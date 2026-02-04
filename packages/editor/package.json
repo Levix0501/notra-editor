@@ -16,10 +16,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tiptap/core": "^2.4.0",
-    "@tiptap/pm": "^2.4.0",
-    "@tiptap/react": "^2.4.0",
-    "@tiptap/starter-kit": "^2.4.0"
+    "@tiptap/core": "^3.19.0",
+    "@tiptap/pm": "^3.19.0",
+    "@tiptap/react": "^3.19.0",
+    "@tiptap/starter-kit": "^3.19.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",

@@ -1,5 +1,6 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { JSX } from 'react';
 
 export interface EditorProps {
   content?: string;
