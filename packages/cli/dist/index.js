@@ -6,7 +6,7 @@ import { Command } from "commander";
 // src/constants.ts
 var CONSTANTS = {
   TARGET_DIR: "components/notra-editor",
-  REGISTRY_BASE_URL: "https://raw.githubusercontent.com/{owner}/{repo}/main/public/r",
+  REGISTRY_BASE_URL: "https://raw.githubusercontent.com/levix0501/notra-editor/main/public/r",
   COMPONENT_NAME: "editor"
 };
 
