@@ -1,0 +1,33 @@
+{
+  "name": "@notra-editor/editor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal Tiptap React editor component",
+  "type": "module",
+  "main": "./core/editor.tsx",
+  "types": "./core/editor.tsx",
+  "exports": {
+    ".": {
+      "import": "./core/editor.tsx",
+      "types": "./core/editor.tsx"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tiptap/core": "^2.4.0",
+    "@tiptap/pm": "^2.4.0",
+    "@tiptap/react": "^2.4.0",
+    "@tiptap/starter-kit": "^2.4.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "typescript": "^5"
+  }
+}
