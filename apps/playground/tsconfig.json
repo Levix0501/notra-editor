@@ -19,6 +19,5 @@
       "@editor/*": ["../../packages/editor/*"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "../../packages/editor" }]
+  "include": ["src"]
 }

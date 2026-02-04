@@ -5,25 +5,25 @@
   "files": [
     {
       "path": "core/editor.tsx",
-      "content": "import { useEditor, EditorContent } from '@tiptap/react';\r\nimport StarterKit from '@tiptap/starter-kit';\r\n\r\nexport interface EditorProps {\r\n  content?: string;\r\n  onChange?: (content: string) => void;\r\n  placeholder?: string;\r\n  editable?: boolean;\r\n}\r\n\r\nexport function Editor({\r\n  content = '',\r\n  onChange,\r\n  placeholder: _placeholder,\r\n  editable = true,\r\n}: EditorProps): JSX.Element {\r\n  const editor = useEditor({\r\n    extensions: [StarterKit],\r\n    content,\r\n    editable,\r\n    onUpdate: ({ editor }) => {\r\n      onChange?.(editor.getHTML());\r\n    },\r\n  });\r\n\r\n  return <EditorContent editor={editor} />;\r\n}\r\n\r\nexport default Editor;\r\n"
+      "content": "import { useEditor, EditorContent } from '@tiptap/react';\r\nimport StarterKit from '@tiptap/starter-kit';\r\nimport { JSX } from 'react';\r\n\r\nexport interface EditorProps {\r\n  content?: string;\r\n  onChange?: (content: string) => void;\r\n  placeholder?: string;\r\n  editable?: boolean;\r\n}\r\n\r\nexport function Editor({\r\n  content = '',\r\n  onChange,\r\n  placeholder: _placeholder,\r\n  editable = true,\r\n}: EditorProps): JSX.Element {\r\n  const editor = useEditor({\r\n    extensions: [StarterKit],\r\n    content,\r\n    editable,\r\n    onUpdate: ({ editor }) => {\r\n      onChange?.(editor.getHTML());\r\n    },\r\n  });\r\n\r\n  return <EditorContent editor={editor} />;\r\n}\r\n\r\nexport default Editor;\r\n"
     }
   ],
   "dependencies": [
     {
       "name": "@tiptap/core",
-      "version": "2.4.0"
+      "version": "3.19.0"
     },
     {
       "name": "@tiptap/pm",
-      "version": "2.4.0"
+      "version": "3.19.0"
     },
     {
       "name": "@tiptap/react",
-      "version": "2.4.0"
+      "version": "3.19.0"
     },
     {
       "name": "@tiptap/starter-kit",
-      "version": "2.4.0"
+      "version": "3.19.0"
     }
   ]
 }
