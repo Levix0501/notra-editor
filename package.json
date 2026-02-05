@@ -1,6 +1,6 @@
 {
 	"name": "notra-editor",
-	"version": "1.0.0",
+	"version": "0.0.0",
 	"private": true,
 	"packageManager": "pnpm@9.0.6",
 	"description": "A Tiptap-based editor with shadcn-ui architecture pattern",
