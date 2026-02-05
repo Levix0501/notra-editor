@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [`07647b428879c909dd7c20b2c2c50f1e27fbffde`](https://github.com/Levix0501/notra-editor/commit/07647b428879c909dd7c20b2c2c50f1e27fbffde) Thanks [@Levix0501](https://github.com/Levix0501)! - fix: remove duplicate shebang in CLI output
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
