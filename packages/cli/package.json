@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/levix0501/notra-editor.git",
+		"url": "https://github.com/Levix0501/notra-editor.git",
 		"directory": "packages/cli"
 	},
 	"publishConfig": {
