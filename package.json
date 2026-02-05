@@ -17,9 +17,14 @@
 		"lint:fix": "eslint . --fix && prettier --write .",
 		"check-types": "tsc --noEmit",
 		"prepare": "husky",
-		"commit": "git add -A && git-cz"
+		"commit": "git add -A && git-cz",
+		"release": "changeset version",
+		"pub:beta": "cd packages/cli && pnpm pub:beta",
+		"pub:release": "cd packages/cli && pnpm pub:release"
 	},
 	"devDependencies": {
+		"@changesets/changelog-github": "^0.4.8",
+		"@changesets/cli": "^2.26.1",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@eslint/eslintrc": "^3",

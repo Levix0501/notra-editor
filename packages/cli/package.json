@@ -23,7 +23,10 @@
 		"build": "tsup",
 		"dev": "tsup --watch",
 		"test": "vitest run",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"release": "changeset version",
+		"pub:beta": "pnpm build && pnpm publish --no-git-checks --access public --tag beta",
+		"pub:release": "pnpm build && pnpm publish --access public"
 	},
 	"dependencies": {
 		"commander": "^14.0.0",
