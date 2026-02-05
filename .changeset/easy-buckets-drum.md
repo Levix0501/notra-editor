@@ -1,0 +1,5 @@
+---
+'notra-editor': patch
+---
+
+test
