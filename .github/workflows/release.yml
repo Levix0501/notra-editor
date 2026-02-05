@@ -34,9 +34,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Enable npm OIDC publish
-        run: echo "NPM_CONFIG_PROVENANCE=true" >> $GITHUB_ENV
-
       - name: Update npm for OIDC support
         run: npm install -g npm@latest
 
