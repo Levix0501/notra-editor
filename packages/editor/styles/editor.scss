@@ -1,0 +1,11 @@
+// Base editor styles
+.notra-editor {
+	@apply min-h-[200px] outline-none;
+}
+
+// Import component styles
+@import 'heading';
+@import 'text';
+@import 'list';
+@import 'code';
+@import 'blockquote';

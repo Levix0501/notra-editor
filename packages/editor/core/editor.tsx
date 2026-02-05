@@ -1,23 +1,18 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import { StarterKit } from '@tiptap/starter-kit';
+import { EditorContent, useEditor } from '@tiptap/react';
 import { JSX } from 'react';
+
+import { EditorExtensions } from '../extensions/editor';
 
 export interface EditorProps {
 	content?: string;
 	onChange?: (content: string) => void;
-	placeholder?: string;
-	editable?: boolean;
 }
 
-export function Editor({
-	content = '',
-	onChange,
-	editable = true
-}: EditorProps): JSX.Element {
+export function Editor({ content = '', onChange }: EditorProps): JSX.Element {
 	const editor = useEditor({
-		extensions: [StarterKit],
+		extensions: EditorExtensions,
 		content,
-		editable,
+		editable: true,
 		onUpdate: ({ editor }) => {
 			onChange?.(editor.getHTML());
 		}
@@ -25,5 +20,3 @@ export function Editor({
 
 	return <EditorContent editor={editor} />;
 }
-
-export default Editor;

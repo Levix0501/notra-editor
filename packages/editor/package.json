@@ -8,6 +8,21 @@
 		".": {
 			"types": "./core/editor.tsx",
 			"import": "./core/editor.tsx"
+		},
+		"./viewer": {
+			"types": "./core/viewer.tsx",
+			"import": "./core/viewer.tsx"
+		},
+		"./extensions": {
+			"types": "./extensions/index.ts",
+			"import": "./extensions/index.ts"
+		},
+		"./extensions/starter": {
+			"types": "./extensions/starter.ts",
+			"import": "./extensions/starter.ts"
+		},
+		"./styles": {
+			"import": "./styles/editor.scss"
 		}
 	},
 	"main": "./core/editor.tsx",
@@ -23,11 +38,14 @@
 		"@tiptap/core": "^3.19.0",
 		"@tiptap/pm": "^3.19.0",
 		"@tiptap/react": "^3.19.0",
-		"@tiptap/starter-kit": "^3.19.0"
+		"@tiptap/starter-kit": "^3.19.0",
+		"@tiptap/static-renderer": "^3.19.0"
 	},
 	"devDependencies": {
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2",
+		"sass": "^1.97.3",
+		"tailwindcss": "^4.1.11",
 		"typescript": "^5"
 	}
 }

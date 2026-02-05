@@ -1,11 +1,55 @@
 {
   "name": "editor",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Minimal Tiptap React editor component",
   "files": [
     {
       "path": "core/editor.tsx",
-      "content": "import { useEditor, EditorContent } from '@tiptap/react';\r\nimport StarterKit from '@tiptap/starter-kit';\r\nimport { JSX } from 'react';\r\n\r\nexport interface EditorProps {\r\n  content?: string;\r\n  onChange?: (content: string) => void;\r\n  placeholder?: string;\r\n  editable?: boolean;\r\n}\r\n\r\nexport function Editor({\r\n  content = '',\r\n  onChange,\r\n  placeholder: _placeholder,\r\n  editable = true,\r\n}: EditorProps): JSX.Element {\r\n  const editor = useEditor({\r\n    extensions: [StarterKit],\r\n    content,\r\n    editable,\r\n    onUpdate: ({ editor }) => {\r\n      onChange?.(editor.getHTML());\r\n    },\r\n  });\r\n\r\n  return <EditorContent editor={editor} />;\r\n}\r\n\r\nexport default Editor;\r\n"
+      "content": "import { EditorContent, useEditor } from '@tiptap/react';\nimport { JSX } from 'react';\n\nimport { EditorExtensions } from '../extensions/editor';\n\nexport interface EditorProps {\n\tcontent?: string;\n\tonChange?: (content: string) => void;\n}\n\nexport function Editor({ content = '', onChange }: EditorProps): JSX.Element {\n\tconst editor = useEditor({\n\t\textensions: EditorExtensions,\n\t\tcontent,\n\t\teditable: true,\n\t\tonUpdate: ({ editor }) => {\n\t\t\tonChange?.(editor.getHTML());\n\t\t}\n\t});\n\n\treturn <EditorContent editor={editor} />;\n}\n"
+    },
+    {
+      "path": "core/viewer.tsx",
+      "content": "import { JSONContent } from '@tiptap/core';\nimport { renderToReactElement } from '@tiptap/static-renderer/pm/react';\nimport { JSX } from 'react';\n\nimport { ViewerExtensions } from '../extensions/viewer';\n\nexport interface ViewerProps {\n\tcontent: JSONContent;\n}\n\nexport function Viewer({ content }: ViewerProps): JSX.Element {\n\treturn <>{renderToReactElement({ extensions: ViewerExtensions, content })}</>;\n}\n"
+    },
+    {
+      "path": "extensions/editor.ts",
+      "content": "import { Starter } from './starter';\n\nexport const EditorExtensions = [Starter];\n"
+    },
+    {
+      "path": "extensions/index.ts",
+      "content": "export { Starter } from './starter';\n"
+    },
+    {
+      "path": "extensions/starter.ts",
+      "content": "import { StarterKit } from '@tiptap/starter-kit';\n\nexport const Starter = StarterKit.configure({\n\thorizontalRule: false,\n\tcodeBlock: false\n});\n"
+    },
+    {
+      "path": "extensions/viewer.ts",
+      "content": "import { Starter } from './starter';\n\nexport const ViewerExtensions = [Starter];\n"
+    },
+    {
+      "path": "styles/editor.scss",
+      "content": "// Base editor styles\n.notra-editor {\n\t@apply min-h-[200px] outline-none;\n}\n\n// Import component styles\n@import 'heading';\n@import 'text';\n@import 'list';\n@import 'code';\n@import 'blockquote';\n"
+    },
+    {
+      "path": "styles/_blockquote.scss",
+      "content": "// Blockquote styles\n.notra-editor {\n\tblockquote {\n\t\t@apply border-l-4 border-gray-300 dark:border-gray-700 pl-4 italic mb-4 text-gray-700 dark:text-gray-300;\n\t}\n}\n"
+    },
+    {
+      "path": "styles/_code.scss",
+      "content": "// Code styles\n.notra-editor {\n\tcode {\n\t\t@apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;\n\t}\n\n\tpre {\n\t\t@apply bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg mb-4 overflow-x-auto;\n\n\t\tcode {\n\t\t\t@apply bg-transparent p-0 text-gray-100;\n\t\t}\n\t}\n}\n"
+    },
+    {
+      "path": "styles/_heading.scss",
+      "content": "// Heading styles\n.notra-editor {\n\th1 {\n\t\t@apply text-3xl font-bold mb-4 mt-6;\n\t}\n\n\th2 {\n\t\t@apply text-2xl font-bold mb-3 mt-5;\n\t}\n\n\th3 {\n\t\t@apply text-xl font-bold mb-2 mt-4;\n\t}\n\n\th4 {\n\t\t@apply text-lg font-bold mb-2 mt-3;\n\t}\n\n\th5 {\n\t\t@apply text-base font-bold mb-1 mt-2;\n\t}\n\n\th6 {\n\t\t@apply text-sm font-bold mb-1 mt-2;\n\t}\n}\n"
+    },
+    {
+      "path": "styles/_list.scss",
+      "content": "// List styles\n.notra-editor {\n\tul,\n\tol {\n\t\t@apply pl-6 mb-3;\n\t}\n\n\tul {\n\t\t@apply list-disc;\n\t}\n\n\tol {\n\t\t@apply list-decimal;\n\t}\n\n\tli {\n\t\t@apply mb-1;\n\t}\n\n\t// Nested lists\n\tul ul,\n\tol ul {\n\t\t@apply list-disc;\n\t}\n\n\tul ol,\n\tol ol {\n\t\t@apply list-decimal;\n\t}\n}\n"
+    },
+    {
+      "path": "styles/_text.scss",
+      "content": "// Paragraph and text styles\n.notra-editor {\n\tp {\n\t\t@apply mb-3;\n\t}\n\n\tstrong {\n\t\t@apply font-bold;\n\t}\n\n\tem {\n\t\t@apply italic;\n\t}\n\n\ta {\n\t\t@apply text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300;\n\t}\n\n\thr {\n\t\t@apply border-gray-300 dark:border-gray-700 my-6;\n\t}\n}\n"
     }
   ],
   "dependencies": [
@@ -23,6 +67,10 @@
     },
     {
       "name": "@tiptap/starter-kit",
+      "version": "3.19.0"
+    },
+    {
+      "name": "@tiptap/static-renderer",
       "version": "3.19.0"
     }
   ]
