@@ -4,6 +4,15 @@
 	"version": "1.0.0-beta.0",
 	"description": "CLI tool to scaffold notra-editor into your project",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/levix0501/notra-editor.git",
+		"directory": "packages/cli"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
 	"keywords": [
 		"tiptap",
 		"editor",
