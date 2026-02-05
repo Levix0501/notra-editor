@@ -4,9 +4,9 @@ import type { Registry } from './types';
  * Result of fetching the registry from a remote URL.
  */
 export interface FetchResult {
-  success: boolean;
-  data?: Registry;
-  error?: string;
+	success: boolean;
+	data?: Registry;
+	error?: string;
 }
 
 /**
@@ -14,27 +14,29 @@ export interface FetchResult {
  * Parses the JSON response and returns a FetchResult with success status and data or error.
  */
 export async function fetchRegistry(url: string): Promise<FetchResult> {
-  try {
-    const response = await fetch(url);
+	try {
+		const response = await fetch(url);
 
-    if (!response.ok) {
-      return {
-        success: false,
-        error: `Failed to fetch registry: HTTP ${response.status} ${response.statusText}`,
-      };
-    }
+		if (!response.ok) {
+			return {
+				success: false,
+				error: `Failed to fetch registry: HTTP ${response.status} ${response.statusText}`
+			};
+		}
 
-    const data = (await response.json()) as Registry;
+		const data = (await response.json()) as Registry;
 
-    return {
-      success: true,
-      data,
-    };
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-    return {
-      success: false,
-      error: `Failed to fetch registry: ${errorMessage}`,
-    };
-  }
+		return {
+			success: true,
+			data
+		};
+	} catch (err) {
+		const errorMessage =
+			err instanceof Error ? err.message : 'Unknown error occurred';
+
+		return {
+			success: false,
+			error: `Failed to fetch registry: ${errorMessage}`
+		};
+	}
 }

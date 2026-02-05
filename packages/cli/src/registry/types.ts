@@ -2,16 +2,16 @@
  * Represents a file in the registry with its path and content.
  */
 export interface RegistryFile {
-  path: string;
-  content: string;
+	path: string;
+	content: string;
 }
 
 /**
  * Represents a dependency with its name and version.
  */
 export interface RegistryDependency {
-  name: string;
-  version: string;
+	name: string;
+	version: string;
 }
 
 /**
@@ -19,9 +19,9 @@ export interface RegistryDependency {
  * component metadata, files, and dependencies.
  */
 export interface Registry {
-  name: string;
-  version: string;
-  description: string;
-  files: RegistryFile[];
-  dependencies: RegistryDependency[];
+	name: string;
+	version: string;
+	description: string;
+	files: RegistryFile[];
+	dependencies: RegistryDependency[];
 }

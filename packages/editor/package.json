@@ -1,33 +1,33 @@
 {
-  "name": "@notra-editor/editor",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Minimal Tiptap React editor component",
-  "type": "module",
-  "main": "./core/editor.tsx",
-  "types": "./core/editor.tsx",
-  "exports": {
-    ".": {
-      "import": "./core/editor.tsx",
-      "types": "./core/editor.tsx"
-    }
-  },
-  "scripts": {
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@tiptap/core": "^3.19.0",
-    "@tiptap/pm": "^3.19.0",
-    "@tiptap/react": "^3.19.0",
-    "@tiptap/starter-kit": "^3.19.0"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
-    "typescript": "^5"
-  }
+	"name": "@notra-editor/editor",
+	"type": "module",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Minimal Tiptap React editor component",
+	"exports": {
+		".": {
+			"types": "./core/editor.tsx",
+			"import": "./core/editor.tsx"
+		}
+	},
+	"main": "./core/editor.tsx",
+	"types": "./core/editor.tsx",
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"peerDependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
+	},
+	"dependencies": {
+		"@tiptap/core": "^3.19.0",
+		"@tiptap/pm": "^3.19.0",
+		"@tiptap/react": "^3.19.0",
+		"@tiptap/starter-kit": "^3.19.0"
+	},
+	"devDependencies": {
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2",
+		"typescript": "^5"
+	}
 }
