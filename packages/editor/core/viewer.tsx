@@ -1,3 +1,5 @@
+import '../styles/editor.css';
+
 import { JSONContent } from '@tiptap/core';
 import { renderToReactElement } from '@tiptap/static-renderer/pm/react';
 import { JSX } from 'react';
@@ -9,5 +11,9 @@ export interface ViewerProps {
 }
 
 export function Viewer({ content }: ViewerProps): JSX.Element {
-	return <>{renderToReactElement({ extensions: ViewerExtensions, content })}</>;
+	return (
+		<div className="notra-editor">
+			{renderToReactElement({ extensions: ViewerExtensions, content })}
+		</div>
+	);
 }

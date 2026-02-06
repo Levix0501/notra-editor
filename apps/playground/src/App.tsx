@@ -1,5 +1,3 @@
-import '@editor/styles/editor.css';
-
 import { Editor } from '@editor/core/editor';
 import { useState } from 'react';
 

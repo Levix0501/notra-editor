@@ -1,1 +1,0 @@
-export { Starter } from './starter';

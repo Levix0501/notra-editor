@@ -1,3 +1,5 @@
+import '../styles/editor.css';
+
 import { EditorContent, useEditor } from '@tiptap/react';
 import { JSX } from 'react';
 
@@ -18,5 +20,9 @@ export function Editor({ content = '', onChange }: EditorProps): JSX.Element {
 		}
 	});
 
-	return <EditorContent editor={editor} />;
+	return (
+		<div className="notra-editor">
+			<EditorContent editor={editor} />
+		</div>
+	);
 }

@@ -12,21 +12,8 @@
 		"./viewer": {
 			"types": "./core/viewer.tsx",
 			"import": "./core/viewer.tsx"
-		},
-		"./extensions": {
-			"types": "./extensions/index.ts",
-			"import": "./extensions/index.ts"
-		},
-		"./extensions/starter": {
-			"types": "./extensions/starter.ts",
-			"import": "./extensions/starter.ts"
-		},
-		"./styles": {
-			"import": "./styles/editor.css"
 		}
 	},
-	"main": "./core/editor.tsx",
-	"types": "./core/editor.tsx",
 	"scripts": {
 		"typecheck": "tsc --noEmit"
 	},
@@ -36,6 +23,7 @@
 	},
 	"dependencies": {
 		"@tiptap/core": "^3.19.0",
+		"@tiptap/extension-horizontal-rule": "^3.19.0",
 		"@tiptap/pm": "^3.19.0",
 		"@tiptap/react": "^3.19.0",
 		"@tiptap/starter-kit": "^3.19.0",

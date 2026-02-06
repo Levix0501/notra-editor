@@ -114,7 +114,8 @@ const eslintConfig = defineConfig([
 		'**/coverage/**',
 		'**/.next/**',
 		'**/out/**',
-		'.ui-main/**'
+		'.ui-main/**',
+		'.notra/**'
 	]),
 	...compat.extends('plugin:import/recommended', 'plugin:import/typescript'),
 	...compat.plugins('import', 'react'),
