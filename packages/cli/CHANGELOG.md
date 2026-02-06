@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.0.0
+
+### Minor Changes
+
+- [`cca5289eb706b2bfc09e99c73bbe6b34bb186708`](https://github.com/Levix0501/notra-editor/commit/cca5289eb706b2bfc09e99c73bbe6b34bb186708) Thanks [@Levix0501](https://github.com/Levix0501)! - feat: migrate styles to pure CSS with CSS custom properties
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
