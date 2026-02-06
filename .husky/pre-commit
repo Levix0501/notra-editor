@@ -1,3 +1,5 @@
+pnpm build:registry
+git add public/r/editor.json
 pnpm lint:fix
 pnpm lint
 pnpm test
