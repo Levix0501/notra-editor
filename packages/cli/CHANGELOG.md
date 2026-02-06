@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.1.0
+
+### Minor Changes
+
+- [`5fc85294ff9ed637c5f82e2ab4eaa6451fb50194`](https://github.com/Levix0501/notra-editor/commit/5fc85294ff9ed637c5f82e2ab4eaa6451fb50194) Thanks [@Levix0501](https://github.com/Levix0501)! - feat(editor): add horizontal rule extension
+
 ## 1.0.0
 
 ### Minor Changes
