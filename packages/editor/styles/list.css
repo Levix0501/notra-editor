@@ -1,0 +1,53 @@
+.notra-editor {
+	ol,
+	ul {
+		margin-top: 1.5em;
+		margin-bottom: 1.5em;
+		padding-left: 1.5em;
+
+		&:first-child {
+			margin-top: 0;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+		ol,
+		ul {
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+	}
+
+	li {
+		p {
+			margin-top: 0;
+			line-height: 1.6;
+		}
+	}
+
+	ol {
+		list-style: decimal;
+
+		ol {
+			list-style: lower-alpha;
+
+			ol {
+				list-style: lower-roman;
+			}
+		}
+	}
+
+	ul {
+		list-style: disc;
+
+		ul {
+			list-style: circle;
+
+			ul {
+				list-style: square;
+			}
+		}
+	}
+}

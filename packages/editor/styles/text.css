@@ -1,0 +1,33 @@
+.notra-editor {
+	p:not(:first-child) {
+		font-size: 1rem;
+		line-height: 1.6;
+		font-weight: normal;
+		margin-top: 1.25em;
+	}
+
+	strong {
+		font-weight: 700;
+	}
+
+	em {
+		font-style: italic;
+	}
+
+	a {
+		color: var(--notra-link);
+		text-decoration: underline;
+	}
+
+	a span {
+		text-decoration: underline;
+	}
+
+	s span {
+		text-decoration: line-through;
+	}
+
+	u span {
+		text-decoration: underline;
+	}
+}

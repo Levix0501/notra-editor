@@ -22,7 +22,7 @@
 			"import": "./extensions/starter.ts"
 		},
 		"./styles": {
-			"import": "./styles/editor.scss"
+			"import": "./styles/editor.css"
 		}
 	},
 	"main": "./core/editor.tsx",
@@ -44,8 +44,6 @@
 	"devDependencies": {
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2",
-		"sass": "^1.97.3",
-		"tailwindcss": "^4.1.11",
 		"typescript": "^5"
 	}
 }

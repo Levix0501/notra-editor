@@ -1,0 +1,9 @@
+.notra-editor {
+	white-space: pre-wrap;
+	outline: none;
+	color: var(--notra-text);
+}
+
+.notra-editor > * {
+	position: relative;
+}

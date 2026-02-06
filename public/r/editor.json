@@ -28,28 +28,44 @@
       "content": "import { Starter } from './starter';\n\nexport const ViewerExtensions = [Starter];\n"
     },
     {
-      "path": "styles/editor.scss",
-      "content": "// Base editor styles\n.notra-editor {\n\t@apply min-h-[200px] outline-none;\n}\n\n// Import component styles\n@import 'heading';\n@import 'text';\n@import 'list';\n@import 'code';\n@import 'blockquote';\n"
+      "path": "styles/base.css",
+      "content": ".notra-editor {\r\n\twhite-space: pre-wrap;\r\n\toutline: none;\r\n\tcolor: var(--notra-text);\r\n}\r\n\r\n.notra-editor > * {\r\n\tposition: relative;\r\n}\r\n"
     },
     {
-      "path": "styles/_blockquote.scss",
-      "content": "// Blockquote styles\n.notra-editor {\n\tblockquote {\n\t\t@apply border-l-4 border-gray-300 dark:border-gray-700 pl-4 italic mb-4 text-gray-700 dark:text-gray-300;\n\t}\n}\n"
+      "path": "styles/blockquote.css",
+      "content": ".notra-editor {\r\n\tblockquote {\r\n\t\tposition: relative;\r\n\t\tpadding-left: 1em;\r\n\t\tpadding-top: 0.375em;\r\n\t\tpadding-bottom: 0.375em;\r\n\t\tmargin: 1.5rem 0;\r\n\r\n\t\tp {\r\n\t\t\tmargin-top: 0;\r\n\t\t}\r\n\r\n\t\t/* Decorative left bar via pseudo-element */\r\n\t\t&::before {\r\n\t\t\tposition: absolute;\r\n\t\t\tbottom: 0;\r\n\t\t\tleft: 0;\r\n\t\t\ttop: 0;\r\n\t\t\theight: 100%;\r\n\t\t\twidth: 0.25em;\r\n\t\t\tbackground-color: var(--notra-blockquote-bar);\r\n\t\t\tcontent: '';\r\n\t\t}\r\n\t}\r\n}\r\n"
     },
     {
-      "path": "styles/_code.scss",
-      "content": "// Code styles\n.notra-editor {\n\tcode {\n\t\t@apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;\n\t}\n\n\tpre {\n\t\t@apply bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg mb-4 overflow-x-auto;\n\n\t\tcode {\n\t\t\t@apply bg-transparent p-0 text-gray-100;\n\t\t}\n\t}\n}\n"
+      "path": "styles/code.css",
+      "content": ".notra-editor {\r\n\tcode {\r\n\t\tbackground-color: var(--notra-code-bg);\r\n\t\tcolor: var(--notra-code-text);\r\n\t\tborder: 1px solid var(--notra-code-border);\r\n\t\tfont-family:\r\n\t\t\tui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;\r\n\t\tfont-size: 0.875em;\r\n\t\tline-height: 1.4;\r\n\t\tborder-radius: 0.375rem;\r\n\t\tpadding: 0.1em 0.2em;\r\n\t}\r\n\r\n\tpre {\r\n\t\tbackground-color: var(--notra-codeblock-bg);\r\n\t\tcolor: var(--notra-codeblock-text);\r\n\t\tborder: 1px solid var(--notra-codeblock-border);\r\n\t\tmargin-top: 1.5em;\r\n\t\tmargin-bottom: 1.5em;\r\n\t\tpadding: 1em;\r\n\t\tfont-size: 1rem;\r\n\t\tborder-radius: 0.375rem;\r\n\t\toverflow-x: auto;\r\n\r\n\t\tcode {\r\n\t\t\tbackground-color: transparent;\r\n\t\t\tborder: none;\r\n\t\t\tborder-radius: 0;\r\n\t\t\tcolor: inherit;\r\n\t\t\tpadding: 0;\r\n\t\t}\r\n\t}\r\n}\r\n"
     },
     {
-      "path": "styles/_heading.scss",
-      "content": "// Heading styles\n.notra-editor {\n\th1 {\n\t\t@apply text-3xl font-bold mb-4 mt-6;\n\t}\n\n\th2 {\n\t\t@apply text-2xl font-bold mb-3 mt-5;\n\t}\n\n\th3 {\n\t\t@apply text-xl font-bold mb-2 mt-4;\n\t}\n\n\th4 {\n\t\t@apply text-lg font-bold mb-2 mt-3;\n\t}\n\n\th5 {\n\t\t@apply text-base font-bold mb-1 mt-2;\n\t}\n\n\th6 {\n\t\t@apply text-sm font-bold mb-1 mt-2;\n\t}\n}\n"
+      "path": "styles/editor.css",
+      "content": "@import './variables.css';\r\n@import './base.css';\r\n@import './heading.css';\r\n@import './text.css';\r\n@import './list.css';\r\n@import './code.css';\r\n@import './blockquote.css';\r\n@import './horizontal-rule.css';\r\n@import './image.css';\r\n"
     },
     {
-      "path": "styles/_list.scss",
-      "content": "// List styles\n.notra-editor {\n\tul,\n\tol {\n\t\t@apply pl-6 mb-3;\n\t}\n\n\tul {\n\t\t@apply list-disc;\n\t}\n\n\tol {\n\t\t@apply list-decimal;\n\t}\n\n\tli {\n\t\t@apply mb-1;\n\t}\n\n\t// Nested lists\n\tul ul,\n\tol ul {\n\t\t@apply list-disc;\n\t}\n\n\tul ol,\n\tol ol {\n\t\t@apply list-decimal;\n\t}\n}\n"
+      "path": "styles/heading.css",
+      "content": "/* Vertical rhythm values from Tailwind Typography */\r\n.notra-editor {\r\n\th1,\r\n\th2,\r\n\th3,\r\n\th4 {\r\n\t\tposition: relative;\r\n\t\tcolor: inherit;\r\n\t\tfont-style: inherit;\r\n\r\n\t\t&:first-child {\r\n\t\t\tmargin-top: 0;\r\n\t\t}\r\n\t}\r\n\r\n\th1 {\r\n\t\tmargin-top: 0;\r\n\t\tmargin-bottom: 0.888889em;\r\n\t\tfont-size: 2.25em;\r\n\t\tfont-weight: 700;\r\n\t\tline-height: 1.11111;\r\n\t}\r\n\r\n\th2 {\r\n\t\tmargin-top: 2em;\r\n\t\tmargin-bottom: 1em;\r\n\t\tfont-size: 1.5em;\r\n\t\tfont-weight: 700;\r\n\t\tline-height: 1.33333;\r\n\t}\r\n\r\n\th3 {\r\n\t\tmargin-top: 1.6em;\r\n\t\tmargin-bottom: 0.6em;\r\n\t\tfont-size: 1.25em;\r\n\t\tfont-weight: 600;\r\n\t\tline-height: 1.6;\r\n\t}\r\n\r\n\th4 {\r\n\t\tmargin-top: 1.5em;\r\n\t\tmargin-bottom: 0.5em;\r\n\t\tfont-weight: 600;\r\n\t\tline-height: 1.5;\r\n\t}\r\n}\r\n"
     },
     {
-      "path": "styles/_text.scss",
-      "content": "// Paragraph and text styles\n.notra-editor {\n\tp {\n\t\t@apply mb-3;\n\t}\n\n\tstrong {\n\t\t@apply font-bold;\n\t}\n\n\tem {\n\t\t@apply italic;\n\t}\n\n\ta {\n\t\t@apply text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300;\n\t}\n\n\thr {\n\t\t@apply border-gray-300 dark:border-gray-700 my-6;\n\t}\n}\n"
+      "path": "styles/horizontal-rule.css",
+      "content": ".notra-editor {\r\n\thr {\r\n\t\tborder: none;\r\n\t\theight: 1px;\r\n\t\tbackground-color: var(--notra-hr);\r\n\t\tmargin-top: 2.25em;\r\n\t\tmargin-bottom: 2.25em;\r\n\t}\r\n}\r\n"
+    },
+    {
+      "path": "styles/image.css",
+      "content": ".notra-editor {\r\n\timg {\r\n\t\tmax-width: 100%;\r\n\t\theight: auto;\r\n\t\tdisplay: block;\r\n\t\tmargin: 2rem 0;\r\n\t\tborder-radius: 0.25rem;\r\n\t}\r\n}\r\n"
+    },
+    {
+      "path": "styles/list.css",
+      "content": ".notra-editor {\r\n\tol,\r\n\tul {\r\n\t\tmargin-top: 1.5em;\r\n\t\tmargin-bottom: 1.5em;\r\n\t\tpadding-left: 1.5em;\r\n\r\n\t\t&:first-child {\r\n\t\t\tmargin-top: 0;\r\n\t\t}\r\n\r\n\t\t&:last-child {\r\n\t\t\tmargin-bottom: 0;\r\n\t\t}\r\n\r\n\t\tol,\r\n\t\tul {\r\n\t\t\tmargin-top: 0;\r\n\t\t\tmargin-bottom: 0;\r\n\t\t}\r\n\t}\r\n\r\n\tli {\r\n\t\tp {\r\n\t\t\tmargin-top: 0;\r\n\t\t\tline-height: 1.6;\r\n\t\t}\r\n\t}\r\n\r\n\tol {\r\n\t\tlist-style: decimal;\r\n\r\n\t\tol {\r\n\t\t\tlist-style: lower-alpha;\r\n\r\n\t\t\tol {\r\n\t\t\t\tlist-style: lower-roman;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\tul {\r\n\t\tlist-style: disc;\r\n\r\n\t\tul {\r\n\t\t\tlist-style: circle;\r\n\r\n\t\t\tul {\r\n\t\t\t\tlist-style: square;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n"
+    },
+    {
+      "path": "styles/text.css",
+      "content": ".notra-editor {\r\n\tp:not(:first-child) {\r\n\t\tfont-size: 1rem;\r\n\t\tline-height: 1.6;\r\n\t\tfont-weight: normal;\r\n\t\tmargin-top: 1.25em;\r\n\t}\r\n\r\n\tstrong {\r\n\t\tfont-weight: 700;\r\n\t}\r\n\r\n\tem {\r\n\t\tfont-style: italic;\r\n\t}\r\n\r\n\ta {\r\n\t\tcolor: var(--notra-link);\r\n\t\ttext-decoration: underline;\r\n\t}\r\n\r\n\ta span {\r\n\t\ttext-decoration: underline;\r\n\t}\r\n\r\n\ts span {\r\n\t\ttext-decoration: line-through;\r\n\t}\r\n\r\n\tu span {\r\n\t\ttext-decoration: underline;\r\n\t}\r\n}\r\n"
+    },
+    {
+      "path": "styles/variables.css",
+      "content": "/* Palette - override these to change the theme */\r\n.notra-editor {\r\n\t/* Gray alpha scale */\r\n\t--notra-gray-a-50: rgb(56 56 56 / 4%);\r\n\t--notra-gray-a-100: rgb(15 22 36 / 5%);\r\n\t--notra-gray-a-200: rgb(37 39 45 / 10%);\r\n\t--notra-gray-a-300: rgb(47 50 55 / 20%);\r\n\t--notra-gray-a-400: rgb(40 44 51 / 42%);\r\n\t--notra-gray-a-500: rgb(52 55 60 / 64%);\r\n\t--notra-gray-a-600: rgb(36 39 46 / 78%);\r\n\t--notra-gray-a-700: rgb(35 37 42 / 87%);\r\n\t--notra-gray-a-800: rgb(30 32 36 / 95%);\r\n\t--notra-gray-a-900: rgb(29 30 32 / 98%);\r\n\r\n\t/* Brand */\r\n\t--notra-brand-50: rgb(239 238 255);\r\n\t--notra-brand-100: rgb(222 219 255);\r\n\t--notra-brand-200: rgb(195 189 255);\r\n\t--notra-brand-300: rgb(157 138 255);\r\n\t--notra-brand-400: rgb(122 82 255);\r\n\t--notra-brand-500: rgb(98 41 255);\r\n\t--notra-brand-600: rgb(84 0 229);\r\n\t--notra-brand-700: rgb(75 0 204);\r\n\t--notra-brand-800: rgb(56 0 153);\r\n\t--notra-brand-900: rgb(43 25 102);\r\n\t--notra-brand-950: hsl(257deg 100% 9%);\r\n\r\n\t/* Semantic tokens */\r\n\t--notra-text: var(--notra-gray-a-900);\r\n\t--notra-link: var(--notra-brand-500);\r\n\t--notra-code-bg: var(--notra-gray-a-100);\r\n\t--notra-code-text: var(--notra-gray-a-700);\r\n\t--notra-code-border: var(--notra-gray-a-200);\r\n\t--notra-codeblock-bg: var(--notra-gray-a-50);\r\n\t--notra-codeblock-text: var(--notra-gray-a-800);\r\n\t--notra-codeblock-border: var(--notra-gray-a-200);\r\n\t--notra-blockquote-bar: var(--notra-gray-a-900);\r\n\t--notra-hr: var(--notra-gray-a-200);\r\n}\r\n\r\n/* Dark mode via .dark ancestor or class on editor itself */\r\n.dark .notra-editor,\r\n.notra-editor.dark {\r\n\t--notra-gray-a-50: rgb(232 232 253 / 5%);\r\n\t--notra-gray-a-100: rgb(231 231 243 / 7%);\r\n\t--notra-gray-a-200: rgb(238 238 246 / 11%);\r\n\t--notra-gray-a-300: rgb(239 239 245 / 22%);\r\n\t--notra-gray-a-400: rgb(244 244 255 / 37%);\r\n\t--notra-gray-a-500: rgb(236 238 253 / 50%);\r\n\t--notra-gray-a-600: rgb(247 247 253 / 64%);\r\n\t--notra-gray-a-700: rgb(251 251 254 / 75%);\r\n\t--notra-gray-a-800: rgb(253 253 253 / 88%);\r\n\t--notra-gray-a-900: rgb(255 255 255 / 96%);\r\n\t--notra-link: var(--notra-brand-400);\r\n}\r\n\r\n/* Dark mode via system preference (opt-out with .light class) */\r\n@media (prefers-color-scheme: dark) {\r\n\t.notra-editor:not(.light) {\r\n\t\t--notra-gray-a-50: rgb(232 232 253 / 5%);\r\n\t\t--notra-gray-a-100: rgb(231 231 243 / 7%);\r\n\t\t--notra-gray-a-200: rgb(238 238 246 / 11%);\r\n\t\t--notra-gray-a-300: rgb(239 239 245 / 22%);\r\n\t\t--notra-gray-a-400: rgb(244 244 255 / 37%);\r\n\t\t--notra-gray-a-500: rgb(236 238 253 / 50%);\r\n\t\t--notra-gray-a-600: rgb(247 247 253 / 64%);\r\n\t\t--notra-gray-a-700: rgb(251 251 254 / 75%);\r\n\t\t--notra-gray-a-800: rgb(253 253 253 / 88%);\r\n\t\t--notra-gray-a-900: rgb(255 255 255 / 96%);\r\n\t\t--notra-link: var(--notra-brand-400);\r\n\t}\r\n}\r\n"
     }
   ],
   "dependencies": [

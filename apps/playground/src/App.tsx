@@ -1,3 +1,5 @@
+import '@editor/styles/editor.css';
+
 import { Editor } from '@editor/core/editor';
 import { useState } from 'react';
 
@@ -7,21 +9,46 @@ export function App() {
 	);
 
 	return (
-		<div className="max-w-4xl mx-auto p-8">
-			<h1 className="text-3xl font-bold mb-6 text-red-900">
+		<div style={{ maxWidth: '48rem', margin: '0 auto', padding: '2rem' }}>
+			<h1
+				style={{
+					fontSize: '1.875rem',
+					fontWeight: 700,
+					marginBottom: '1.5rem'
+				}}
+			>
 				Notra Editor Playground
 			</h1>
 
-			<div className="border border-gray-200 rounded-lg p-4 mb-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+			<div
+				style={{
+					border: '1px solid #e5e7eb',
+					borderRadius: '0.5rem',
+					padding: '1rem',
+					marginBottom: '1.5rem'
+				}}
+			>
 				<Editor content={content} onChange={setContent} />
 			</div>
 
-			<details className="mt-6">
-				<summary className="cursor-pointer text-gray-600 hover:text-gray-900 font-medium">
+			<details>
+				<summary
+					style={{ cursor: 'pointer', color: '#6b7280', fontWeight: 500 }}
+				>
 					View HTML Output
 				</summary>
-				<pre className="bg-gray-50 p-4 rounded-lg overflow-auto text-sm mt-2 border border-gray-200">
-					<code className="text-gray-800">{content}</code>
+				<pre
+					style={{
+						background: '#f9fafb',
+						padding: '1rem',
+						borderRadius: '0.5rem',
+						overflow: 'auto',
+						fontSize: '0.875rem',
+						marginTop: '0.5rem',
+						border: '1px solid #e5e7eb'
+					}}
+				>
+					<code>{content}</code>
 				</pre>
 			</details>
 		</div>

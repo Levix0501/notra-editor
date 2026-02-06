@@ -1,0 +1,72 @@
+/* Palette - override these to change the theme */
+.notra-editor {
+	/* Gray alpha scale */
+	--notra-gray-a-50: rgb(56 56 56 / 4%);
+	--notra-gray-a-100: rgb(15 22 36 / 5%);
+	--notra-gray-a-200: rgb(37 39 45 / 10%);
+	--notra-gray-a-300: rgb(47 50 55 / 20%);
+	--notra-gray-a-400: rgb(40 44 51 / 42%);
+	--notra-gray-a-500: rgb(52 55 60 / 64%);
+	--notra-gray-a-600: rgb(36 39 46 / 78%);
+	--notra-gray-a-700: rgb(35 37 42 / 87%);
+	--notra-gray-a-800: rgb(30 32 36 / 95%);
+	--notra-gray-a-900: rgb(29 30 32 / 98%);
+
+	/* Brand */
+	--notra-brand-50: rgb(239 238 255);
+	--notra-brand-100: rgb(222 219 255);
+	--notra-brand-200: rgb(195 189 255);
+	--notra-brand-300: rgb(157 138 255);
+	--notra-brand-400: rgb(122 82 255);
+	--notra-brand-500: rgb(98 41 255);
+	--notra-brand-600: rgb(84 0 229);
+	--notra-brand-700: rgb(75 0 204);
+	--notra-brand-800: rgb(56 0 153);
+	--notra-brand-900: rgb(43 25 102);
+	--notra-brand-950: hsl(257deg 100% 9%);
+
+	/* Semantic tokens */
+	--notra-text: var(--notra-gray-a-900);
+	--notra-link: var(--notra-brand-500);
+	--notra-code-bg: var(--notra-gray-a-100);
+	--notra-code-text: var(--notra-gray-a-700);
+	--notra-code-border: var(--notra-gray-a-200);
+	--notra-codeblock-bg: var(--notra-gray-a-50);
+	--notra-codeblock-text: var(--notra-gray-a-800);
+	--notra-codeblock-border: var(--notra-gray-a-200);
+	--notra-blockquote-bar: var(--notra-gray-a-900);
+	--notra-hr: var(--notra-gray-a-200);
+}
+
+/* Dark mode via .dark ancestor or class on editor itself */
+.dark .notra-editor,
+.notra-editor.dark {
+	--notra-gray-a-50: rgb(232 232 253 / 5%);
+	--notra-gray-a-100: rgb(231 231 243 / 7%);
+	--notra-gray-a-200: rgb(238 238 246 / 11%);
+	--notra-gray-a-300: rgb(239 239 245 / 22%);
+	--notra-gray-a-400: rgb(244 244 255 / 37%);
+	--notra-gray-a-500: rgb(236 238 253 / 50%);
+	--notra-gray-a-600: rgb(247 247 253 / 64%);
+	--notra-gray-a-700: rgb(251 251 254 / 75%);
+	--notra-gray-a-800: rgb(253 253 253 / 88%);
+	--notra-gray-a-900: rgb(255 255 255 / 96%);
+	--notra-link: var(--notra-brand-400);
+}
+
+/* Dark mode via system preference (opt-out with .light class) */
+@media (prefers-color-scheme: dark) {
+	.notra-editor:not(.light) {
+		--notra-gray-a-50: rgb(232 232 253 / 5%);
+		--notra-gray-a-100: rgb(231 231 243 / 7%);
+		--notra-gray-a-200: rgb(238 238 246 / 11%);
+		--notra-gray-a-300: rgb(239 239 245 / 22%);
+		--notra-gray-a-400: rgb(244 244 255 / 37%);
+		--notra-gray-a-500: rgb(236 238 253 / 50%);
+		--notra-gray-a-600: rgb(247 247 253 / 64%);
+		--notra-gray-a-700: rgb(251 251 254 / 75%);
+		--notra-gray-a-800: rgb(253 253 253 / 88%);
+		--notra-gray-a-900: rgb(255 255 255 / 96%);
+		--notra-link: var(--notra-brand-400);
+	}
+}

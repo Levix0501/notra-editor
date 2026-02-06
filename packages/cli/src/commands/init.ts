@@ -112,6 +112,7 @@ export async function initCommand(options: InitOptions = {}): Promise<void> {
 	// Final success message
 	success('\n✨ notra-editor initialized successfully!');
 	info(`\nEditor files have been copied to: ${CONSTANTS.TARGET_DIR}`);
-	info('You can now import the editor in your project:');
-	info(`  import { Editor } from '@/components/notra-editor/editor';`);
+	info('\nYou can now import the components:');
+	info(`  import { Editor } from '@/components/notra-editor/core/editor';`);
+	info(`  import { Viewer } from '@/components/notra-editor/core/viewer';`);
 }
