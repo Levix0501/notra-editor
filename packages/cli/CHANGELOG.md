@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.2.0
+
+### Minor Changes
+
+- feat(editor): add Fixed Toolbar with Undo/Redo buttons
+
 ## 1.1.0
 
 ### Minor Changes

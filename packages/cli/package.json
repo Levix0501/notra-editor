@@ -1,7 +1,7 @@
 {
 	"name": "notra-editor",
 	"type": "module",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "CLI tool to scaffold notra-editor into your project",
 	"license": "MIT",
 	"repository": {
