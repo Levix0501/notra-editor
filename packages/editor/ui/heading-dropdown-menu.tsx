@@ -2,6 +2,7 @@ import { ChevronDown } from 'lucide-react';
 
 import { HeadingButton } from './heading-button';
 import { useHeadingDropdownMenu } from '../hooks/use-heading-dropdown-menu';
+import { useTranslation } from '../i18n';
 import { Button } from './primitives/button';
 import {
 	DropdownMenu,
@@ -10,6 +11,7 @@ import {
 } from './primitives/dropdown-menu';
 
 export function HeadingDropdownMenu() {
+	const dictionary = useTranslation();
 	const { isVisible, isActive, canToggle, Icon, levels } =
 		useHeadingDropdownMenu({
 			levels: [1, 2, 3, 4, 5, 6]
@@ -23,7 +25,7 @@ export function HeadingDropdownMenu() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button
-					aria-label="Format text as heading"
+					aria-label={dictionary['heading.dropdown.ariaLabel']}
 					aria-pressed={isActive}
 					data-active-state={isActive ? 'on' : 'off'}
 					data-disabled={!canToggle}

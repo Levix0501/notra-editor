@@ -5,7 +5,8 @@ export default defineConfig({
 		include: [
 			'ui/__tests__/**/*.test.ts',
 			'lib/__tests__/**/*.test.ts',
-			'hooks/__tests__/**/*.test.ts'
+			'hooks/__tests__/**/*.test.ts',
+			'i18n/__tests__/**/*.test.ts'
 		],
 		testTimeout: 30000
 	}

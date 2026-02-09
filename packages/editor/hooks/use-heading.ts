@@ -10,12 +10,13 @@ import {
 import * as React from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
+import { useTranslation } from '../i18n';
 import {
 	findNodePosition,
 	isNodeInSchema,
 	isNodeTypeSelected,
 	isValidPosition
-} from '../lib/tiptap-utils';
+} from '../lib/utils';
 
 import type { Editor } from '@tiptap/core';
 import type { LucideIcon } from 'lucide-react';
@@ -28,15 +29,6 @@ export interface UseHeadingConfig {
 	hideWhenUnavailable?: boolean;
 	onToggled?: () => void;
 }
-
-export const headingLabels: Record<Level, string> = {
-	1: 'Heading 1',
-	2: 'Heading 2',
-	3: 'Heading 3',
-	4: 'Heading 4',
-	5: 'Heading 5',
-	6: 'Heading 6'
-};
 
 export const headingIcons: Record<Level, LucideIcon> = {
 	1: Heading1,
@@ -211,6 +203,7 @@ export function useHeading(config: UseHeadingConfig) {
 	} = config;
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
+	const dictionary = useTranslation();
 	const [isVisible, setIsVisible] = React.useState<boolean>(true);
 	const canToggleState = canToggle(activeEditor, level);
 	const isActive = isHeadingActive(activeEditor, level);
@@ -254,7 +247,7 @@ export function useHeading(config: UseHeadingConfig) {
 		isActive,
 		handleToggle,
 		canToggle: canToggleState,
-		label: headingLabels[level],
+		label: dictionary[`heading.${level}`],
 		Icon: headingIcons[level]
 	};
 }

@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.4.0
+
+### Minor Changes
+
+- feat(editor): add i18n support with built-in en/zh/ja dictionaries
+
 ## 1.3.0
 
 ### Minor Changes

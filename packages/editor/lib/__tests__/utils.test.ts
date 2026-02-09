@@ -2,11 +2,7 @@ import { NodeSelection } from '@tiptap/pm/state';
 import * as fc from 'fast-check';
 import { describe, expect, test } from 'vitest';
 
-import {
-	isNodeInSchema,
-	isNodeTypeSelected,
-	isValidPosition
-} from '../tiptap-utils';
+import { isNodeInSchema, isNodeTypeSelected, isValidPosition } from '../utils';
 
 // ── Property 2: isValidPosition ──────────────────────────────────────
 
