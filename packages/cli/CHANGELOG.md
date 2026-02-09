@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.5.0
+
+### Minor Changes
+
+- feat(editor): add list dropdown menu with bullet, ordered, and task list support
+
 ## 1.4.0
 
 ### Minor Changes

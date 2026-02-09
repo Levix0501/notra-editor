@@ -8,5 +8,9 @@ export const en = {
 	'heading.5': 'Heading 5',
 	'heading.6': 'Heading 6',
 	'heading.dropdown.ariaLabel': 'Format text as heading',
+	'list.bullet': 'Bullet List',
+	'list.ordered': 'Ordered List',
+	'list.task': 'Task List',
+	'list.dropdown.ariaLabel': 'Format text as list',
 	'editor.ariaLabel': 'Main content area, start typing to enter text.'
 } satisfies Dictionary;

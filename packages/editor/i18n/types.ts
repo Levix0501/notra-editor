@@ -6,6 +6,10 @@ export interface Dictionary {
 	'heading.5': string;
 	'heading.6': string;
 	'heading.dropdown.ariaLabel': string;
+	'list.bullet': string;
+	'list.ordered': string;
+	'list.task': string;
+	'list.dropdown.ariaLabel': string;
 	'editor.ariaLabel': string;
 }
 

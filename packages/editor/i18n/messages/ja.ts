@@ -8,5 +8,9 @@ export const ja = {
 	'heading.5': '見出し 5',
 	'heading.6': '見出し 6',
 	'heading.dropdown.ariaLabel': 'テキストを見出しとして書式設定',
+	'list.bullet': '箇条書き',
+	'list.ordered': '番号付きリスト',
+	'list.task': 'タスクリスト',
+	'list.dropdown.ariaLabel': 'テキストをリストとして書式設定',
 	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。'
 } satisfies Dictionary;

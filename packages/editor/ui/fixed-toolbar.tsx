@@ -1,4 +1,5 @@
 import { HeadingDropdownMenu } from './heading-dropdown-menu';
+import { ListDropdownMenu } from './list-dropdown-menu';
 import { Separator } from './primitives/separator';
 import { Spacer } from './primitives/spacer';
 import { UndoRedoButton } from './undo-redo-button';
@@ -35,6 +36,7 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 
 			<ToolbarGroup>
 				<HeadingDropdownMenu />
+				<ListDropdownMenu />
 			</ToolbarGroup>
 
 			<Spacer />
