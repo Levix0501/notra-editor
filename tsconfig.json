@@ -23,5 +23,5 @@
 			"@editor/*": ["packages/editor/*"]
 		}
 	},
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules", "dist", "apps"]
 }

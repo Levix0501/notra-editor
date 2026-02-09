@@ -43,7 +43,7 @@ export function UndoRedoButton({ action }: UndoRedoButtonProps) {
 	return (
 		<Button
 			disabled={!canExecute}
-			size="icon"
+			size="icon-xs"
 			variant="ghost"
 			onClick={() => executeAction(editor, action)}
 		>

@@ -164,6 +164,7 @@ const eslintConfig = defineConfig([
 					project: [
 						'tsconfig.json',
 						'apps/*/tsconfig.json',
+						'apps/*/tsconfig.app.json',
 						'packages/*/tsconfig.json'
 					]
 				}

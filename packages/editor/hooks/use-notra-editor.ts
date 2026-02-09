@@ -1,19 +1,36 @@
 import { useCurrentEditor, useEditorState } from '@tiptap/react';
+import * as React from 'react';
 
 import type { Editor } from '@tiptap/core';
 
-// useCurrentEditor only reads from context and won't re-render on transactions.
-// useEditorState subscribes to editor state changes, ensuring UI stays in sync.
-export function useNotraEditor(): {
+/**
+ * Hook that provides access to a Tiptap editor instance.
+ *
+ * Accepts an optional editor instance directly, or falls back to retrieving
+ * the editor from the Tiptap context if available. This allows components
+ * to work both when given an editor directly and when used within a Tiptap
+ * editor context.
+ *
+ * @param providedEditor - Optional editor instance to use instead of the context editor
+ * @returns The provided editor or the editor from context, whichever is available
+ */
+export function useNotraEditor(providedEditor?: Editor | null): {
 	editor: Editor | null;
 } {
-	const { editor } = useCurrentEditor();
+	const { editor: contextEditor } = useCurrentEditor();
+	const editor = React.useMemo(
+		() => providedEditor ?? contextEditor,
+		[providedEditor, contextEditor]
+	);
 
 	return (
 		useEditorState({
 			editor,
 			selector(context) {
-				return { editor: context.editor };
+				return {
+					editor: context.editor,
+					editorState: context.editor?.state
+				};
 			}
 		}) || { editor: null }
 	);

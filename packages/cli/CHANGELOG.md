@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.3.0
+
+### Minor Changes
+
+- feat(editor): add toolbar components with heading support
+
 ## 1.2.0
 
 ### Minor Changes
