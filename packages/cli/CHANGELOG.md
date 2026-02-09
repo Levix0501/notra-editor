@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.6.0
+
+### Minor Changes
+
+- feat(editor): add mark and blockquote formatting buttons to toolbar
+
 ## 1.5.0
 
 ### Minor Changes

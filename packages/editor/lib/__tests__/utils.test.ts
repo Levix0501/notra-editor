@@ -2,7 +2,12 @@ import { NodeSelection } from '@tiptap/pm/state';
 import * as fc from 'fast-check';
 import { describe, expect, test } from 'vitest';
 
-import { isNodeInSchema, isNodeTypeSelected, isValidPosition } from '../utils';
+import {
+	isMarkInSchema,
+	isNodeInSchema,
+	isNodeTypeSelected,
+	isValidPosition
+} from '../utils';
 
 // ── Property 2: isValidPosition ──────────────────────────────────────
 
@@ -177,6 +182,96 @@ describe('Feature: toolbar-components, Property 4: isNodeTypeSelected 正确性'
 					expect(result).toBe(expected);
 				}
 			}),
+			{ numRuns: 200 }
+		);
+	});
+});
+
+// ── Property 4 (toolbar-formatting-buttons): isMarkInSchema ──────────
+
+type MarkEditorInput =
+	| { type: 'null' }
+	| { type: 'no-schema' }
+	| { type: 'present'; markNames: string[] };
+
+const markEditorInputArbitrary: fc.Arbitrary<MarkEditorInput> = fc.oneof(
+	fc.constant<MarkEditorInput>({ type: 'null' }),
+	fc.constant<MarkEditorInput>({ type: 'no-schema' }),
+	fc.record<MarkEditorInput & { type: 'present' }>({
+		type: fc.constant('present' as const),
+		markNames: fc.array(fc.string({ minLength: 1, maxLength: 20 }), {
+			minLength: 0,
+			maxLength: 10
+		})
+	})
+);
+
+function buildMockEditorForMarkSchema(
+	input: MarkEditorInput
+): Record<string, unknown> | null {
+	if (input.type === 'null') return null;
+
+	if (input.type === 'no-schema') return {};
+
+	const markSet = new Set(input.markNames);
+
+	return {
+		schema: {
+			spec: {
+				marks: {
+					get: (name: string) => (markSet.has(name) ? {} : undefined)
+				}
+			}
+		}
+	};
+}
+
+describe('Feature: toolbar-formatting-buttons, Property 4: isMarkInSchema correctness', () => {
+	/**
+	 * **Validates: Requirements 8.1, 8.2, 8.3**
+	 */
+	test('returns false when editor is null or schema does not exist', () => {
+		fc.assert(
+			fc.property(
+				fc.constantFrom<MarkEditorInput>(
+					{ type: 'null' },
+					{ type: 'no-schema' }
+				),
+				fc.string({ minLength: 1, maxLength: 20 }),
+				(editorInput, markName) => {
+					const editor = buildMockEditorForMarkSchema(editorInput);
+					const result = isMarkInSchema(markName, editor as never);
+
+					expect(result).toBe(false);
+				}
+			),
+			{ numRuns: 200 }
+		);
+	});
+
+	/**
+	 * **Validates: Requirements 8.2, 8.3**
+	 */
+	test('returns true iff editor is non-null with schema and marks spec contains the name', () => {
+		const markNameArbitrary = fc.string({ minLength: 1, maxLength: 20 });
+
+		fc.assert(
+			fc.property(
+				markEditorInputArbitrary,
+				markNameArbitrary,
+				(editorInput, markName) => {
+					const editor = buildMockEditorForMarkSchema(editorInput);
+					const result = isMarkInSchema(markName, editor as never);
+
+					if (editorInput.type === 'null' || editorInput.type === 'no-schema') {
+						expect(result).toBe(false);
+					} else {
+						const expected = editorInput.markNames.includes(markName);
+
+						expect(result).toBe(expected);
+					}
+				}
+			),
 			{ numRuns: 200 }
 		);
 	});

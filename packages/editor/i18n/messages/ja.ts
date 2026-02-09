@@ -12,5 +12,11 @@ export const ja = {
 	'list.ordered': '番号付きリスト',
 	'list.task': 'タスクリスト',
 	'list.dropdown.ariaLabel': 'テキストをリストとして書式設定',
+	'mark.bold': '太字',
+	'mark.italic': '斜体',
+	'mark.underline': '下線',
+	'mark.strike': '取り消し線',
+	'mark.code': 'コード',
+	'blockquote.label': '引用',
 	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。'
 } satisfies Dictionary;

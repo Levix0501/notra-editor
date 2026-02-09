@@ -1,5 +1,7 @@
+import { BlockquoteButton } from './blockquote-button';
 import { HeadingDropdownMenu } from './heading-dropdown-menu';
 import { ListDropdownMenu } from './list-dropdown-menu';
+import { MarkButton } from './mark-button';
 import { Separator } from './primitives/separator';
 import { Spacer } from './primitives/spacer';
 import { UndoRedoButton } from './undo-redo-button';
@@ -37,6 +39,17 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 			<ToolbarGroup>
 				<HeadingDropdownMenu />
 				<ListDropdownMenu />
+				<BlockquoteButton />
+			</ToolbarGroup>
+
+			<ToolbarSeparator />
+
+			<ToolbarGroup>
+				<MarkButton type="bold" />
+				<MarkButton type="italic" />
+				<MarkButton type="underline" />
+				<MarkButton type="strike" />
+				<MarkButton type="code" />
 			</ToolbarGroup>
 
 			<Spacer />

@@ -12,5 +12,11 @@ export const en = {
 	'list.ordered': 'Ordered List',
 	'list.task': 'Task List',
 	'list.dropdown.ariaLabel': 'Format text as list',
+	'mark.bold': 'Bold',
+	'mark.italic': 'Italic',
+	'mark.underline': 'Underline',
+	'mark.strike': 'Strikethrough',
+	'mark.code': 'Code',
+	'blockquote.label': 'Blockquote',
 	'editor.ariaLabel': 'Main content area, start typing to enter text.'
 } satisfies Dictionary;

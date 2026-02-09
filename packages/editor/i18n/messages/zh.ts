@@ -12,5 +12,11 @@ export const zh = {
 	'list.ordered': '有序列表',
 	'list.task': '任务列表',
 	'list.dropdown.ariaLabel': '将文本格式化为列表',
+	'mark.bold': '加粗',
+	'mark.italic': '斜体',
+	'mark.underline': '下划线',
+	'mark.strike': '删除线',
+	'mark.code': '代码',
+	'blockquote.label': '引用',
 	'editor.ariaLabel': '主要内容区域，开始输入文本。'
 } satisfies Dictionary;

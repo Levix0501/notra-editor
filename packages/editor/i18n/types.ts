@@ -10,6 +10,12 @@ export interface Dictionary {
 	'list.ordered': string;
 	'list.task': string;
 	'list.dropdown.ariaLabel': string;
+	'mark.bold': string;
+	'mark.italic': string;
+	'mark.underline': string;
+	'mark.strike': string;
+	'mark.code': string;
+	'blockquote.label': string;
 	'editor.ariaLabel': string;
 }
 

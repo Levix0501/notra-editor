@@ -18,6 +18,15 @@ export function isNodeInSchema(
 	return editor.schema.spec.nodes.get(nodeName) !== undefined;
 }
 
+export function isMarkInSchema(
+	markName: string,
+	editor: Editor | null
+): boolean {
+	if (!editor?.schema) return false;
+
+	return editor.schema.spec.marks.get(markName) !== undefined;
+}
+
 export function isNodeTypeSelected(
 	editor: Editor | null,
 	types: string[] = []
