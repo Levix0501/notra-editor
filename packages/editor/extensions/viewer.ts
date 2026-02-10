@@ -1,4 +1,4 @@
-import { HorizontalRule } from './horizontal-rule';
-import { Starter } from './starter';
+import { CodeBlockBase } from './code-block-base';
+import { SharedExtensions } from './shared';
 
-export const ViewerExtensions = [Starter, HorizontalRule];
+export const ViewerExtensions = [...SharedExtensions, CodeBlockBase];

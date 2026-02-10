@@ -1,13 +1,12 @@
-import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 import { TextSelection } from '@tiptap/pm/state';
 import {
 	NodeViewContent,
 	NodeViewWrapper,
 	ReactNodeViewRenderer
 } from '@tiptap/react';
-import { all, createLowlight } from 'lowlight';
 import * as React from 'react';
 
+import { CodeBlockBase } from './code-block-base';
 import { CopyButton } from '../ui/code-block-copy-button';
 import {
 	LanguageSelect,
@@ -15,8 +14,6 @@ import {
 } from '../ui/code-block-language-select';
 
 import type { NodeViewProps } from '@tiptap/react';
-
-const lowlight = createLowlight(all);
 
 function CodeBlockNodeView({ node, updateAttributes }: NodeViewProps) {
 	const rawLanguage = node.attrs.language || '';
@@ -50,7 +47,7 @@ function CodeBlockNodeView({ node, updateAttributes }: NodeViewProps) {
 	);
 }
 
-export const CodeBlock = CodeBlockLowlight.configure({ lowlight }).extend({
+export const CodeBlock = CodeBlockBase.extend({
 	addKeyboardShortcuts() {
 		return {
 			...this.parent?.(),
