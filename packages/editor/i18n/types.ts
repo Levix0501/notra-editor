@@ -15,6 +15,8 @@ export interface Dictionary {
 	'mark.underline': string;
 	'mark.strike': string;
 	'mark.code': string;
+	'mark.superscript': string;
+	'mark.subscript': string;
 	'blockquote.label': string;
 	'editor.ariaLabel': string;
 }

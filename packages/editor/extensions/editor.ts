@@ -1,3 +1,5 @@
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
 import { TaskItem } from '@tiptap/extension-task-item';
 import { TaskList } from '@tiptap/extension-task-list';
 import { Underline } from '@tiptap/extension-underline';
@@ -10,5 +12,7 @@ export const EditorExtensions = [
 	HorizontalRule,
 	TaskList,
 	TaskItem.configure({ nested: true }),
-	Underline
+	Underline,
+	Superscript,
+	Subscript
 ];

@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.7.0
+
+### Minor Changes
+
+- feat(editor): add superscript and subscript support
+
 ## 1.6.0
 
 ### Minor Changes

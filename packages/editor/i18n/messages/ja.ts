@@ -17,6 +17,8 @@ export const ja = {
 	'mark.underline': '下線',
 	'mark.strike': '取り消し線',
 	'mark.code': 'コード',
+	'mark.superscript': '上付き文字',
+	'mark.subscript': '下付き文字',
 	'blockquote.label': '引用',
 	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。'
 } satisfies Dictionary;

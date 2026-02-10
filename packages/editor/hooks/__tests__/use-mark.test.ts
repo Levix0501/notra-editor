@@ -1,18 +1,35 @@
 import * as fc from 'fast-check';
+import { Subscript, Superscript } from 'lucide-react';
 import { describe, expect, test } from 'vitest';
 
-import { canToggleMark, isMarkActive, toggleMark } from '../use-mark';
+import { en } from '../../i18n/messages/en';
+import {
+	canToggleMark,
+	isMarkActive,
+	MARK_SHORTCUT_KEYS,
+	markIcons,
+	toggleMark
+} from '../use-mark';
 
+import type { Dictionary } from '../../i18n/types';
 import type { MarkType } from '../use-mark';
+
+// ── All MarkType values ──────────────────────────────────────────────
+
+const ALL_MARK_TYPES: MarkType[] = [
+	'bold',
+	'italic',
+	'underline',
+	'strike',
+	'code',
+	'superscript',
+	'subscript'
+];
 
 // ── Shared arbitraries ───────────────────────────────────────────────
 
 const markTypeArbitrary: fc.Arbitrary<MarkType> = fc.constantFrom(
-	'bold' as MarkType,
-	'italic' as MarkType,
-	'underline' as MarkType,
-	'strike' as MarkType,
-	'code' as MarkType
+	...ALL_MARK_TYPES
 );
 
 // ── Property 1: canToggleMark and toggleMark guard conditions ────────
@@ -167,5 +184,71 @@ describe('Feature: toolbar-formatting-buttons, Property 2: isMarkActive guard an
 			),
 			{ numRuns: 200 }
 		);
+	});
+});
+
+// ── Feature: superscript-subscript ───────────────────────────────────
+
+// The expected i18n key pattern for each mark type
+const MARK_LABEL_KEY_PATTERN: Record<MarkType, keyof Dictionary> = {
+	bold: 'mark.bold',
+	italic: 'mark.italic',
+	underline: 'mark.underline',
+	strike: 'mark.strike',
+	code: 'mark.code',
+	superscript: 'mark.superscript',
+	subscript: 'mark.subscript'
+};
+
+describe('Feature: superscript-subscript, Property 1: Mark configuration completeness invariant', () => {
+	/**
+	 * **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5**
+	 */
+	test('every MarkType value has a corresponding entry in markIcons, MARK_SHORTCUT_KEYS, and i18n dictionary', () => {
+		fc.assert(
+			fc.property(markTypeArbitrary, (markType) => {
+				// markIcons must have an entry for this mark type
+				expect(markIcons[markType]).toBeDefined();
+				expect(markIcons[markType]).not.toBeNull();
+
+				// MARK_SHORTCUT_KEYS must have an entry for this mark type
+				expect(MARK_SHORTCUT_KEYS[markType]).toBeDefined();
+				expect(typeof MARK_SHORTCUT_KEYS[markType]).toBe('string');
+				expect(MARK_SHORTCUT_KEYS[markType].length).toBeGreaterThan(0);
+
+				// The i18n dictionary key for this mark type must exist in the en dictionary
+				const labelKey = MARK_LABEL_KEY_PATTERN[markType];
+
+				expect(labelKey).toBeDefined();
+				expect(en[labelKey]).toBeDefined();
+				expect(typeof en[labelKey]).toBe('string');
+				expect(en[labelKey].length).toBeGreaterThan(0);
+			}),
+			{ numRuns: 100 }
+		);
+	});
+});
+
+describe('Feature: superscript-subscript, Unit tests: superscript and subscript mark configuration', () => {
+	/**
+	 * **Validates: Requirements 2.2, 2.3**
+	 */
+	test('markIcons maps superscript to the Superscript icon', () => {
+		expect(markIcons.superscript).toBe(Superscript);
+	});
+
+	test('markIcons maps subscript to the Subscript icon', () => {
+		expect(markIcons.subscript).toBe(Subscript);
+	});
+
+	/**
+	 * **Validates: Requirements 2.4, 2.5**
+	 */
+	test('MARK_SHORTCUT_KEYS maps superscript to mod+.', () => {
+		expect(MARK_SHORTCUT_KEYS.superscript).toBe('mod+.');
+	});
+
+	test('MARK_SHORTCUT_KEYS maps subscript to mod+,', () => {
+		expect(MARK_SHORTCUT_KEYS.subscript).toBe('mod+,');
 	});
 });

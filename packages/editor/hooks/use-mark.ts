@@ -1,4 +1,12 @@
-import { Bold, CodeXml, Italic, Strikethrough, Underline } from 'lucide-react';
+import {
+	Bold,
+	CodeXml,
+	Italic,
+	Strikethrough,
+	Subscript,
+	Superscript,
+	Underline
+} from 'lucide-react';
 import * as React from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
@@ -8,7 +16,14 @@ import { isMarkInSchema, isNodeTypeSelected } from '../lib/utils';
 import type { Editor } from '@tiptap/core';
 import type { LucideIcon } from 'lucide-react';
 
-export type MarkType = 'bold' | 'italic' | 'underline' | 'strike' | 'code';
+export type MarkType =
+	| 'bold'
+	| 'italic'
+	| 'underline'
+	| 'strike'
+	| 'code'
+	| 'superscript'
+	| 'subscript';
 
 export interface UseMarkConfig {
 	editor?: Editor | null;
@@ -22,7 +37,9 @@ export const markIcons: Record<MarkType, LucideIcon> = {
 	italic: Italic,
 	underline: Underline,
 	strike: Strikethrough,
-	code: CodeXml
+	code: CodeXml,
+	superscript: Superscript,
+	subscript: Subscript
 };
 
 export const MARK_SHORTCUT_KEYS: Record<MarkType, string> = {
@@ -30,7 +47,9 @@ export const MARK_SHORTCUT_KEYS: Record<MarkType, string> = {
 	italic: 'mod+i',
 	underline: 'mod+u',
 	strike: 'mod+shift+s',
-	code: 'mod+e'
+	code: 'mod+e',
+	superscript: 'mod+.',
+	subscript: 'mod+,'
 };
 
 export function canToggleMark(editor: Editor | null, type: MarkType): boolean {
@@ -127,7 +146,9 @@ export function useMark(config: UseMarkConfig) {
 		italic: 'mark.italic',
 		underline: 'mark.underline',
 		strike: 'mark.strike',
-		code: 'mark.code'
+		code: 'mark.code',
+		superscript: 'mark.superscript',
+		subscript: 'mark.subscript'
 	};
 
 	return {

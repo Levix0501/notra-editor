@@ -17,6 +17,8 @@ export const zh = {
 	'mark.underline': '下划线',
 	'mark.strike': '删除线',
 	'mark.code': '代码',
+	'mark.superscript': '上标',
+	'mark.subscript': '下标',
 	'blockquote.label': '引用',
 	'editor.ariaLabel': '主要内容区域，开始输入文本。'
 } satisfies Dictionary;

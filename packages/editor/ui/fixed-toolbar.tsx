@@ -52,6 +52,13 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 				<MarkButton type="code" />
 			</ToolbarGroup>
 
+			<ToolbarSeparator />
+
+			<ToolbarGroup>
+				<MarkButton type="superscript" />
+				<MarkButton type="subscript" />
+			</ToolbarGroup>
+
 			<Spacer />
 		</div>
 	);

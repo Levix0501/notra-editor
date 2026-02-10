@@ -17,6 +17,8 @@ export const en = {
 	'mark.underline': 'Underline',
 	'mark.strike': 'Strikethrough',
 	'mark.code': 'Code',
+	'mark.superscript': 'Superscript',
+	'mark.subscript': 'Subscript',
 	'blockquote.label': 'Blockquote',
 	'editor.ariaLabel': 'Main content area, start typing to enter text.'
 } satisfies Dictionary;
