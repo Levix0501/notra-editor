@@ -1,4 +1,5 @@
 import { BlockquoteButton } from './blockquote-button';
+import { CodeBlockButton } from './code-block-button';
 import { HeadingDropdownMenu } from './heading-dropdown-menu';
 import { ListDropdownMenu } from './list-dropdown-menu';
 import { MarkButton } from './mark-button';
@@ -40,6 +41,7 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 				<HeadingDropdownMenu />
 				<ListDropdownMenu />
 				<BlockquoteButton />
+				<CodeBlockButton />
 			</ToolbarGroup>
 
 			<ToolbarSeparator />

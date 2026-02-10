@@ -20,5 +20,11 @@ export const en = {
 	'mark.superscript': 'Superscript',
 	'mark.subscript': 'Subscript',
 	'blockquote.label': 'Blockquote',
+	'codeBlock.label': 'Code Block',
+	'codeBlock.languageSelect.placeholder': 'Select language',
+	'codeBlock.languageSelect.searchPlaceholder': 'Search language...',
+	'codeBlock.languageSelect.noResult': 'No language found.',
+	'codeBlock.languageSelect.auto': 'Auto',
+	'codeBlock.languageSelect.plaintext': 'Plain Text',
 	'editor.ariaLabel': 'Main content area, start typing to enter text.'
 } satisfies Dictionary;

@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@tiptap/core": "^3.19.0",
+		"@tiptap/extension-code-block-lowlight": "^3.19.0",
 		"@tiptap/extension-horizontal-rule": "^3.19.0",
 		"@tiptap/extension-subscript": "^3.19.0",
 		"@tiptap/extension-superscript": "^3.19.0",
@@ -36,6 +37,8 @@
 		"@tiptap/static-renderer": "^3.19.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"cmdk": "^1.1.1",
+		"lowlight": "^3.3.0",
 		"lucide-react": "^0.511.0",
 		"radix-ui": "^1.4.2",
 		"tailwind-merge": "^3.3.0"

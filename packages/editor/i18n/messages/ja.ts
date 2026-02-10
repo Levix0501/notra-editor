@@ -20,5 +20,11 @@ export const ja = {
 	'mark.superscript': '上付き文字',
 	'mark.subscript': '下付き文字',
 	'blockquote.label': '引用',
+	'codeBlock.label': 'コードブロック',
+	'codeBlock.languageSelect.placeholder': '言語を選択',
+	'codeBlock.languageSelect.searchPlaceholder': '言語を検索...',
+	'codeBlock.languageSelect.noResult': '言語が見つかりません。',
+	'codeBlock.languageSelect.auto': '自動',
+	'codeBlock.languageSelect.plaintext': 'プレーンテキスト',
 	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。'
 } satisfies Dictionary;

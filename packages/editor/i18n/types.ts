@@ -18,6 +18,12 @@ export interface Dictionary {
 	'mark.superscript': string;
 	'mark.subscript': string;
 	'blockquote.label': string;
+	'codeBlock.label': string;
+	'codeBlock.languageSelect.placeholder': string;
+	'codeBlock.languageSelect.searchPlaceholder': string;
+	'codeBlock.languageSelect.noResult': string;
+	'codeBlock.languageSelect.auto': string;
+	'codeBlock.languageSelect.plaintext': string;
 	'editor.ariaLabel': string;
 }
 

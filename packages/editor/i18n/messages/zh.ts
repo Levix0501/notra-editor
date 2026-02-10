@@ -20,5 +20,11 @@ export const zh = {
 	'mark.superscript': '上标',
 	'mark.subscript': '下标',
 	'blockquote.label': '引用',
+	'codeBlock.label': '代码块',
+	'codeBlock.languageSelect.placeholder': '选择语言',
+	'codeBlock.languageSelect.searchPlaceholder': '搜索语言...',
+	'codeBlock.languageSelect.noResult': '未找到语言。',
+	'codeBlock.languageSelect.auto': '自动',
+	'codeBlock.languageSelect.plaintext': '纯文本',
 	'editor.ariaLabel': '主要内容区域，开始输入文本。'
 } satisfies Dictionary;

@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.8.0
+
+### Minor Changes
+
+- feat(editor): add code block with syntax highlighting and language selector
+
 ## 1.7.0
 
 ### Minor Changes
