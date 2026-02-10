@@ -25,6 +25,9 @@
 	--notra-brand-900: rgb(43 25 102);
 	--notra-brand-950: hsl(257deg 100% 9%);
 
+	/* Selection */
+	--notra-selection: rgb(157 138 255 / 20%);
+
 	/* Semantic tokens */
 	--notra-text: var(--notra-gray-a-900);
 	--notra-link: var(--notra-brand-500);
@@ -51,6 +54,7 @@
 	--notra-gray-a-700: rgb(251 251 254 / 75%);
 	--notra-gray-a-800: rgb(253 253 253 / 88%);
 	--notra-gray-a-900: rgb(255 255 255 / 96%);
+	--notra-selection: rgb(122 82 255 / 20%);
 	--notra-link: var(--notra-brand-400);
 }
 
@@ -67,6 +71,7 @@
 		--notra-gray-a-700: rgb(251 251 254 / 75%);
 		--notra-gray-a-800: rgb(253 253 253 / 88%);
 		--notra-gray-a-900: rgb(255 255 255 / 96%);
+		--notra-selection: rgb(122 82 255 / 20%);
 		--notra-link: var(--notra-brand-400);
 	}
 }

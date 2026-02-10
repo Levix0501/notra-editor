@@ -112,22 +112,36 @@ export function toggleList(editor: Editor | null, type: ListType): boolean {
 		let state = view.state;
 		let tr = state.tr;
 
+		// Node types that Tiptap can toggle to list directly
+		const directToggleTypes = new Set([
+			'paragraph',
+			'bulletList',
+			'orderedList',
+			'taskList'
+		]);
+
+		let chain = editor.chain().focus();
+
 		if (state.selection.empty || state.selection instanceof TextSelection) {
-			const pos = findNodePosition({
-				editor,
-				node: state.selection.$anchor.node(1)
-			})?.pos;
+			const parentNode = state.selection.$anchor.node(1);
 
-			if (!isValidPosition(pos)) return false;
+			if (!parentNode || directToggleTypes.has(parentNode.type.name)) {
+				// Skip NodeSelection conversion for simple nodes
+			} else {
+				const pos = findNodePosition({
+					editor,
+					node: parentNode
+				})?.pos;
 
-			tr = tr.setSelection(NodeSelection.create(state.doc, pos));
-			view.dispatch(tr);
-			state = view.state;
+				if (!isValidPosition(pos)) return false;
+
+				tr = tr.setSelection(NodeSelection.create(state.doc, pos));
+				view.dispatch(tr);
+				state = view.state;
+			}
 		}
 
 		const selection = state.selection;
-
-		let chain = editor.chain().focus();
 
 		if (selection instanceof NodeSelection) {
 			const firstChild = selection.node.firstChild?.firstChild;
