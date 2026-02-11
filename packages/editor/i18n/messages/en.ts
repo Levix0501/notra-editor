@@ -26,5 +26,6 @@ export const en = {
 	'codeBlock.languageSelect.noResult': 'No language found.',
 	'codeBlock.languageSelect.auto': 'Auto',
 	'codeBlock.languageSelect.plaintext': 'Plain Text',
-	'editor.ariaLabel': 'Main content area, start typing to enter text.'
+	'editor.ariaLabel': 'Main content area, start typing to enter text.',
+	'dragHandle.ariaLabel': 'Drag to reorder'
 } satisfies Dictionary;

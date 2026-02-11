@@ -26,5 +26,6 @@ export const zh = {
 	'codeBlock.languageSelect.noResult': '未找到语言。',
 	'codeBlock.languageSelect.auto': '自动',
 	'codeBlock.languageSelect.plaintext': '纯文本',
-	'editor.ariaLabel': '主要内容区域，开始输入文本。'
+	'editor.ariaLabel': '主要内容区域，开始输入文本。',
+	'dragHandle.ariaLabel': '拖拽以重新排序'
 } satisfies Dictionary;

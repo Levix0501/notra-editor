@@ -23,8 +23,11 @@
 		"react-dom": "^19.0.0"
 	},
 	"dependencies": {
+		"@floating-ui/react": "^0.27.17",
 		"@tiptap/core": "^3.19.0",
 		"@tiptap/extension-code-block-lowlight": "^3.19.0",
+		"@tiptap/extension-drag-handle": "^3.19.0",
+		"@tiptap/extension-drag-handle-react": "^3.19.0",
 		"@tiptap/extension-horizontal-rule": "^3.19.0",
 		"@tiptap/extension-subscript": "^3.19.0",
 		"@tiptap/extension-superscript": "^3.19.0",

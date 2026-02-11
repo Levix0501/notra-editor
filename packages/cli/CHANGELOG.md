@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.9.0
+
+### Minor Changes
+
+- feat(editor): add block drag handle for reordering content blocks
+
 ## 1.8.0
 
 ### Minor Changes

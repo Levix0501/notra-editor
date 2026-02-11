@@ -26,5 +26,6 @@ export const ja = {
 	'codeBlock.languageSelect.noResult': '言語が見つかりません。',
 	'codeBlock.languageSelect.auto': '自動',
 	'codeBlock.languageSelect.plaintext': 'プレーンテキスト',
-	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。'
+	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。',
+	'dragHandle.ariaLabel': 'ドラッグして並べ替え'
 } satisfies Dictionary;

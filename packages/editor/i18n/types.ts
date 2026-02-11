@@ -25,6 +25,7 @@ export interface Dictionary {
 	'codeBlock.languageSelect.auto': string;
 	'codeBlock.languageSelect.plaintext': string;
 	'editor.ariaLabel': string;
+	'dragHandle.ariaLabel': string;
 }
 
 export type Locale = 'en' | 'zh' | 'ja';
