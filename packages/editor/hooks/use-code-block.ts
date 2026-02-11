@@ -77,7 +77,7 @@ export function useCodeBlock(config?: UseCodeBlockConfig) {
 	const dictionary = useTranslation();
 	const [isVisible, setIsVisible] = React.useState<boolean>(true);
 	const canToggle = canToggleCodeBlock(activeEditor);
-	const isActive = activeEditor?.isActive('codeBlock') || false;
+	const isActive = activeEditor?.isActive('codeBlock') ?? false;
 
 	React.useEffect(() => {
 		if (!activeEditor) return;

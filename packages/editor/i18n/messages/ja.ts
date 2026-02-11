@@ -26,6 +26,12 @@ export const ja = {
 	'codeBlock.languageSelect.noResult': '言語が見つかりません。',
 	'codeBlock.languageSelect.auto': '自動',
 	'codeBlock.languageSelect.plaintext': 'プレーンテキスト',
+	'undoRedo.undo': '元に戻す',
+	'undoRedo.redo': 'やり直し',
 	'editor.ariaLabel': 'メインコンテンツエリア、テキストを入力してください。',
-	'dragHandle.ariaLabel': 'ドラッグして並べ替え'
+	'dragHandle.ariaLabel': 'ドラッグして並べ替え',
+	'textAlign.left': '左揃え',
+	'textAlign.center': '中央揃え',
+	'textAlign.right': '右揃え',
+	'textAlign.justify': '両端揃え'
 } satisfies Dictionary;

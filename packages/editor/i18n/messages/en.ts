@@ -26,6 +26,12 @@ export const en = {
 	'codeBlock.languageSelect.noResult': 'No language found.',
 	'codeBlock.languageSelect.auto': 'Auto',
 	'codeBlock.languageSelect.plaintext': 'Plain Text',
+	'undoRedo.undo': 'Undo',
+	'undoRedo.redo': 'Redo',
 	'editor.ariaLabel': 'Main content area, start typing to enter text.',
-	'dragHandle.ariaLabel': 'Drag to reorder'
+	'dragHandle.ariaLabel': 'Drag to reorder',
+	'textAlign.left': 'Align Left',
+	'textAlign.center': 'Align Center',
+	'textAlign.right': 'Align Right',
+	'textAlign.justify': 'Justify'
 } satisfies Dictionary;

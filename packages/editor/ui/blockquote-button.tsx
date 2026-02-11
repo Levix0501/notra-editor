@@ -1,27 +1,11 @@
-import { useEditorState } from '@tiptap/react';
 import * as React from 'react';
 
-import { canToggleBlockquote, useBlockquote } from '../hooks/use-blockquote';
-import { useNotraEditor } from '../hooks/use-notra-editor';
+import { useBlockquote } from '../hooks/use-blockquote';
 import { Button } from './primitives/button';
 
 export function BlockquoteButton() {
-	const { editor } = useNotraEditor();
-
-	const { isVisible, handleToggle, label, Icon } = useBlockquote({
-		editor
-	});
-
-	const editorState = useEditorState({
-		editor,
-		selector: (ctx) => ({
-			canToggle: canToggleBlockquote(ctx.editor),
-			isActive: ctx.editor?.isActive('blockquote') ?? false
-		})
-	});
-
-	const canToggle = editorState?.canToggle ?? false;
-	const isActive = editorState?.isActive ?? false;
+	const { isVisible, isActive, canToggle, handleToggle, label, Icon } =
+		useBlockquote();
 
 	const handleClick = React.useCallback(
 		(event: React.MouseEvent<HTMLButtonElement>) => {

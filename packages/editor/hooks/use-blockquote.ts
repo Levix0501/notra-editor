@@ -142,7 +142,7 @@ export function useBlockquote(config?: UseBlockquoteConfig) {
 	const dictionary = useTranslation();
 	const [isVisible, setIsVisible] = React.useState<boolean>(true);
 	const canToggle = canToggleBlockquote(activeEditor);
-	const isActive = activeEditor?.isActive('blockquote') || false;
+	const isActive = activeEditor?.isActive('blockquote') ?? false;
 
 	React.useEffect(() => {
 		if (!activeEditor) return;

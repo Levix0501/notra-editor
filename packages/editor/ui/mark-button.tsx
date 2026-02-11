@@ -1,8 +1,6 @@
-import { useEditorState } from '@tiptap/react';
 import * as React from 'react';
 
-import { canToggleMark, isMarkActive, useMark } from '../hooks/use-mark';
-import { useNotraEditor } from '../hooks/use-notra-editor';
+import { useMark } from '../hooks/use-mark';
 import { Button } from './primitives/button';
 
 import type { MarkType } from '../hooks/use-mark';
@@ -12,23 +10,9 @@ export interface MarkButtonProps {
 }
 
 export function MarkButton({ type }: MarkButtonProps) {
-	const { editor } = useNotraEditor();
-
-	const { isVisible, handleMark, label, Icon } = useMark({
-		editor,
+	const { isVisible, isActive, canToggle, handleMark, label, Icon } = useMark({
 		type
 	});
-
-	const editorState = useEditorState({
-		editor,
-		selector: (ctx) => ({
-			canToggle: canToggleMark(ctx.editor, type),
-			isActive: isMarkActive(ctx.editor, type)
-		})
-	});
-
-	const canToggle = editorState?.canToggle ?? false;
-	const isActive = editorState?.isActive ?? false;
 
 	const handleClick = React.useCallback(
 		(event: React.MouseEvent<HTMLButtonElement>) => {

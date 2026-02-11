@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.10.0
+
+### Minor Changes
+
+- feat(editor): add text-align support and refactor toolbar button hooks
+
 ## 1.9.0
 
 ### Minor Changes

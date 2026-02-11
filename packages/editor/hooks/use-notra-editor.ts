@@ -16,6 +16,7 @@ import type { Editor } from '@tiptap/core';
  */
 export function useNotraEditor(providedEditor?: Editor | null): {
 	editor: Editor | null;
+	editorState?: Editor['state'];
 } {
 	const { editor: contextEditor } = useCurrentEditor();
 	const editor = React.useMemo(

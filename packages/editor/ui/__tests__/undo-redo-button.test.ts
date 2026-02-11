@@ -1,12 +1,18 @@
-import * as fc from 'fast-check';
+﻿import * as fc from 'fast-check';
 import { describe, expect, test, vi } from 'vitest';
 
-import { canExecuteAction, executeAction } from '../undo-redo-button';
+import {
+	canExecuteAction,
+	executeAction,
+	shouldShowUndoRedoButton
+} from '../../hooks/use-undo-redo';
 
-// Minimal mock that satisfies the subset of Editor used by canExecuteAction
+const emptySelection = { empty: true };
+
 interface MockEditor {
 	isEditable: boolean;
 	can: () => { undo: () => boolean; redo: () => boolean };
+	state: { selection: { empty: boolean } };
 }
 
 type EditorState =
@@ -35,7 +41,8 @@ function buildMockEditor(state: EditorState): MockEditor | null {
 	if (state.type === 'not-editable') {
 		return {
 			isEditable: false,
-			can: () => ({ undo: () => false, redo: () => false })
+			can: () => ({ undo: () => false, redo: () => false }),
+			state: { selection: emptySelection }
 		};
 	}
 
@@ -44,7 +51,8 @@ function buildMockEditor(state: EditorState): MockEditor | null {
 		can: () => ({
 			undo: () => state.canUndo,
 			redo: () => state.canRedo
-		})
+		}),
+		state: { selection: emptySelection }
 	};
 }
 
@@ -54,15 +62,11 @@ function expectedResult(state: EditorState, action: 'undo' | 'redo'): boolean {
 	return action === 'undo' ? state.canUndo : state.canRedo;
 }
 
-describe('Feature: fixed-toolbar, Property 1: canExecuteAction 正确反映编辑器能力', () => {
-	/**
-	 * **Validates: Requirements 3.7, 3.8, 4.3**
-	 */
-	test('Property 1: canExecuteAction returns true iff editor is non-null, editable, and has matching history', () => {
+describe('canExecuteAction', () => {
+	test('returns correct result based on editor state and action', () => {
 		fc.assert(
 			fc.property(editorStateArbitrary, actionArbitrary, (state, action) => {
 				const editor = buildMockEditor(state);
-				// Cast to satisfy the Editor type parameter without importing the full Tiptap dependency
 				const result = canExecuteAction(editor as never, action);
 
 				expect(result).toBe(expectedResult(state, action));
@@ -72,10 +76,7 @@ describe('Feature: fixed-toolbar, Property 1: canExecuteAction 正确反映编�
 	});
 });
 
-// Extended mock that also tracks chain().focus().undo()/redo().run() calls
-interface MockEditorWithChain {
-	isEditable: boolean;
-	can: () => { undo: () => boolean; redo: () => boolean };
+interface MockEditorWithChain extends MockEditor {
 	chain: () => {
 		focus: () => {
 			undo: () => { run: () => boolean };
@@ -99,6 +100,7 @@ function buildMockEditorWithChain(state: EditorState): {
 			editor: {
 				isEditable: false,
 				can: () => ({ undo: () => false, redo: () => false }),
+				state: { selection: emptySelection },
 				chain: () => ({
 					focus: () => ({
 						undo: () => ({ run: undoRunSpy }),
@@ -117,6 +119,7 @@ function buildMockEditorWithChain(state: EditorState): {
 				undo: () => state.canUndo,
 				redo: () => state.canRedo
 			}),
+			state: { selection: emptySelection },
 			chain: () => ({
 				focus: () => ({
 					undo: () => ({ run: undoRunSpy }),
@@ -128,11 +131,8 @@ function buildMockEditorWithChain(state: EditorState): {
 	};
 }
 
-describe('Feature: fixed-toolbar, Property 2: executeAction 安全性', () => {
-	/**
-	 * **Validates: Requirements 3.5, 3.6**
-	 */
-	test('Property 2: when canExecuteAction is false, executeAction returns false and calls no commands', () => {
+describe('executeAction', () => {
+	test('when canExecuteAction is false, returns false and calls no commands', () => {
 		fc.assert(
 			fc.property(editorStateArbitrary, actionArbitrary, (state, action) => {
 				const { editor, spies } = buildMockEditorWithChain(state);
@@ -150,10 +150,7 @@ describe('Feature: fixed-toolbar, Property 2: executeAction 安全性', () => {
 		);
 	});
 
-	/**
-	 * **Validates: Requirements 3.5, 3.6**
-	 */
-	test('Property 2: when canExecuteAction is true, executeAction calls the corresponding command', () => {
+	test('when canExecuteAction is true, calls the corresponding command', () => {
 		fc.assert(
 			fc.property(editorStateArbitrary, actionArbitrary, (state, action) => {
 				const { editor, spies } = buildMockEditorWithChain(state);
@@ -171,6 +168,66 @@ describe('Feature: fixed-toolbar, Property 2: executeAction 安全性', () => {
 						expect(spies.redo).toHaveBeenCalledOnce();
 						expect(spies.undo).not.toHaveBeenCalled();
 					}
+				}
+			}),
+			{ numRuns: 100 }
+		);
+	});
+});
+
+describe('shouldShowUndoRedoButton', () => {
+	test('returns false for null editor', () => {
+		expect(
+			shouldShowUndoRedoButton({
+				editor: null as never,
+				action: 'undo',
+				hideWhenUnavailable: false
+			})
+		).toBe(false);
+	});
+
+	test('returns false for non-editable editor', () => {
+		const editor = buildMockEditor({ type: 'not-editable' });
+
+		expect(
+			shouldShowUndoRedoButton({
+				editor: editor as never,
+				action: 'undo',
+				hideWhenUnavailable: false
+			})
+		).toBe(false);
+	});
+
+	test('returns true for editable editor when hideWhenUnavailable is false', () => {
+		const editor = buildMockEditor({
+			type: 'editable',
+			canUndo: false,
+			canRedo: false
+		});
+
+		expect(
+			shouldShowUndoRedoButton({
+				editor: editor as never,
+				action: 'undo',
+				hideWhenUnavailable: false
+			})
+		).toBe(true);
+	});
+
+	test('when hideWhenUnavailable is true, returns based on canExecuteAction', () => {
+		fc.assert(
+			fc.property(editorStateArbitrary, actionArbitrary, (state, action) => {
+				const editor = buildMockEditor(state);
+				const result = shouldShowUndoRedoButton({
+					editor: editor as never,
+					action,
+					hideWhenUnavailable: true
+				});
+
+				if (state.type === 'null' || state.type === 'not-editable') {
+					expect(result).toBe(false);
+				} else {
+					expect(result).toBe(expectedResult(state, action));
 				}
 			}),
 			{ numRuns: 100 }

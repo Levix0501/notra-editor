@@ -24,8 +24,14 @@ export interface Dictionary {
 	'codeBlock.languageSelect.noResult': string;
 	'codeBlock.languageSelect.auto': string;
 	'codeBlock.languageSelect.plaintext': string;
+	'undoRedo.undo': string;
+	'undoRedo.redo': string;
 	'editor.ariaLabel': string;
 	'dragHandle.ariaLabel': string;
+	'textAlign.left': string;
+	'textAlign.center': string;
+	'textAlign.right': string;
+	'textAlign.justify': string;
 }
 
 export type Locale = 'en' | 'zh' | 'ja';

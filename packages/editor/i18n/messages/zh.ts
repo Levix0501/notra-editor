@@ -26,6 +26,12 @@ export const zh = {
 	'codeBlock.languageSelect.noResult': '未找到语言。',
 	'codeBlock.languageSelect.auto': '自动',
 	'codeBlock.languageSelect.plaintext': '纯文本',
+	'undoRedo.undo': '撤销',
+	'undoRedo.redo': '重做',
 	'editor.ariaLabel': '主要内容区域，开始输入文本。',
-	'dragHandle.ariaLabel': '拖拽以重新排序'
+	'dragHandle.ariaLabel': '拖拽以重新排序',
+	'textAlign.left': '左对齐',
+	'textAlign.center': '居中对齐',
+	'textAlign.right': '右对齐',
+	'textAlign.justify': '两端对齐'
 } satisfies Dictionary;

@@ -1,51 +1,28 @@
-import { useEditorState } from '@tiptap/react';
-import { Redo2, Undo2 } from 'lucide-react';
-
-import { useNotraEditor } from '../hooks/use-notra-editor';
+import { useUndoRedo } from '../hooks/use-undo-redo';
 import { Button } from './primitives/button';
 
-import type { Editor } from '@tiptap/core';
+import type { UndoRedoAction } from '../hooks/use-undo-redo';
 
 export interface UndoRedoButtonProps {
-	action: 'undo' | 'redo';
-}
-
-export function canExecuteAction(
-	editor: Editor | null,
-	action: 'undo' | 'redo'
-): boolean {
-	if (!editor || !editor.isEditable) return false;
-
-	return action === 'undo' ? editor.can().undo() : editor.can().redo();
-}
-
-export function executeAction(
-	editor: Editor | null,
-	action: 'undo' | 'redo'
-): boolean {
-	if (!editor || !canExecuteAction(editor, action)) return false;
-
-	const chain = editor.chain().focus();
-
-	return action === 'undo' ? chain.undo().run() : chain.redo().run();
+	action: UndoRedoAction;
 }
 
 export function UndoRedoButton({ action }: UndoRedoButtonProps) {
-	const { editor } = useNotraEditor();
-
-	const canExecute = useEditorState({
-		editor,
-		selector: (ctx) => canExecuteAction(ctx.editor, action)
+	const { isVisible, canExecute, handleAction, label, Icon } = useUndoRedo({
+		action
 	});
 
-	const Icon = action === 'undo' ? Undo2 : Redo2;
+	if (!isVisible) {
+		return null;
+	}
 
 	return (
 		<Button
+			aria-label={label}
 			disabled={!canExecute}
 			size="icon-xs"
 			variant="ghost"
-			onClick={() => executeAction(editor, action)}
+			onClick={handleAction}
 		>
 			<Icon size={16} />
 		</Button>

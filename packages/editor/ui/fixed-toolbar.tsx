@@ -5,6 +5,7 @@ import { ListDropdownMenu } from './list-dropdown-menu';
 import { MarkButton } from './mark-button';
 import { Separator } from './primitives/separator';
 import { Spacer } from './primitives/spacer';
+import { TextAlignButton } from './text-align-button';
 import { UndoRedoButton } from './undo-redo-button';
 import { cn } from '../lib/utils';
 
@@ -59,6 +60,15 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 			<ToolbarGroup>
 				<MarkButton type="superscript" />
 				<MarkButton type="subscript" />
+			</ToolbarGroup>
+
+			<ToolbarSeparator />
+
+			<ToolbarGroup>
+				<TextAlignButton alignment="left" />
+				<TextAlignButton alignment="center" />
+				<TextAlignButton alignment="right" />
+				<TextAlignButton alignment="justify" />
 			</ToolbarGroup>
 
 			<Spacer />

@@ -21,6 +21,8 @@ const expectedKeys: (keyof Dictionary)[] = [
 	'heading.5',
 	'heading.6',
 	'heading.dropdown.ariaLabel',
+	'undoRedo.undo',
+	'undoRedo.redo',
 	'editor.ariaLabel'
 ];
 
@@ -109,6 +111,8 @@ const dictionaryKeys: (keyof Dictionary)[] = [
 	'heading.5',
 	'heading.6',
 	'heading.dropdown.ariaLabel',
+	'undoRedo.undo',
+	'undoRedo.redo',
 	'editor.ariaLabel'
 ];
 
@@ -175,6 +179,45 @@ describe('Property 5: Dictionary JSON 往返一致性', () => {
 				const roundTripped = JSON.parse(JSON.stringify(dict));
 
 				expect(roundTripped).toEqual(dict);
+			}),
+			{ numRuns: 100 }
+		);
+	});
+});
+
+/**
+ * **Feature: editor-extensions-text-align, Property 3: 内置字典包含所有对齐翻译键**
+ * **Validates: Requirements 6.1, 6.2, 6.3, 6.4**
+ */
+
+const textAlignKeys: (keyof Dictionary)[] = [
+	'textAlign.left',
+	'textAlign.center',
+	'textAlign.right',
+	'textAlign.justify'
+];
+
+const localeEntries = Object.entries(builtinDictionaries) as [
+	string,
+	Dictionary
+][];
+
+const localeNameArbitrary: fc.Arbitrary<string> = fc.constantFrom(
+	...localeEntries.map(([name]) => name)
+);
+
+describe('Property 3: 内置字典包含所有对齐翻译键', () => {
+	it('every built-in locale dictionary contains all textAlign keys with non-empty string values', () => {
+		fc.assert(
+			fc.property(localeNameArbitrary, (localeName) => {
+				const dict = builtinDictionaries[localeName];
+
+				for (const key of textAlignKeys) {
+					const value = dict[key];
+
+					expect(typeof value).toBe('string');
+					expect(value.length).toBeGreaterThan(0);
+				}
 			}),
 			{ numRuns: 100 }
 		);

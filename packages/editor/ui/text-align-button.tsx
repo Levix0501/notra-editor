@@ -1,19 +1,27 @@
 import * as React from 'react';
 
-import { useCodeBlock } from '../hooks/use-code-block';
+import { useTextAlign } from '../hooks/use-text-align';
 import { Button } from './primitives/button';
 
-export function CodeBlockButton() {
-	const { isVisible, isActive, canToggle, handleToggle, label, Icon } =
-		useCodeBlock();
+import type { AlignmentType } from '../hooks/use-text-align';
+
+export interface TextAlignButtonProps {
+	alignment: AlignmentType;
+}
+
+export function TextAlignButton({ alignment }: TextAlignButtonProps) {
+	const { isVisible, isActive, canAlign, handleAlign, label, Icon } =
+		useTextAlign({
+			alignment
+		});
 
 	const handleClick = React.useCallback(
 		(event: React.MouseEvent<HTMLButtonElement>) => {
 			if (event.defaultPrevented) return;
 
-			handleToggle();
+			handleAlign();
 		},
-		[handleToggle]
+		[handleAlign]
 	);
 
 	if (!isVisible) {
@@ -23,7 +31,7 @@ export function CodeBlockButton() {
 	return (
 		<Button
 			aria-label={label}
-			disabled={!canToggle}
+			disabled={!canAlign}
 			isActive={isActive}
 			size="icon-xs"
 			variant="ghost"
