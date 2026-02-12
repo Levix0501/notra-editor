@@ -64,16 +64,7 @@ Built-in locales: `en`, `zh`, `ja`, `ko`, `es`, `fr`, `de`, `pt`, `ru`.
 <Editor content={content} onChange={setContent} locale="zh" />
 ```
 
-You can also provide partial overrides:
-
-```tsx
-<Editor
-	content={content}
-	onChange={setContent}
-	locale="en"
-	messages={{ 'mark.bold': 'Make Bold' }}
-/>
-```
+Since you own the source code, you can add or modify languages directly in `i18n/messages/`.
 
 ## Editor Props
 
@@ -82,7 +73,6 @@ You can also provide partial overrides:
 | `content`  | `string`                                                               | `''`    | Initial HTML content           |
 | `onChange` | `(html: string) => void`                                               | —       | Called on every content change |
 | `locale`   | `'en' \| 'zh' \| 'ja' \| 'ko' \| 'es' \| 'fr' \| 'de' \| 'pt' \| 'ru'` | `'en'`  | UI language                    |
-| `messages` | `Partial<Dictionary>`                                                  | —       | Override specific i18n strings |
 
 ## How It Works
 

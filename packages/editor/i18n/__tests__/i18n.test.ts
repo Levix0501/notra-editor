@@ -137,8 +137,8 @@ describe('Property 3: 不支持的 Locale 回退', () => {
 });
 
 /**
- * **Feature: editor-i18n, Property 4: 自定义消息合并**
- * **Validates: Requirements 3.1, 3.2**
+ * **Feature: editor-i18n, Property 4: Dictionary JSON 往返一致性**
+ * **Validates: Requirements 5.1**
  */
 
 const dictionaryKeys: (keyof Dictionary)[] = [
@@ -153,56 +153,6 @@ const dictionaryKeys: (keyof Dictionary)[] = [
 	'undoRedo.redo',
 	'editor.ariaLabel'
 ];
-
-const partialDictionaryArbitrary: fc.Arbitrary<Partial<Dictionary>> = fc
-	.record(
-		Object.fromEntries(
-			dictionaryKeys.map((key) => [
-				key,
-				fc.option(fc.string({ minLength: 1 }), { nil: undefined })
-			])
-		) as Record<keyof Dictionary, fc.Arbitrary<string | undefined>>
-	)
-	.map((rec) => {
-		const partial: Partial<Dictionary> = {};
-
-		for (const key of dictionaryKeys) {
-			if (rec[key] !== undefined) {
-				partial[key] = rec[key];
-			}
-		}
-
-		return partial;
-	});
-
-describe('Property 4: 自定义消息合并', () => {
-	it('overridden keys use custom values, non-overridden keys use built-in values', () => {
-		fc.assert(
-			fc.property(
-				localeArbitrary,
-				partialDictionaryArbitrary,
-				(locale, override) => {
-					const result = getDictionary(locale, override);
-					const base = localeDictionaryMap[locale];
-
-					for (const key of dictionaryKeys) {
-						if (key in override) {
-							expect(result[key]).toBe(override[key]);
-						} else {
-							expect(result[key]).toBe(base[key]);
-						}
-					}
-				}
-			),
-			{ numRuns: 100 }
-		);
-	});
-});
-
-/**
- * **Feature: editor-i18n, Property 5: Dictionary JSON 往返一致性**
- * **Validates: Requirements 5.1**
- */
 
 const dictionaryArbitrary: fc.Arbitrary<Dictionary> = fc.record(
 	Object.fromEntries(

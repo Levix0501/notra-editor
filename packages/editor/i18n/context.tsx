@@ -15,7 +15,6 @@ import type { ReactNode } from 'react';
 
 interface I18nProviderProps {
 	locale?: Locale;
-	messages?: Partial<Dictionary>;
 	children: ReactNode;
 }
 
@@ -33,31 +32,15 @@ const builtinDictionaries: Record<Locale, Dictionary> = {
 
 const I18nContext = createContext<Dictionary>(en);
 
-export function getDictionary(
-	locale: string,
-	messages?: Partial<Dictionary>
-): Dictionary {
+export function getDictionary(locale: string): Dictionary {
 	// Avoid prototype keys like "toString" matching via `in` operator
-	const base = Object.prototype.hasOwnProperty.call(builtinDictionaries, locale)
+	return Object.prototype.hasOwnProperty.call(builtinDictionaries, locale)
 		? builtinDictionaries[locale as Locale]
 		: builtinDictionaries.en;
-
-	if (messages) {
-		return { ...base, ...messages } as Dictionary;
-	}
-
-	return base;
 }
 
-export function I18nProvider({
-	locale = 'en',
-	messages,
-	children
-}: I18nProviderProps) {
-	const dictionary = useMemo(
-		() => getDictionary(locale, messages),
-		[locale, messages]
-	);
+export function I18nProvider({ locale = 'en', children }: I18nProviderProps) {
+	const dictionary = useMemo(() => getDictionary(locale), [locale]);
 
 	return (
 		<I18nContext.Provider value={dictionary}>{children}</I18nContext.Provider>

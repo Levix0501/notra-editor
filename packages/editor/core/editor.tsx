@@ -7,22 +7,16 @@ import { getDictionary, I18nProvider } from '../i18n';
 import { BlockDragHandle } from '../ui/drag-handle';
 import { FixedToolbar } from '../ui/fixed-toolbar';
 
-import type { Dictionary, Locale } from '../i18n';
+import type { Locale } from '../i18n';
 
 export interface EditorProps {
 	content?: string;
 	onChange?: (content: string) => void;
 	locale?: Locale;
-	messages?: Partial<Dictionary>;
 }
 
-export function Editor({
-	content = '',
-	onChange,
-	locale = 'en',
-	messages
-}: EditorProps) {
-	const dictionary = getDictionary(locale, messages);
+export function Editor({ content = '', onChange, locale = 'en' }: EditorProps) {
+	const dictionary = getDictionary(locale);
 
 	const editor = useEditor({
 		content,
@@ -42,7 +36,7 @@ export function Editor({
 
 	return (
 		<div className="notra-editor">
-			<I18nProvider locale={locale} messages={messages}>
+			<I18nProvider locale={locale}>
 				<EditorContext.Provider value={{ editor }}>
 					<FixedToolbar />
 
