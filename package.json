@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"packageManager": "pnpm@9.0.6",
-	"description": "A Tiptap-based editor with shadcn-ui architecture pattern",
+	"description": "A Notion-like rich text editor with shadcn-ui distribution pattern",
 	"engines": {
 		"node": ">=18.0.0"
 	},
