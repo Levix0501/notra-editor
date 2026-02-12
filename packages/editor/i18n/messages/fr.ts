@@ -1,0 +1,38 @@
+import type { Dictionary } from '../types';
+
+export const fr = {
+	'heading.1': 'Titre 1',
+	'heading.2': 'Titre 2',
+	'heading.3': 'Titre 3',
+	'heading.4': 'Titre 4',
+	'heading.5': 'Titre 5',
+	'heading.6': 'Titre 6',
+	'heading.dropdown.ariaLabel': 'Formater le texte en titre',
+	'list.bullet': 'Liste à puces',
+	'list.ordered': 'Liste numérotée',
+	'list.task': 'Liste de tâches',
+	'list.dropdown.ariaLabel': 'Formater le texte en liste',
+	'mark.bold': 'Gras',
+	'mark.italic': 'Italique',
+	'mark.underline': 'Souligné',
+	'mark.strike': 'Barré',
+	'mark.code': 'Code',
+	'mark.superscript': 'Exposant',
+	'mark.subscript': 'Indice',
+	'blockquote.label': 'Citation',
+	'codeBlock.label': 'Bloc de code',
+	'codeBlock.languageSelect.placeholder': 'Sélectionner la langue',
+	'codeBlock.languageSelect.searchPlaceholder': 'Rechercher une langue...',
+	'codeBlock.languageSelect.noResult': 'Aucune langue trouvée.',
+	'codeBlock.languageSelect.auto': 'Automatique',
+	'codeBlock.languageSelect.plaintext': 'Texte brut',
+	'undoRedo.undo': 'Annuler',
+	'undoRedo.redo': 'Rétablir',
+	'editor.ariaLabel':
+		'Zone de contenu principale, commencez à saisir du texte.',
+	'dragHandle.ariaLabel': 'Glisser pour réorganiser',
+	'textAlign.left': 'Aligner à gauche',
+	'textAlign.center': 'Centrer',
+	'textAlign.right': 'Aligner à droite',
+	'textAlign.justify': 'Justifier'
+} satisfies Dictionary;

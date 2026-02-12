@@ -1,7 +1,13 @@
 import { createContext, useContext, useMemo } from 'react';
 
+import { de } from './messages/de';
 import { en } from './messages/en';
+import { es } from './messages/es';
+import { fr } from './messages/fr';
 import { ja } from './messages/ja';
+import { ko } from './messages/ko';
+import { pt } from './messages/pt';
+import { ru } from './messages/ru';
 import { zh } from './messages/zh';
 
 import type { Dictionary, Locale } from './types';
@@ -13,7 +19,17 @@ interface I18nProviderProps {
 	children: ReactNode;
 }
 
-const builtinDictionaries: Record<Locale, Dictionary> = { en, zh, ja };
+const builtinDictionaries: Record<Locale, Dictionary> = {
+	en,
+	zh,
+	ja,
+	ko,
+	es,
+	fr,
+	de,
+	pt,
+	ru
+};
 
 const I18nContext = createContext<Dictionary>(en);
 

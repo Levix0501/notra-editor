@@ -2,8 +2,14 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 
 import { getDictionary } from '../context';
+import { de } from '../messages/de';
 import { en } from '../messages/en';
+import { es } from '../messages/es';
+import { fr } from '../messages/fr';
 import { ja } from '../messages/ja';
+import { ko } from '../messages/ko';
+import { pt } from '../messages/pt';
+import { ru } from '../messages/ru';
 import { zh } from '../messages/zh';
 
 import type { Dictionary, Locale } from '../types';
@@ -26,7 +32,17 @@ const expectedKeys: (keyof Dictionary)[] = [
 	'editor.ariaLabel'
 ];
 
-const builtinDictionaries: Record<string, Dictionary> = { en, zh, ja };
+const builtinDictionaries: Record<string, Dictionary> = {
+	en,
+	zh,
+	ja,
+	ko,
+	es,
+	fr,
+	de,
+	pt,
+	ru
+};
 
 describe('Property 1: 内置字典完整性', () => {
 	it.each(Object.entries(builtinDictionaries))(
@@ -58,9 +74,29 @@ describe('Property 1: 内置字典完整性', () => {
  * **Validates: Requirements 2.2**
  */
 
-const localeArbitrary: fc.Arbitrary<Locale> = fc.constantFrom('en', 'zh', 'ja');
+const localeArbitrary: fc.Arbitrary<Locale> = fc.constantFrom(
+	'en',
+	'zh',
+	'ja',
+	'ko',
+	'es',
+	'fr',
+	'de',
+	'pt',
+	'ru'
+);
 
-const localeDictionaryMap: Record<Locale, Dictionary> = { en, zh, ja };
+const localeDictionaryMap: Record<Locale, Dictionary> = {
+	en,
+	zh,
+	ja,
+	ko,
+	es,
+	fr,
+	de,
+	pt,
+	ru
+};
 
 describe('Property 2: Locale 解析正确性', () => {
 	it('getDictionary(locale) returns the exact built-in dictionary for that locale', () => {
@@ -83,7 +119,9 @@ describe('Property 2: Locale 解析正确性', () => {
 
 const invalidLocaleArbitrary: fc.Arbitrary<string> = fc
 	.string()
-	.filter((s) => s !== 'en' && s !== 'zh' && s !== 'ja');
+	.filter(
+		(s) => !['en', 'zh', 'ja', 'ko', 'es', 'fr', 'de', 'pt', 'ru'].includes(s)
+	);
 
 describe('Property 3: 不支持的 Locale 回退', () => {
 	it('getDictionary returns the English dictionary for any unsupported locale', () => {

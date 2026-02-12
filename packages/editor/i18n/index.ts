@@ -1,5 +1,11 @@
 export type { Dictionary, Locale } from './types';
 export { I18nProvider, useTranslation, getDictionary } from './context';
+export { de } from './messages/de';
 export { en } from './messages/en';
-export { zh } from './messages/zh';
+export { es } from './messages/es';
+export { fr } from './messages/fr';
 export { ja } from './messages/ja';
+export { ko } from './messages/ko';
+export { pt } from './messages/pt';
+export { ru } from './messages/ru';
+export { zh } from './messages/zh';

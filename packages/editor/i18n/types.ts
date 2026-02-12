@@ -34,4 +34,13 @@ export interface Dictionary {
 	'textAlign.justify': string;
 }
 
-export type Locale = 'en' | 'zh' | 'ja';
+export type Locale =
+	| 'en'
+	| 'zh'
+	| 'ja'
+	| 'ko'
+	| 'es'
+	| 'fr'
+	| 'de'
+	| 'pt'
+	| 'ru';
