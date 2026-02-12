@@ -3,10 +3,12 @@ import * as fc from 'fast-check';
 import { describe, expect, test } from 'vitest';
 
 import {
+	isAllowedUri,
 	isMarkInSchema,
 	isNodeInSchema,
 	isNodeTypeSelected,
-	isValidPosition
+	isValidPosition,
+	sanitizeUrl
 } from '../utils';
 
 // ── Property 2: isValidPosition ──────────────────────────────────────
@@ -273,6 +275,145 @@ describe('Feature: toolbar-formatting-buttons, Property 4: isMarkInSchema correc
 				}
 			),
 			{ numRuns: 200 }
+		);
+	});
+});
+
+// ── isAllowedUri ─────────────────────────────────────────────────────
+
+describe('isAllowedUri', () => {
+	test('allows http and https URLs', () => {
+		expect(isAllowedUri('https://example.com')).toBe(true);
+		expect(isAllowedUri('http://example.com/path')).toBe(true);
+	});
+
+	test('allows mailto, tel, and other safe protocols', () => {
+		expect(isAllowedUri('mailto:user@example.com')).toBe(true);
+		expect(isAllowedUri('tel:+1234567890')).toBe(true);
+		expect(isAllowedUri('ftp://files.example.com')).toBe(true);
+	});
+
+	test('blocks javascript: protocol', () => {
+		expect(isAllowedUri('javascript:alert(1)')).toBe(false);
+	});
+
+	test('blocks data: protocol', () => {
+		expect(isAllowedUri('data:text/html,<script>alert(1)</script>')).toBe(
+			false
+		);
+	});
+
+	test('blocks vbscript: protocol', () => {
+		expect(isAllowedUri('vbscript:MsgBox("XSS")')).toBe(false);
+	});
+
+	test('allows undefined/empty input', () => {
+		expect(isAllowedUri(undefined)).toBe(true);
+		expect(isAllowedUri('')).toBe(true);
+	});
+
+	test('allows relative paths', () => {
+		expect(isAllowedUri('/about')).toBe(true);
+		expect(isAllowedUri('./page')).toBe(true);
+		expect(isAllowedUri('#section')).toBe(true);
+	});
+
+	test('allows custom protocols via config', () => {
+		expect(isAllowedUri('custom:something', ['custom'])).toBe(true);
+		expect(isAllowedUri('myapp:open', [{ scheme: 'myapp' }])).toBe(true);
+	});
+
+	test('strips invisible Unicode whitespace before checking', () => {
+		expect(isAllowedUri('java\u200Bscript:alert(1)')).toBe(false);
+	});
+});
+
+// ── sanitizeUrl ──────────────────────────────────────────────────────
+
+const BASE_URL = 'https://example.com';
+
+describe('sanitizeUrl', () => {
+	test('resolves absolute URLs', () => {
+		expect(sanitizeUrl('https://example.com/page', BASE_URL)).toBe(
+			'https://example.com/page'
+		);
+	});
+
+	test('resolves relative paths against baseUrl', () => {
+		expect(sanitizeUrl('/about', BASE_URL)).toBe('https://example.com/about');
+		expect(sanitizeUrl('./page', BASE_URL + '/docs/')).toBe(
+			'https://example.com/docs/page'
+		);
+	});
+
+	test('returns "#" for dangerous protocols', () => {
+		expect(sanitizeUrl('javascript:alert(1)', BASE_URL)).toBe('#');
+		expect(sanitizeUrl('data:text/html,<h1>XSS</h1>', BASE_URL)).toBe('#');
+		expect(sanitizeUrl('vbscript:run', BASE_URL)).toBe('#');
+	});
+});
+
+// ── Property: dangerous protocol sanitization ────────────────────────
+
+describe('Property: dangerous URL sanitization', () => {
+	const dangerousProtocolArbitrary = fc.constantFrom(
+		'javascript',
+		'JavaScript',
+		'JAVASCRIPT',
+		'data',
+		'Data',
+		'DATA',
+		'vbscript',
+		'VBScript',
+		'VBSCRIPT'
+	);
+
+	const payloadArbitrary = fc.string({ minLength: 0, maxLength: 50 });
+
+	test('returns "#" for any URL with a dangerous protocol', () => {
+		fc.assert(
+			fc.property(
+				dangerousProtocolArbitrary,
+				payloadArbitrary,
+				(protocol, payload) => {
+					const url = `${protocol}:${payload}`;
+
+					expect(sanitizeUrl(url, BASE_URL)).toBe('#');
+				}
+			),
+			{ numRuns: 100 }
+		);
+	});
+});
+
+// ── Property: safe URL round-trip ────────────────────────────────────
+
+describe('Property: safe URL round-trip', () => {
+	const safeUrlArbitrary = fc
+		.constantFrom('http', 'https')
+		.chain((protocol) =>
+			fc
+				.domain()
+				.chain((domain) =>
+					fc
+						.webPath()
+						.map((path) =>
+							path
+								? `${protocol}://${domain}${path}`
+								: `${protocol}://${domain}`
+						)
+				)
+		);
+
+	test('preserves any safe http/https URL after normalization', () => {
+		fc.assert(
+			fc.property(safeUrlArbitrary, (url) => {
+				const result = sanitizeUrl(url, BASE_URL);
+				const normalized = new URL(url).href;
+
+				expect(result).toBe(normalized);
+			}),
+			{ numRuns: 100 }
 		);
 	});
 });

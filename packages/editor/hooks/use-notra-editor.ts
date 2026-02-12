@@ -1,5 +1,5 @@
 import { useCurrentEditor, useEditorState } from '@tiptap/react';
-import * as React from 'react';
+import { useMemo } from 'react';
 
 import type { Editor } from '@tiptap/core';
 
@@ -19,7 +19,7 @@ export function useNotraEditor(providedEditor?: Editor | null): {
 	editorState?: Editor['state'];
 } {
 	const { editor: contextEditor } = useCurrentEditor();
-	const editor = React.useMemo(
+	const editor = useMemo(
 		() => providedEditor ?? contextEditor,
 		[providedEditor, contextEditor]
 	);

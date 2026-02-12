@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 
 import { DropdownMenuItem } from './primitives/dropdown-menu';
 import { useHeading } from '../hooks/use-heading';
 
 import type { Level } from '../hooks/use-heading';
+import type { MouseEvent } from 'react';
 
 export interface HeadingButtonProps {
 	level: Level;
@@ -12,8 +13,8 @@ export interface HeadingButtonProps {
 export function HeadingButton({ level }: HeadingButtonProps) {
 	const { isVisible, handleToggle, Icon, label } = useHeading({ level });
 
-	const handleClick = React.useCallback(
-		(event: React.MouseEvent<HTMLDivElement>) => {
+	const handleClick = useCallback(
+		(event: MouseEvent<HTMLDivElement>) => {
 			if (event.defaultPrevented) return;
 
 			handleToggle();

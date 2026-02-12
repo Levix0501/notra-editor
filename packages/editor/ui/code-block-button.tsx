@@ -1,14 +1,16 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 
 import { useCodeBlock } from '../hooks/use-code-block';
 import { Button } from './primitives/button';
+
+import type { MouseEvent } from 'react';
 
 export function CodeBlockButton() {
 	const { isVisible, isActive, canToggle, handleToggle, label, Icon } =
 		useCodeBlock();
 
-	const handleClick = React.useCallback(
-		(event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleClick = useCallback(
+		(event: MouseEvent<HTMLButtonElement>) => {
 			if (event.defaultPrevented) return;
 
 			handleToggle();

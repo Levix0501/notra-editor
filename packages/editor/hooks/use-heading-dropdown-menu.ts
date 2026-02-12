@@ -1,5 +1,5 @@
 import { Heading } from 'lucide-react';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 
 import {
 	headingIcons,
@@ -43,13 +43,13 @@ export function useHeadingDropdownMenu(config?: UseHeadingDropdownMenuConfig): {
 	} = config || {};
 
 	const { editor } = useNotraEditor(providedEditor);
-	const [isVisible, setIsVisible] = React.useState(true);
+	const [isVisible, setIsVisible] = useState(true);
 
 	const activeLevel = getActiveHeadingLevel(editor, levels);
 	const isActive = isHeadingActive(editor);
 	const canToggleState = canToggle(editor);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!editor) return;
 
 		const handleSelectionUpdate = () => {

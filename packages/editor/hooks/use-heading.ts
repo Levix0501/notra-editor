@@ -7,7 +7,7 @@ import {
 	Heading5,
 	Heading6
 } from 'lucide-react';
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
 import { useTranslation } from '../i18n';
@@ -204,11 +204,11 @@ export function useHeading(config: UseHeadingConfig) {
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState<boolean>(true);
+	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const canToggleState = canToggle(activeEditor, level);
 	const isActive = isHeadingActive(activeEditor, level);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!activeEditor) return;
 
 		const handleSelectionUpdate = () => {
@@ -230,7 +230,7 @@ export function useHeading(config: UseHeadingConfig) {
 		};
 	}, [activeEditor, level, hideWhenUnavailable]);
 
-	const handleToggle = React.useCallback(() => {
+	const handleToggle = useCallback(() => {
 		if (!activeEditor) return false;
 
 		const success = toggleHeading(activeEditor, level);

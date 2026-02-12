@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 
 import { DropdownMenuItem } from './primitives/dropdown-menu';
 import { useList } from '../hooks/use-list';
 
 import type { ListType } from '../hooks/use-list';
+import type { MouseEvent } from 'react';
 
 export interface ListButtonProps {
 	type: ListType;
@@ -12,8 +13,8 @@ export interface ListButtonProps {
 export function ListButton({ type }: ListButtonProps) {
 	const { isVisible, handleToggle, Icon, label } = useList({ type });
 
-	const handleClick = React.useCallback(
-		(event: React.MouseEvent<HTMLDivElement>) => {
+	const handleClick = useCallback(
+		(event: MouseEvent<HTMLDivElement>) => {
 			if (event.defaultPrevented) return;
 
 			handleToggle();

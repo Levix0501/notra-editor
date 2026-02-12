@@ -5,11 +5,12 @@ import { ja } from './messages/ja';
 import { zh } from './messages/zh';
 
 import type { Dictionary, Locale } from './types';
+import type { ReactNode } from 'react';
 
 interface I18nProviderProps {
 	locale?: Locale;
 	messages?: Partial<Dictionary>;
-	children: React.ReactNode;
+	children: ReactNode;
 }
 
 const builtinDictionaries: Record<Locale, Dictionary> = { en, zh, ja };

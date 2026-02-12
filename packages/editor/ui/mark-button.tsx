@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 
 import { useMark } from '../hooks/use-mark';
 import { Button } from './primitives/button';
 
 import type { MarkType } from '../hooks/use-mark';
+import type { MouseEvent } from 'react';
 
 export interface MarkButtonProps {
 	type: MarkType;
@@ -14,8 +15,8 @@ export function MarkButton({ type }: MarkButtonProps) {
 		type
 	});
 
-	const handleClick = React.useCallback(
-		(event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleClick = useCallback(
+		(event: MouseEvent<HTMLButtonElement>) => {
 			if (event.defaultPrevented) return;
 
 			handleMark();

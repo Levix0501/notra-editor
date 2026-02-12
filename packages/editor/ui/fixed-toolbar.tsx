@@ -1,6 +1,7 @@
 import { BlockquoteButton } from './blockquote-button';
 import { CodeBlockButton } from './code-block-button';
 import { HeadingDropdownMenu } from './heading-dropdown-menu';
+import { LinkPopover } from './link-popover';
 import { ListDropdownMenu } from './list-dropdown-menu';
 import { MarkButton } from './mark-button';
 import { Separator } from './primitives/separator';
@@ -9,7 +10,9 @@ import { TextAlignButton } from './text-align-button';
 import { UndoRedoButton } from './undo-redo-button';
 import { cn } from '../lib/utils';
 
-function ToolbarGroup({ children }: { children: React.ReactNode }) {
+import type { ReactNode } from 'react';
+
+function ToolbarGroup({ children }: { children: ReactNode }) {
 	return <div className="flex items-center gap-0.5">{children}</div>;
 }
 
@@ -53,6 +56,7 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 				<MarkButton type="underline" />
 				<MarkButton type="strike" />
 				<MarkButton type="code" />
+				<LinkPopover />
 			</ToolbarGroup>
 
 			<ToolbarSeparator />

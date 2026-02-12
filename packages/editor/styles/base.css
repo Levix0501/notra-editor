@@ -1,46 +1,45 @@
-.notra-editor {
+.notra-editor .tiptap {
 	white-space: pre-wrap;
 	outline: none;
 	color: var(--notra-text);
 	caret-color: var(--notra-brand-500);
-}
 
-.dark .notra-editor,
-.notra-editor.dark {
-	caret-color: var(--notra-brand-400);
-}
-
-@media (prefers-color-scheme: dark) {
-	.notra-editor:not(.light) {
+	.dark &,
+	&.dark {
 		caret-color: var(--notra-brand-400);
 	}
-}
 
-.notra-editor > * {
-	position: relative;
-}
+	@media (prefers-color-scheme: dark) {
+		&:not(.light) {
+			caret-color: var(--notra-brand-400);
+		}
+	}
 
-/* Native text selection */
-.notra-editor:not(.ProseMirror-hideselection) ::selection {
-	background-color: var(--notra-selection);
-}
+	& > * {
+		position: relative;
+	}
 
-.notra-editor:not(.ProseMirror-hideselection) .selection::selection {
-	background: transparent;
-}
+	&:not(.ProseMirror-hideselection) {
+		::selection {
+			background-color: var(--notra-selection);
+		}
 
-/* Programmatic selection highlight */
-.notra-editor .selection {
-	display: inline;
-	background-color: var(--notra-selection);
-}
+		.selection::selection {
+			background: transparent;
+		}
+	}
 
-/* Selected node (exclude images, code blocks, and react renderers) */
-.notra-editor .ProseMirror-selectednode:not(img, pre, .react-renderer) {
-	border-radius: 0.375rem;
-	background-color: var(--notra-selection);
-}
+	.selection {
+		display: inline;
+		background-color: var(--notra-selection);
+	}
 
-.notra-editor .ProseMirror-hideselection {
-	caret-color: transparent;
+	.ProseMirror-selectednode:not(img, pre, .react-renderer) {
+		border-radius: 0.375rem;
+		background-color: var(--notra-selection);
+	}
+
+	.ProseMirror-hideselection {
+		caret-color: transparent;
+	}
 }

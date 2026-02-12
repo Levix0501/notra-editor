@@ -1,6 +1,6 @@
 import { NodeSelection, TextSelection } from '@tiptap/pm/state';
 import { TextQuote } from 'lucide-react';
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
 import { useTranslation } from '../i18n';
@@ -140,11 +140,11 @@ export function useBlockquote(config?: UseBlockquoteConfig) {
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState<boolean>(true);
+	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const canToggle = canToggleBlockquote(activeEditor);
 	const isActive = activeEditor?.isActive('blockquote') ?? false;
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!activeEditor) return;
 
 		const handleSelectionUpdate = () => {
@@ -165,7 +165,7 @@ export function useBlockquote(config?: UseBlockquoteConfig) {
 		};
 	}, [activeEditor, hideWhenUnavailable]);
 
-	const handleToggle = React.useCallback(() => {
+	const handleToggle = useCallback(() => {
 		if (!activeEditor) return false;
 
 		const success = toggleBlockquote(activeEditor);

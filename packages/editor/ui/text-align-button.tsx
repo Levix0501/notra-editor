@@ -1,9 +1,10 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 
 import { useTextAlign } from '../hooks/use-text-align';
 import { Button } from './primitives/button';
 
 import type { AlignmentType } from '../hooks/use-text-align';
+import type { MouseEvent } from 'react';
 
 export interface TextAlignButtonProps {
 	alignment: AlignmentType;
@@ -15,8 +16,8 @@ export function TextAlignButton({ alignment }: TextAlignButtonProps) {
 			alignment
 		});
 
-	const handleClick = React.useCallback(
-		(event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleClick = useCallback(
+		(event: MouseEvent<HTMLButtonElement>) => {
 			if (event.defaultPrevented) return;
 
 			handleAlign();

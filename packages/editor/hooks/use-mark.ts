@@ -7,7 +7,7 @@ import {
 	Superscript,
 	Underline
 } from 'lucide-react';
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
 import { useTranslation } from '../i18n';
@@ -103,11 +103,11 @@ export function useMark(config: UseMarkConfig) {
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState<boolean>(true);
+	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const canToggle = canToggleMark(activeEditor, type);
 	const isActive = isMarkActive(activeEditor, type);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!activeEditor) return;
 
 		const handleSelectionUpdate = () => {
@@ -129,7 +129,7 @@ export function useMark(config: UseMarkConfig) {
 		};
 	}, [activeEditor, type, hideWhenUnavailable]);
 
-	const handleMark = React.useCallback(() => {
+	const handleMark = useCallback(() => {
 		if (!activeEditor) return false;
 
 		const success = toggleMark(activeEditor, type);

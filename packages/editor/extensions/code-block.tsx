@@ -4,7 +4,7 @@ import {
 	NodeViewWrapper,
 	ReactNodeViewRenderer
 } from '@tiptap/react';
-import * as React from 'react';
+import { useEffect } from 'react';
 
 import { CodeBlockBase } from './code-block-base';
 import { CopyButton } from '../ui/code-block-copy-button';
@@ -21,7 +21,7 @@ function CodeBlockNodeView({ node, updateAttributes }: NodeViewProps) {
 
 	// Normalize the stored attribute when an alias (e.g. "js") resolves to a full name.
 	// Deferred via microtask to avoid flushSync during React render cycle.
-	React.useEffect(() => {
+	useEffect(() => {
 		if (rawLanguage && language !== rawLanguage) {
 			queueMicrotask(() => updateAttributes({ language }));
 		}

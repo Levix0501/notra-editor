@@ -1,6 +1,6 @@
 import { NodeSelection, TextSelection } from '@tiptap/pm/state';
 import { List, ListOrdered, ListTodo } from 'lucide-react';
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
 import { useTranslation } from '../i18n';
@@ -218,11 +218,11 @@ export function useList(config: UseListConfig) {
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState<boolean>(true);
+	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const canToggle = canToggleList(activeEditor, type);
 	const isActive = isListActive(activeEditor, type);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!activeEditor) return;
 
 		const handleSelectionUpdate = () => {
@@ -244,7 +244,7 @@ export function useList(config: UseListConfig) {
 		};
 	}, [activeEditor, type, hideWhenUnavailable]);
 
-	const handleToggle = React.useCallback(() => {
+	const handleToggle = useCallback(() => {
 		if (!activeEditor) return false;
 
 		const success = toggleList(activeEditor, type);

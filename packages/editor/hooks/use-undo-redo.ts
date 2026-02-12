@@ -1,5 +1,5 @@
 import { Redo2, Undo2 } from 'lucide-react';
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
 import { useTranslation } from '../i18n';
@@ -81,11 +81,11 @@ export function useUndoRedo(config: UseUndoRedoConfig) {
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState<boolean>(true);
+	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const canExecute = canExecuteAction(activeEditor, action);
 
 	// Undo/redo availability depends on history stack, not just selection
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!activeEditor) return;
 
 		const handleUpdate = () => {
@@ -107,7 +107,7 @@ export function useUndoRedo(config: UseUndoRedoConfig) {
 		};
 	}, [activeEditor, action, hideWhenUnavailable]);
 
-	const handleAction = React.useCallback(() => {
+	const handleAction = useCallback(() => {
 		if (!activeEditor) return false;
 
 		const success = executeAction(activeEditor, action);

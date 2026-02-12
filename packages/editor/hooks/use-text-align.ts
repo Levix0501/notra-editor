@@ -1,5 +1,5 @@
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from 'lucide-react';
-import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useNotraEditor } from './use-notra-editor';
 import { useTranslation } from '../i18n';
@@ -109,11 +109,11 @@ export function useTextAlign(config: UseTextAlignConfig) {
 
 	const { editor: activeEditor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState<boolean>(true);
+	const [isVisible, setIsVisible] = useState<boolean>(true);
 	const canAlign = canSetTextAlign(activeEditor, alignment);
 	const isActive = isTextAlignActive(activeEditor, alignment);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!activeEditor) return;
 
 		const handleSelectionUpdate = () => {
@@ -135,7 +135,7 @@ export function useTextAlign(config: UseTextAlignConfig) {
 		};
 	}, [activeEditor, alignment, hideWhenUnavailable]);
 
-	const handleAlign = React.useCallback(() => {
+	const handleAlign = useCallback(() => {
 		if (!activeEditor) return false;
 
 		const success = setTextAlign(activeEditor, alignment);

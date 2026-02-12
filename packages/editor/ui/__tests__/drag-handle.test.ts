@@ -22,6 +22,15 @@ let mockDictionary: Record<string, string> = {
 	'dragHandle.ariaLabel': 'Drag to reorder'
 };
 
+vi.mock('react', async () => {
+	const actual = await vi.importActual<typeof import('react')>('react');
+
+	return {
+		...actual,
+		useCallback: (fn: unknown) => fn
+	};
+});
+
 vi.mock('@tiptap/react', () => ({
 	useCurrentEditor: () => ({ editor: mockEditor })
 }));

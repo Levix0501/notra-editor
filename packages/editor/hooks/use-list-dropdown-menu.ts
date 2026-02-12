@@ -1,5 +1,5 @@
 import { List } from 'lucide-react';
-import * as React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from '../i18n';
 import {
@@ -14,6 +14,7 @@ import { isNodeInSchema } from '../lib/utils';
 import type { Dictionary } from '../i18n';
 import type { Editor } from '@tiptap/core';
 import type { LucideIcon } from 'lucide-react';
+import type { ElementType } from 'react';
 
 export interface UseListDropdownMenuConfig {
 	/**
@@ -35,7 +36,7 @@ export interface UseListDropdownMenuConfig {
 export interface ListOption {
 	label: string;
 	type: ListType;
-	icon: React.ElementType;
+	icon: ElementType;
 }
 
 const listLabelKeys: Record<ListType, keyof Dictionary> = {
@@ -122,11 +123,11 @@ export function useListDropdownMenu(config?: UseListDropdownMenuConfig): {
 
 	const { editor } = useNotraEditor(providedEditor);
 	const dictionary = useTranslation();
-	const [isVisible, setIsVisible] = React.useState(false);
+	const [isVisible, setIsVisible] = useState(false);
 
 	const listInSchema = types.some((type) => isNodeInSchema(type, editor));
 
-	const listOptions: ListOption[] = React.useMemo(
+	const listOptions: ListOption[] = useMemo(
 		() =>
 			ALL_LIST_TYPES.map((type) => ({
 				label: dictionary[listLabelKeys[type]],
@@ -136,7 +137,7 @@ export function useListDropdownMenu(config?: UseListDropdownMenuConfig): {
 		[dictionary]
 	);
 
-	const filteredLists = React.useMemo(
+	const filteredLists = useMemo(
 		() => getFilteredListOptions(listOptions, types),
 		[listOptions, types]
 	);
@@ -146,7 +147,7 @@ export function useListDropdownMenu(config?: UseListDropdownMenuConfig): {
 	const activeType = getActiveListType(editor, types);
 	const activeList = filteredLists.find((option) => option.type === activeType);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!editor) return;
 
 		const handleSelectionUpdate = () => {

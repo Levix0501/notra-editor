@@ -1,5 +1,5 @@
 import { Check, ChevronDown } from 'lucide-react';
-import * as React from 'react';
+import { useState } from 'react';
 
 import { cn } from '../lib/utils';
 import { Button } from './primitives/button';
@@ -186,7 +186,7 @@ export function LanguageSelect({
 	language,
 	onLanguageChange
 }: LanguageSelectProps) {
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
 
 	const currentLabel =
 		LANGUAGES.find((lang) => lang.value === language)?.label ??

@@ -2,13 +2,14 @@ import * as fc from 'fast-check';
 import { describe, expect, test } from 'vitest';
 
 import type { SpacerOrientation } from '../primitives/spacer';
+import type { CSSProperties } from 'react';
 
 // Replicate the pure style computation from Spacer component
 function computeSpacerStyle(
 	orientation: SpacerOrientation = 'horizontal',
 	size: string | number | undefined,
-	style: React.CSSProperties = {}
-): React.CSSProperties {
+	style: CSSProperties = {}
+): CSSProperties {
 	return {
 		...style,
 		...(orientation === 'horizontal' && !size && { flex: 1 }),
