@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.11.0
+
+### Minor Changes
+
+- feat(editor): add link popover with URL validation and drag state tracking
+
 ## 1.10.0
 
 ### Minor Changes
