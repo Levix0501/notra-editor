@@ -33,5 +33,6 @@ export const ru = {
 	'textAlign.left': 'По левому краю',
 	'textAlign.center': 'По центру',
 	'textAlign.right': 'По правому краю',
-	'textAlign.justify': 'По ширине'
+	'textAlign.justify': 'По ширине',
+	'placeholder.default': 'Начните писать...'
 } satisfies Dictionary;

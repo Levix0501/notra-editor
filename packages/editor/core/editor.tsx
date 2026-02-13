@@ -1,5 +1,6 @@
 import '../styles/editor.css';
 
+import { Placeholder } from '@tiptap/extensions';
 import { EditorContent, EditorContext, useEditor } from '@tiptap/react';
 
 import { EditorExtensions } from '../extensions/editor';
@@ -30,7 +31,12 @@ export function Editor({ content = '', onChange, locale = 'en' }: EditorProps) {
 					'flex-1 px-4 sm:px-[max(64px,calc(50%-375px))] pb-[30vh] pt-15 sm:pt-23 outline-none'
 			}
 		},
-		extensions: EditorExtensions,
+		extensions: [
+			...EditorExtensions,
+			Placeholder.configure({
+				placeholder: dictionary['placeholder.default']
+			})
+		],
 		onUpdate: ({ editor }) => onChange?.(editor.getHTML())
 	});
 

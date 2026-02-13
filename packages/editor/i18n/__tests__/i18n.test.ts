@@ -211,3 +211,37 @@ describe('Property 3: 内置字典包含所有对齐翻译键', () => {
 		);
 	});
 });
+
+/**
+ * **Feature: trailing-node-and-placeholder, Property 1: All supported locales have placeholder text**
+ * **Validates: Requirements 3.5**
+ */
+
+describe('Property 1: All supported locales have placeholder text', () => {
+	it('getDictionary(locale) returns a dictionary with a non-empty placeholder.default for any supported locale', () => {
+		fc.assert(
+			fc.property(localeArbitrary, (locale) => {
+				const dict = getDictionary(locale);
+				const value = dict['placeholder.default'];
+
+				expect(typeof value).toBe('string');
+				expect(value.length).toBeGreaterThan(0);
+			}),
+			{ numRuns: 100 }
+		);
+	});
+});
+
+describe('Placeholder i18n unit tests', () => {
+	it('en placeholder.default returns "Start writing..."', () => {
+		expect(getDictionary('en')['placeholder.default']).toBe('Start writing...');
+	});
+
+	it('zh placeholder.default returns "开始输入..."', () => {
+		expect(getDictionary('zh')['placeholder.default']).toBe('开始输入...');
+	});
+
+	it('ja placeholder.default returns "入力を開始..."', () => {
+		expect(getDictionary('ja')['placeholder.default']).toBe('入力を開始...');
+	});
+});

@@ -33,5 +33,6 @@ export const ja = {
 	'textAlign.left': '左揃え',
 	'textAlign.center': '中央揃え',
 	'textAlign.right': '右揃え',
-	'textAlign.justify': '両端揃え'
+	'textAlign.justify': '両端揃え',
+	'placeholder.default': '入力を開始...'
 } satisfies Dictionary;

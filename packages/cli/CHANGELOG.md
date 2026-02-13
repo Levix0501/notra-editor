@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.12.0
+
+### Minor Changes
+
+- feat(editor): add TrailingNode and Placeholder extensions with i18n support
+
 ## 1.11.0
 
 ### Minor Changes

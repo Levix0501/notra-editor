@@ -33,5 +33,6 @@ export const de = {
 	'textAlign.left': 'Linksbündig',
 	'textAlign.center': 'Zentriert',
 	'textAlign.right': 'Rechtsbündig',
-	'textAlign.justify': 'Blocksatz'
+	'textAlign.justify': 'Blocksatz',
+	'placeholder.default': 'Schreiben Sie los...'
 } satisfies Dictionary;

@@ -33,5 +33,6 @@ export const ko = {
 	'textAlign.left': '왼쪽 정렬',
 	'textAlign.center': '가운데 정렬',
 	'textAlign.right': '오른쪽 정렬',
-	'textAlign.justify': '양쪽 정렬'
+	'textAlign.justify': '양쪽 정렬',
+	'placeholder.default': '입력을 시작하세요...'
 } satisfies Dictionary;

@@ -33,5 +33,6 @@ export const en = {
 	'textAlign.left': 'Align Left',
 	'textAlign.center': 'Align Center',
 	'textAlign.right': 'Align Right',
-	'textAlign.justify': 'Justify'
+	'textAlign.justify': 'Justify',
+	'placeholder.default': 'Start writing...'
 } satisfies Dictionary;

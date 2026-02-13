@@ -32,6 +32,7 @@ export interface Dictionary {
 	'textAlign.center': string;
 	'textAlign.right': string;
 	'textAlign.justify': string;
+	'placeholder.default': string;
 }
 
 export type Locale =

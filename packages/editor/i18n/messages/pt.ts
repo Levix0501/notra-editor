@@ -33,5 +33,6 @@ export const pt = {
 	'textAlign.left': 'Alinhar à esquerda',
 	'textAlign.center': 'Centralizar',
 	'textAlign.right': 'Alinhar à direita',
-	'textAlign.justify': 'Justificar'
+	'textAlign.justify': 'Justificar',
+	'placeholder.default': 'Comece a escrever...'
 } satisfies Dictionary;

@@ -33,5 +33,6 @@ export const zh = {
 	'textAlign.left': '左对齐',
 	'textAlign.center': '居中对齐',
 	'textAlign.right': '右对齐',
-	'textAlign.justify': '两端对齐'
+	'textAlign.justify': '两端对齐',
+	'placeholder.default': '开始输入...'
 } satisfies Dictionary;
