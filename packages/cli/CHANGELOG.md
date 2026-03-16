@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.13.3
+
+### Patch Changes
+
+- [`008c5757c8b4b8c2aa05e61a0a081a719b05e8c8`](https://github.com/Levix0501/notra-editor/commit/008c5757c8b4b8c2aa05e61a0a081a719b05e8c8) Thanks [@Levix0501](https://github.com/Levix0501)! - chore: edit CHANGELOG.md
+
 ## 1.13.2
 
 ### Patch Changes
