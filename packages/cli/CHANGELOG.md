@@ -1,5 +1,11 @@
 # notra-editor
 
+## 1.13.0
+
+### Minor Changes
+
+- [`7be46f7db2f1a39783b00c94d66e0a7239b5f258`](https://github.com/Levix0501/notra-editor/commit/7be46f7db2f1a39783b00c94d66e0a7239b5f258) Thanks [@Levix0501](https://github.com/Levix0501)! - add text color and background color support
+
 ## 1.12.0
 
 ### Minor Changes
