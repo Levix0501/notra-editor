@@ -33,6 +33,11 @@ export interface Dictionary {
 	'textAlign.right': string;
 	'textAlign.justify': string;
 	'placeholder.default': string;
+	'color.textColor': string;
+	'color.backgroundColor': string;
+	'color.removeTextColor': string;
+	'color.removeBackgroundColor': string;
+	'color.button.ariaLabel': string;
 }
 
 export type Locale =

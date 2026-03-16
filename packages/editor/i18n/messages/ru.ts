@@ -34,5 +34,10 @@ export const ru = {
 	'textAlign.center': 'По центру',
 	'textAlign.right': 'По правому краю',
 	'textAlign.justify': 'По ширине',
-	'placeholder.default': 'Начните писать...'
+	'placeholder.default': 'Начните писать...',
+	'color.textColor': 'Цвет текста',
+	'color.backgroundColor': 'Цвет фона',
+	'color.removeTextColor': 'Удалить цвет текста',
+	'color.removeBackgroundColor': 'Удалить цвет фона',
+	'color.button.ariaLabel': 'Цвет текста'
 } satisfies Dictionary;

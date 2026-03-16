@@ -34,5 +34,10 @@ export const ko = {
 	'textAlign.center': '가운데 정렬',
 	'textAlign.right': '오른쪽 정렬',
 	'textAlign.justify': '양쪽 정렬',
-	'placeholder.default': '입력을 시작하세요...'
+	'placeholder.default': '입력을 시작하세요...',
+	'color.textColor': '텍스트 색상',
+	'color.backgroundColor': '배경색',
+	'color.removeTextColor': '텍스트 색상 제거',
+	'color.removeBackgroundColor': '배경색 제거',
+	'color.button.ariaLabel': '텍스트 색상'
 } satisfies Dictionary;

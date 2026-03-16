@@ -34,5 +34,10 @@ export const ja = {
 	'textAlign.center': '中央揃え',
 	'textAlign.right': '右揃え',
 	'textAlign.justify': '両端揃え',
-	'placeholder.default': '入力を開始...'
+	'placeholder.default': '入力を開始...',
+	'color.textColor': 'テキストカラー',
+	'color.backgroundColor': '背景色',
+	'color.removeTextColor': 'テキストカラーを削除',
+	'color.removeBackgroundColor': '背景色を削除',
+	'color.button.ariaLabel': 'テキストカラー'
 } satisfies Dictionary;

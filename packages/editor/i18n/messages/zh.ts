@@ -34,5 +34,10 @@ export const zh = {
 	'textAlign.center': '居中对齐',
 	'textAlign.right': '右对齐',
 	'textAlign.justify': '两端对齐',
-	'placeholder.default': '开始输入...'
+	'placeholder.default': '开始输入...',
+	'color.textColor': '文本颜色',
+	'color.backgroundColor': '背景色',
+	'color.removeTextColor': '移除文本颜色',
+	'color.removeBackgroundColor': '移除背景色',
+	'color.button.ariaLabel': '文本颜色'
 } satisfies Dictionary;

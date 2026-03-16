@@ -35,5 +35,10 @@ export const fr = {
 	'textAlign.center': 'Centrer',
 	'textAlign.right': 'Aligner à droite',
 	'textAlign.justify': 'Justifier',
-	'placeholder.default': 'Commencez à écrire...'
+	'placeholder.default': 'Commencez à écrire...',
+	'color.textColor': 'Couleur du texte',
+	'color.backgroundColor': 'Couleur de fond',
+	'color.removeTextColor': 'Supprimer la couleur du texte',
+	'color.removeBackgroundColor': 'Supprimer la couleur de fond',
+	'color.button.ariaLabel': 'Couleur du texte'
 } satisfies Dictionary;

@@ -1,5 +1,6 @@
 import { BlockquoteButton } from './blockquote-button';
 import { CodeBlockButton } from './code-block-button';
+import { ColorPopover } from './color-popover';
 import { HeadingDropdownMenu } from './heading-dropdown-menu';
 import { LinkPopover } from './link-popover';
 import { ListDropdownMenu } from './list-dropdown-menu';
@@ -57,6 +58,7 @@ export function FixedToolbar({ className }: FixedToolbarProps) {
 				<MarkButton type="strike" />
 				<MarkButton type="code" />
 				<LinkPopover />
+				<ColorPopover />
 			</ToolbarGroup>
 
 			<ToolbarSeparator />

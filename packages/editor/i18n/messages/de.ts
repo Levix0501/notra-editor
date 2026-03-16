@@ -34,5 +34,10 @@ export const de = {
 	'textAlign.center': 'Zentriert',
 	'textAlign.right': 'Rechtsbündig',
 	'textAlign.justify': 'Blocksatz',
-	'placeholder.default': 'Schreiben Sie los...'
+	'placeholder.default': 'Schreiben Sie los...',
+	'color.textColor': 'Textfarbe',
+	'color.backgroundColor': 'Hintergrundfarbe',
+	'color.removeTextColor': 'Textfarbe entfernen',
+	'color.removeBackgroundColor': 'Hintergrundfarbe entfernen',
+	'color.button.ariaLabel': 'Textfarbe'
 } satisfies Dictionary;
