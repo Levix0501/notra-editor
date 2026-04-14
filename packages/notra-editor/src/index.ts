@@ -22,3 +22,5 @@ export {
 } from './core/create-editor';
 
 export { buildMarkdownSerializer, buildMarkdownParser } from './markdown';
+
+export { defaultPlugins } from './plugins/default-plugins';
