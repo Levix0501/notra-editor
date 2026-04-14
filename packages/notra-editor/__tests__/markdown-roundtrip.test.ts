@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import { buildMarkdownParser, buildMarkdownSerializer } from '../src/markdown';
 import { Schema } from '@tiptap/pm/model';
+import { describe, it, expect } from 'vitest';
+
+import { buildMarkdownParser, buildMarkdownSerializer } from '../src/markdown';
+
 import type { CollectedMarkdownRules } from '../src/core/create-editor';
 
 // Minimal schema for testing
@@ -125,7 +127,9 @@ describe('Markdown round-trip', () => {
 
 	function roundTrip(md: string): string {
 		const doc = parser.parse(md);
+
 		if (!doc) throw new Error('Parse returned null');
+
 		return serializer.serialize(doc);
 	}
 
@@ -139,9 +143,7 @@ describe('Markdown round-trip', () => {
 	});
 
 	it('round-trips bold and italic', () => {
-		expect(roundTrip('**bold** and *italic*')).toBe(
-			'**bold** and *italic*'
-		);
+		expect(roundTrip('**bold** and *italic*')).toBe('**bold** and *italic*');
 	});
 
 	it('round-trips blockquote', () => {

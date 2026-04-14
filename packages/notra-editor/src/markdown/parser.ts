@@ -1,7 +1,8 @@
 import MarkdownIt from 'markdown-it';
 import { MarkdownParser } from 'prosemirror-markdown';
-import type { Schema } from '@tiptap/pm/model';
+
 import type { CollectedMarkdownRules } from '../core/create-editor';
+import type { Schema } from '@tiptap/pm/model';
 
 export function buildMarkdownParser(
 	schema: Schema,
@@ -17,6 +18,7 @@ export function buildMarkdownParser(
 	} catch {
 		// strikethrough not available in commonmark preset
 	}
+
 	try {
 		md.enable('table');
 	} catch {
