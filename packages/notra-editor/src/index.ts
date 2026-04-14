@@ -1,2 +1,22 @@
-// Public API - will be populated as plugins and components are built
-export {};
+export type {
+  NotraPlugin,
+  SlashCommandItem,
+  ToolbarItem,
+  ToolbarDropdownItem,
+  NotraTheme,
+  NotraEditorProps,
+  NotraViewerProps,
+  NodeSerializerFn,
+  MarkSerializerSpec,
+  TokenSpec,
+  MarkdownItPlugin,
+} from './types';
+
+export { definePlugin } from './plugins/define-plugin';
+export {
+  collectExtensions,
+  collectSlashCommands,
+  collectToolbarItems,
+  collectFloatingToolbarItems,
+  collectMarkdownRules,
+} from './core/create-editor';
