@@ -11,7 +11,11 @@ import {
 	CommandItem,
 	CommandList
 } from '../../ui/primitives/command';
-import { Popover, PopoverContent, PopoverTrigger } from '../../ui/primitives/popover';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger
+} from '../../ui/primitives/popover';
 
 interface LanguageOption {
 	label: string;

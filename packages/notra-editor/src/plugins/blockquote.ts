@@ -10,9 +10,7 @@ export const blockquotePlugin = definePlugin({
 		serializer: {
 			nodes: {
 				blockquote: (state, node) => {
-					state.wrapBlock('> ', null, node, () =>
-						state.renderContent(node)
-					);
+					state.wrapBlock('> ', null, node, () => state.renderContent(node));
 				}
 			}
 		},

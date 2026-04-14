@@ -1,14 +1,8 @@
-import {
-	NodeViewContent,
-	NodeViewWrapper
-} from '@tiptap/react';
+import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
 import { useEffect } from 'react';
 
 import { CopyButton } from './copy-button';
-import {
-	LanguageSelect,
-	resolveLanguageAlias
-} from './language-select';
+import { LanguageSelect, resolveLanguageAlias } from './language-select';
 
 import type { NodeViewProps } from '@tiptap/react';
 
