@@ -10,10 +10,6 @@ export default defineConfig({
 	esbuildOptions(options) {
 		options.jsx = 'automatic';
 	},
-	// Copy CSS files to dist/ after build and create entry point CSS files
-	onSuccess: [
-		'cp -r src/styles dist/',
-		'printf "@import \'./styles/editor.css\';\\n" > dist/styles.css',
-		'printf "@import \'./styles/viewer.css\';\\n" > dist/viewer.css'
-	].join(' && ')
+	// Copy CSS files to dist/ after build
+	onSuccess: ['cp -r src/styles dist/', 'cp -r src/themes dist/'].join(' && ')
 });
