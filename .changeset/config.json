@@ -10,5 +10,5 @@
 	"access": "public",
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["@notra-editor/playground", "@notra-editor/editor"]
+	"ignore": ["@notra-editor/playground"]
 }

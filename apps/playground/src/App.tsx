@@ -4,9 +4,7 @@ import { useState } from 'react';
 import 'notra-editor/styles.css';
 
 function App() {
-	const [markdown, setMarkdown] = useState(
-		'# Hello World\n\nStart writing...'
-	);
+	const [markdown, setMarkdown] = useState('# Hello World\n\nStart writing...');
 
 	return (
 		<div className="h-screen">
