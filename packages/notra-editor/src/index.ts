@@ -1,3 +1,6 @@
+export { NotraEditor } from './core/editor';
+export { NotraViewer } from './core/viewer';
+
 export type {
 	NotraPlugin,
 	SlashCommandItem,

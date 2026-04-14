@@ -1,8 +1,8 @@
 import '../styles/editor.css';
 
-import { useEffect, useMemo, useRef } from 'react';
 import { Placeholder } from '@tiptap/extensions';
 import { EditorContent, EditorContext, useEditor } from '@tiptap/react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import {
 	collectExtensions,
@@ -12,18 +12,18 @@ import {
 	collectToolbarItems
 } from './create-editor';
 import { NotraEditorProvider } from './editor-context';
+import { getDictionary, I18nProvider } from '../i18n';
+import { cn } from '../lib/utils';
 import { buildMarkdownParser, buildMarkdownSerializer } from '../markdown';
 import { defaultPlugins } from '../plugins/default-plugins';
 import { SlashMenuExtension } from '../slash-menu/slash-extension';
 import { SlashMenu } from '../slash-menu/slash-menu';
+import { buildThemeStyle } from '../theme/theme-provider';
 import { FixedToolbar } from '../toolbar/fixed-toolbar';
 import { FloatingToolbar } from '../toolbar/floating-toolbar';
-import { buildThemeStyle } from '../theme/theme-provider';
-import { getDictionary, I18nProvider } from '../i18n';
-import { cn } from '../lib/utils';
 
-import type { NotraEditorProps } from '../types';
 import type { Locale } from '../i18n';
+import type { NotraEditorProps } from '../types';
 
 export function NotraEditor({
 	content = '',
@@ -56,10 +56,7 @@ export function NotraEditor({
 		() => collectFloatingToolbarItems(plugins),
 		[plugins]
 	);
-	const slashCommands = useMemo(
-		() => collectSlashCommands(plugins),
-		[plugins]
-	);
+	const slashCommands = useMemo(() => collectSlashCommands(plugins), [plugins]);
 
 	const editor = useEditor({
 		extensions,
@@ -113,9 +110,7 @@ export function NotraEditor({
 			<I18nProvider locale={locale as Locale}>
 				<EditorContext.Provider value={{ editor }}>
 					<NotraEditorProvider value={editor}>
-						{showFixed && (
-							<FixedToolbar editor={editor} items={toolbarItems} />
-						)}
+						{showFixed && <FixedToolbar editor={editor} items={toolbarItems} />}
 						<EditorContent className="relative" editor={editor} />
 						{showFloating && (
 							<FloatingToolbar editor={editor} items={floatingItems} />
