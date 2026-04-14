@@ -1,3 +1,9 @@
+.notra-editor {
+	font-family: var(--notra-font-family);
+	font-size: var(--notra-font-size);
+	line-height: var(--notra-line-height);
+}
+
 .notra-editor .tiptap {
 	white-space: pre-wrap;
 	outline: none;
