@@ -1,9 +1,23 @@
-import { Editor } from '@editor/core/editor';
+import { NotraEditor, defaultPlugins } from 'notra-editor';
+import { useState } from 'react';
 
-export function App() {
+import 'notra-editor/styles.css';
+
+function App() {
+	const [markdown, setMarkdown] = useState(
+		'# Hello World\n\nStart writing...'
+	);
+
 	return (
-		<div className="h-screen w-screen">
-			<Editor />
+		<div className="h-screen">
+			<NotraEditor
+				content={markdown}
+				plugins={defaultPlugins}
+				toolbar="both"
+				onChange={setMarkdown}
+			/>
 		</div>
 	);
 }
+
+export default App;

@@ -24,8 +24,7 @@
 
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"],
-			"@editor/*": ["../../packages/editor/*"]
+			"@/*": ["./src/*"]
 		}
 	},
 	"include": ["src"]

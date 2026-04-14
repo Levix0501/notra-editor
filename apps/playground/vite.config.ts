@@ -9,8 +9,7 @@ export default defineConfig({
 	plugins: [react(), tailwindcss()],
 	resolve: {
 		alias: {
-			'@': path.resolve(__dirname, './src'),
-			'@editor': path.resolve(__dirname, '../../packages/editor')
+			'@': path.resolve(__dirname, './src')
 		}
 	}
 });
