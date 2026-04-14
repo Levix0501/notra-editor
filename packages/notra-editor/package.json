@@ -1,0 +1,87 @@
+{
+	"name": "notra-editor",
+	"type": "module",
+	"version": "2.0.0-alpha.0",
+	"description": "A Markdown-first rich text editor with plugin system, built on Tiptap 3 and React 19",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Levix0501/notra-editor.git",
+		"directory": "packages/notra-editor"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"keywords": [
+		"tiptap",
+		"editor",
+		"markdown",
+		"rich-text",
+		"react",
+		"plugin"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./styles.css": "./dist/styles.css",
+		"./viewer.css": "./dist/viewer.css"
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=18"
+	},
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"peerDependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
+	},
+	"dependencies": {
+		"@floating-ui/react": "^0.27.17",
+		"@tiptap/core": "^3.19.0",
+		"@tiptap/extension-code-block-lowlight": "^3.19.0",
+		"@tiptap/extension-drag-handle": "^3.19.0",
+		"@tiptap/extension-drag-handle-react": "^3.19.0",
+		"@tiptap/extension-horizontal-rule": "^3.19.0",
+		"@tiptap/extension-link": "^3.19.0",
+		"@tiptap/extension-subscript": "^3.19.0",
+		"@tiptap/extension-superscript": "^3.19.0",
+		"@tiptap/extension-task-item": "^3.19.0",
+		"@tiptap/extension-task-list": "^3.19.0",
+		"@tiptap/extension-typography": "^3.19.0",
+		"@tiptap/extensions": "^3.19.0",
+		"@tiptap/pm": "^3.19.0",
+		"@tiptap/react": "^3.19.0",
+		"@tiptap/starter-kit": "^3.19.0",
+		"@tiptap/static-renderer": "^3.19.0",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"cmdk": "^1.1.1",
+		"lowlight": "^3.3.0",
+		"lucide-react": "^0.511.0",
+		"markdown-it": "^14.0.0",
+		"prosemirror-markdown": "^1.13.0",
+		"radix-ui": "^1.4.2",
+		"tailwind-merge": "^3.3.0"
+	},
+	"devDependencies": {
+		"@types/markdown-it": "^14.1.2",
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2",
+		"tsup": "^8.5.0",
+		"typescript": "^5",
+		"vitest": "^4.0.18"
+	}
+}
