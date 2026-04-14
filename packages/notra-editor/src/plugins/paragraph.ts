@@ -9,13 +9,13 @@ export const paragraphPlugin = definePlugin({
 				paragraph: (state, node) => {
 					state.renderInline(node);
 					state.closeBlock(node);
-				},
-			},
+				}
+			}
 		},
 		parser: {
 			tokens: {
-				paragraph: { block: 'paragraph' },
-			},
-		},
-	},
+				paragraph: { block: 'paragraph' }
+			}
+		}
+	}
 });

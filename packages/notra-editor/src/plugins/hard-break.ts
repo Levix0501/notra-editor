@@ -17,13 +17,13 @@ export const hardBreakPlugin = definePlugin({
 					if (!isTrailing) {
 						state.write('  \n');
 					}
-				},
-			},
+				}
+			}
 		},
 		parser: {
 			tokens: {
-				hardbreak: { node: 'hardBreak' },
-			},
-		},
-	},
+				hardbreak: { node: 'hardBreak' }
+			}
+		}
+	}
 });

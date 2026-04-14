@@ -1,5 +1,5 @@
-import { createElement } from 'react';
 import { Italic } from 'lucide-react';
+import { createElement } from 'react';
 
 import { definePlugin } from './define-plugin';
 
@@ -13,15 +13,15 @@ export const italicPlugin = definePlugin({
 					open: '*',
 					close: '*',
 					mixable: true,
-					expelEnclosingWhitespace: true,
-				},
-			},
+					expelEnclosingWhitespace: true
+				}
+			}
 		},
 		parser: {
 			tokens: {
-				em: { mark: 'italic' },
-			},
-		},
+				em: { mark: 'italic' }
+			}
+		}
 	},
 	floatingToolbarItems: [
 		{
@@ -34,7 +34,7 @@ export const italicPlugin = definePlugin({
 			command: (editor) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(editor.chain().focus() as any).toggleItalic().run();
-			},
-		},
-	],
+			}
+		}
+	]
 });

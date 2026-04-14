@@ -1,5 +1,5 @@
-import { createElement } from 'react';
 import { CodeXml } from 'lucide-react';
+import { createElement } from 'react';
 
 import { definePlugin } from './define-plugin';
 
@@ -12,15 +12,15 @@ export const codePlugin = definePlugin({
 				code: {
 					open: '`',
 					close: '`',
-					escape: false,
-				},
-			},
+					escape: false
+				}
+			}
 		},
 		parser: {
 			tokens: {
-				code_inline: { mark: 'code' },
-			},
-		},
+				code_inline: { mark: 'code' }
+			}
+		}
 	},
 	floatingToolbarItems: [
 		{
@@ -33,7 +33,7 @@ export const codePlugin = definePlugin({
 			command: (editor) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(editor.chain().focus() as any).toggleCode().run();
-			},
-		},
-	],
+			}
+		}
+	]
 });

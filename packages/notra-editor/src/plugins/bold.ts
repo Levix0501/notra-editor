@@ -1,5 +1,5 @@
-import { createElement } from 'react';
 import { Bold } from 'lucide-react';
+import { createElement } from 'react';
 
 import { definePlugin } from './define-plugin';
 
@@ -13,15 +13,15 @@ export const boldPlugin = definePlugin({
 					open: '**',
 					close: '**',
 					mixable: true,
-					expelEnclosingWhitespace: true,
-				},
-			},
+					expelEnclosingWhitespace: true
+				}
+			}
 		},
 		parser: {
 			tokens: {
-				strong: { mark: 'bold' },
-			},
-		},
+				strong: { mark: 'bold' }
+			}
+		}
 	},
 	floatingToolbarItems: [
 		{
@@ -34,7 +34,7 @@ export const boldPlugin = definePlugin({
 			command: (editor) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(editor.chain().focus() as any).toggleBold().run();
-			},
-		},
-	],
+			}
+		}
+	]
 });
