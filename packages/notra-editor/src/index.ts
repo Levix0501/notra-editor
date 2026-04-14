@@ -20,3 +20,5 @@ export {
 	collectFloatingToolbarItems,
 	collectMarkdownRules
 } from './core/create-editor';
+
+export { buildMarkdownSerializer, buildMarkdownParser } from './markdown';

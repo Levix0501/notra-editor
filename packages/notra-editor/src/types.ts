@@ -43,14 +43,12 @@ export interface TokenSpec {
 	block?: string;
 	node?: string;
 	mark?: string;
-	attrs?:
-		| Record<string, any>
-		| ((token: any, tokenStream: any, state: any) => Record<string, any>);
+	attrs?: Record<string, any> | null;
 	getAttrs?: (
 		token: any,
 		tokenStream: any,
-		state: any
-	) => Record<string, any> | false | null;
+		index: any
+	) => Record<string, any> | null;
 	ignore?: boolean;
 	noCloseToken?: boolean;
 }
