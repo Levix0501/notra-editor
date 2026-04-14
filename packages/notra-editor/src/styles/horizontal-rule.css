@@ -1,0 +1,9 @@
+.notra-editor {
+	hr {
+		border: none;
+		height: 1px;
+		background-color: var(--notra-hr);
+		margin-top: 2.25em;
+		margin-bottom: 2.25em;
+	}
+}
