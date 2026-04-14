@@ -7,9 +7,9 @@ import type {
 	TokenSpec,
 	MarkdownItPlugin
 } from '../types';
-import type { Extension } from '@tiptap/core';
+import type { AnyExtension } from '@tiptap/core';
 
-export function collectExtensions(plugins: NotraPlugin[]): Extension[] {
+export function collectExtensions(plugins: NotraPlugin[]): AnyExtension[] {
 	return plugins.flatMap((p) => p.extensions);
 }
 

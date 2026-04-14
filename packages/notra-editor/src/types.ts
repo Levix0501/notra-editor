@@ -1,4 +1,4 @@
-import type { Extension, Editor } from '@tiptap/core';
+import type { AnyExtension, Editor } from '@tiptap/core';
 import type { Node as PmNode } from '@tiptap/pm/model';
 import type { MarkdownSerializerState } from 'prosemirror-markdown';
 import type { ReactNode } from 'react';
@@ -61,7 +61,7 @@ export type MarkdownItPlugin = (md: any, ...args: any[]) => void;
 
 export interface NotraPlugin {
 	name: string;
-	extensions: Extension[];
+	extensions: AnyExtension[];
 	markdown?: {
 		serializer?: {
 			nodes?: Record<string, NodeSerializerFn>;
