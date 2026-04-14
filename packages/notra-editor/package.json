@@ -26,8 +26,14 @@
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		},
-		"./styles.css": "./dist/styles.css",
-		"./viewer.css": "./dist/viewer.css"
+		"./styles.css": "./dist/themes/obsidian-editor.css",
+		"./viewer.css": "./dist/themes/obsidian-viewer.css",
+		"./themes/obsidian-editor.css": "./dist/themes/obsidian-editor.css",
+		"./themes/obsidian-viewer.css": "./dist/themes/obsidian-viewer.css",
+		"./themes/github-editor.css": "./dist/themes/github-editor.css",
+		"./themes/github-viewer.css": "./dist/themes/github-viewer.css",
+		"./themes/notion-editor.css": "./dist/themes/notion-editor.css",
+		"./themes/notion-viewer.css": "./dist/themes/notion-viewer.css"
 	},
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
