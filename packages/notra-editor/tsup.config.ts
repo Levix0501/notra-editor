@@ -11,5 +11,5 @@ export default defineConfig({
 		options.jsx = 'automatic';
 	},
 	// Copy CSS files to dist/ after build
-	onSuccess: ['cp -r src/styles dist/', 'cp -r src/themes dist/'].join(' && ')
+	onSuccess: 'cp -r src/themes dist/'
 });

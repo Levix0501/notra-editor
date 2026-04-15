@@ -7,31 +7,35 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  /* Accent color (HSL-based, Obsidian purple) */
-  --accent-h: 258;
-  --accent-s: 88%;
-  --accent-l: 66%;
+	/* Accent color (HSL-based, Obsidian purple) */
+	--accent-h: 258;
+	--accent-s: 88%;
+	--accent-l: 66%;
 
-  --text-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
-  --text-on-accent: #fff;
+	--text-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+	--text-on-accent: #fff;
 
-  /* Semantic text colors */
-  --text-normal: #1a1a1a;
-  --text-muted: #666666;
-  --text-faint: #999999;
+	/* Semantic text colors */
+	--text-normal: #1a1a1a;
+	--text-muted: #666666;
+	--text-faint: #999999;
 
-  /* Backgrounds */
-  --background-primary: #ffffff;
-  --background-primary-alt: #f5f6f8;
-  --background-modifier-border: rgba(0, 0, 0, 0.08);
-  --background-modifier-hover: rgba(0, 0, 0, 0.04);
+	/* Backgrounds */
+	--background-primary: #ffffff;
+	--background-primary-alt: #f5f6f8;
+	--background-modifier-border: rgba(0, 0, 0, 0.08);
+	--background-modifier-hover: rgba(0, 0, 0, 0.04);
 
-  /* Interactive */
-  --interactive-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
-  --interactive-accent-hover: hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) - 6%));
+	/* Interactive */
+	--interactive-accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+	--interactive-accent-hover: hsl(
+		var(--accent-h),
+		var(--accent-s),
+		calc(var(--accent-l) - 6%)
+	);
 
-  /* Selection */
-  --selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.15);
+	/* Selection */
+	--selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.15);
 }
 
 /* --------------------------------------------
@@ -39,39 +43,43 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  --font-default: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-  --font-monospace: "SFMono-Regular", Consolas, "Cascadia Mono", "Roboto Mono", "DejaVu Sans Mono", monospace;
+	--font-default:
+		ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter,
+		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+	--font-monospace:
+		'SFMono-Regular', Consolas, 'Cascadia Mono', 'Roboto Mono',
+		'DejaVu Sans Mono', monospace;
 
-  --font-text-size: 16px;
-  --line-height-normal: 1.5;
-  --line-height-tight: 1.3;
+	--font-text-size: 16px;
+	--line-height-normal: 1.5;
+	--line-height-tight: 1.3;
 
-  --bold-modifier: 200;
+	--bold-modifier: 200;
 
-  /* Heading scales (Obsidian golden ratio) */
-  --h1-size: 1.618em;
-  --h2-size: 1.296em;
-  --h3-size: 1.114em;
-  --h4-size: 1em;
-  --h5-size: 1em;
-  --h6-size: 1em;
+	/* Heading scales (Obsidian golden ratio) */
+	--h1-size: 1.618em;
+	--h2-size: 1.296em;
+	--h3-size: 1.114em;
+	--h4-size: 1em;
+	--h5-size: 1em;
+	--h6-size: 1em;
 
-  --h1-weight: 700;
-  --h2-weight: 600;
-  --h3-weight: 600;
-  --h4-weight: 600;
-  --h5-weight: 600;
-  --h6-weight: 600;
+	--h1-weight: 700;
+	--h2-weight: 600;
+	--h3-weight: 600;
+	--h4-weight: 600;
+	--h5-weight: 600;
+	--h6-weight: 600;
 
-  --h1-line-height: var(--line-height-tight);
-  --h2-line-height: var(--line-height-tight);
-  --h3-line-height: var(--line-height-normal);
-  --h4-line-height: var(--line-height-normal);
+	--h1-line-height: var(--line-height-tight);
+	--h2-line-height: var(--line-height-tight);
+	--h3-line-height: var(--line-height-normal);
+	--h4-line-height: var(--line-height-normal);
 
-  --h1-letter-spacing: -0.015em;
-  --h2-letter-spacing: -0.01em;
-  --h3-letter-spacing: -0.005em;
-  --h4-letter-spacing: 0em;
+	--h1-letter-spacing: -0.015em;
+	--h2-letter-spacing: -0.01em;
+	--h3-letter-spacing: -0.005em;
+	--h4-letter-spacing: 0em;
 }
 
 /* --------------------------------------------
@@ -79,19 +87,19 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  --code-background: var(--background-primary-alt);
-  --code-normal: var(--text-normal);
-  --code-border: var(--background-modifier-border);
+	--code-background: var(--background-primary-alt);
+	--code-normal: var(--text-normal);
+	--code-border: var(--background-modifier-border);
 
-  /* Syntax highlighting (Obsidian-style) */
-  --code-comment: #5c6370;
-  --code-keyword: #c678dd;
-  --code-function: #61aeee;
-  --code-string: #98c379;
-  --code-number: #d19a66;
-  --code-tag: #e06c75;
-  --code-operator: #56b6c2;
-  --code-builtin: #e6c07b;
+	/* Syntax highlighting (Obsidian-style) */
+	--code-comment: #5c6370;
+	--code-keyword: #c678dd;
+	--code-function: #61aeee;
+	--code-string: #98c379;
+	--code-number: #d19a66;
+	--code-tag: #e06c75;
+	--code-operator: #56b6c2;
+	--code-builtin: #e6c07b;
 }
 
 /* --------------------------------------------
@@ -99,26 +107,26 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  /* Blockquote */
-  --blockquote-border-thickness: 2px;
-  --blockquote-border-color: var(--text-accent);
+	/* Blockquote */
+	--blockquote-border-thickness: 2px;
+	--blockquote-border-color: var(--text-accent);
 
-  /* Horizontal rule */
-  --hr-color: var(--background-modifier-border);
+	/* Horizontal rule */
+	--hr-color: var(--background-modifier-border);
 
-  /* Lists */
-  --list-marker-color: var(--text-faint);
+	/* Lists */
+	--list-marker-color: var(--text-faint);
 
-  /* Checklist */
-  --checklist-bg: var(--background-modifier-hover);
-  --checklist-bg-active: var(--text-normal);
-  --checklist-border: var(--background-modifier-border);
-  --checklist-border-active: var(--text-normal);
-  --checklist-check-icon: white;
-  --checklist-text-active: var(--text-muted);
+	/* Checklist */
+	--checklist-bg: var(--background-modifier-hover);
+	--checklist-bg-active: var(--text-normal);
+	--checklist-border: var(--background-modifier-border);
+	--checklist-border-active: var(--text-normal);
+	--checklist-check-icon: white;
+	--checklist-text-active: var(--text-muted);
 
-  /* Placeholder */
-  --placeholder-color: var(--text-faint);
+	/* Placeholder */
+	--placeholder-color: var(--text-faint);
 }
 
 /* --------------------------------------------
@@ -128,38 +136,46 @@
 /* Dark mode via .dark ancestor or class on editor itself */
 .dark .notra-editor,
 .notra-editor.dark {
-  --text-normal: #dadada;
-  --text-muted: #999999;
-  --text-faint: #666666;
+	--text-normal: #dadada;
+	--text-muted: #999999;
+	--text-faint: #666666;
 
-  --background-primary: #1e1e1e;
-  --background-primary-alt: #262626;
-  --background-modifier-border: rgba(255, 255, 255, 0.08);
-  --background-modifier-hover: rgba(255, 255, 255, 0.06);
+	--background-primary: #1e1e1e;
+	--background-primary-alt: #262626;
+	--background-modifier-border: rgba(255, 255, 255, 0.08);
+	--background-modifier-hover: rgba(255, 255, 255, 0.06);
 
-  --selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2);
-  --text-accent: hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 6%));
+	--selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2);
+	--text-accent: hsl(
+		var(--accent-h),
+		var(--accent-s),
+		calc(var(--accent-l) + 6%)
+	);
 
-  --checklist-check-icon: black;
+	--checklist-check-icon: black;
 }
 
 /* Dark mode via system preference (opt-out with .light class) */
 @media (prefers-color-scheme: dark) {
-  .notra-editor:not(.light) {
-    --text-normal: #dadada;
-    --text-muted: #999999;
-    --text-faint: #666666;
+	.notra-editor:not(.light) {
+		--text-normal: #dadada;
+		--text-muted: #999999;
+		--text-faint: #666666;
 
-    --background-primary: #1e1e1e;
-    --background-primary-alt: #262626;
-    --background-modifier-border: rgba(255, 255, 255, 0.08);
-    --background-modifier-hover: rgba(255, 255, 255, 0.06);
+		--background-primary: #1e1e1e;
+		--background-primary-alt: #262626;
+		--background-modifier-border: rgba(255, 255, 255, 0.08);
+		--background-modifier-hover: rgba(255, 255, 255, 0.06);
 
-    --selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2);
-    --text-accent: hsl(var(--accent-h), var(--accent-s), calc(var(--accent-l) + 6%));
+		--selection: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.2);
+		--text-accent: hsl(
+			var(--accent-h),
+			var(--accent-s),
+			calc(var(--accent-l) + 6%)
+		);
 
-    --checklist-check-icon: black;
-  }
+		--checklist-check-icon: black;
+	}
 }
 
 /* --------------------------------------------
@@ -167,44 +183,44 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  font-family: var(--font-default);
-  font-size: var(--font-text-size);
-  line-height: var(--line-height-normal);
+	font-family: var(--font-default);
+	font-size: var(--font-text-size);
+	line-height: var(--line-height-normal);
 }
 
 .notra-editor .tiptap {
-  white-space: pre-wrap;
-  outline: none;
-  color: var(--text-normal);
-  caret-color: var(--text-accent);
+	white-space: pre-wrap;
+	outline: none;
+	color: var(--text-normal);
+	caret-color: var(--text-accent);
 
-  & > * {
-    position: relative;
-  }
+	& > * {
+		position: relative;
+	}
 
-  &:not(.ProseMirror-hideselection) {
-    ::selection {
-      background-color: var(--selection);
-    }
+	&:not(.ProseMirror-hideselection) {
+		::selection {
+			background-color: var(--selection);
+		}
 
-    .selection::selection {
-      background: transparent;
-    }
-  }
+		.selection::selection {
+			background: transparent;
+		}
+	}
 
-  .selection {
-    display: inline;
-    background-color: var(--selection);
-  }
+	.selection {
+		display: inline;
+		background-color: var(--selection);
+	}
 
-  .ProseMirror-selectednode:not(img, pre, .react-renderer) {
-    border-radius: 0.375rem;
-    background-color: var(--selection);
-  }
+	.ProseMirror-selectednode:not(img, pre, .react-renderer) {
+		border-radius: 0.375rem;
+		background-color: var(--selection);
+	}
 
-  .ProseMirror-hideselection {
-    caret-color: transparent;
-  }
+	.ProseMirror-hideselection {
+		caret-color: transparent;
+	}
 }
 
 /* --------------------------------------------
@@ -212,73 +228,73 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    position: relative;
-    color: inherit;
-    font-style: inherit;
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		position: relative;
+		color: inherit;
+		font-style: inherit;
 
-    &:first-child {
-      margin-top: 0;
-    }
-  }
+		&:first-child {
+			margin-top: 0;
+		}
+	}
 
-  h1 {
-    margin-top: 0;
-    margin-bottom: 0.5em;
-    font-size: var(--h1-size);
-    font-weight: var(--h1-weight);
-    line-height: var(--h1-line-height);
-    letter-spacing: var(--h1-letter-spacing);
-  }
+	h1 {
+		margin-top: 0;
+		margin-bottom: 0.5em;
+		font-size: var(--h1-size);
+		font-weight: var(--h1-weight);
+		line-height: var(--h1-line-height);
+		letter-spacing: var(--h1-letter-spacing);
+	}
 
-  h2 {
-    margin-top: 1.6em;
-    margin-bottom: 0.5em;
-    font-size: var(--h2-size);
-    font-weight: var(--h2-weight);
-    line-height: var(--h2-line-height);
-    letter-spacing: var(--h2-letter-spacing);
-  }
+	h2 {
+		margin-top: 1.6em;
+		margin-bottom: 0.5em;
+		font-size: var(--h2-size);
+		font-weight: var(--h2-weight);
+		line-height: var(--h2-line-height);
+		letter-spacing: var(--h2-letter-spacing);
+	}
 
-  h3 {
-    margin-top: 1.4em;
-    margin-bottom: 0.4em;
-    font-size: var(--h3-size);
-    font-weight: var(--h3-weight);
-    line-height: var(--h3-line-height);
-    letter-spacing: var(--h3-letter-spacing);
-  }
+	h3 {
+		margin-top: 1.4em;
+		margin-bottom: 0.4em;
+		font-size: var(--h3-size);
+		font-weight: var(--h3-weight);
+		line-height: var(--h3-line-height);
+		letter-spacing: var(--h3-letter-spacing);
+	}
 
-  h4 {
-    margin-top: 1.2em;
-    margin-bottom: 0.3em;
-    font-size: var(--h4-size);
-    font-weight: var(--h4-weight);
-    line-height: var(--h4-line-height);
-    letter-spacing: var(--h4-letter-spacing);
-  }
+	h4 {
+		margin-top: 1.2em;
+		margin-bottom: 0.3em;
+		font-size: var(--h4-size);
+		font-weight: var(--h4-weight);
+		line-height: var(--h4-line-height);
+		letter-spacing: var(--h4-letter-spacing);
+	}
 
-  h5 {
-    margin-top: 1.2em;
-    margin-bottom: 0.3em;
-    font-size: var(--h5-size);
-    font-weight: var(--h5-weight);
-    line-height: var(--line-height-normal);
-  }
+	h5 {
+		margin-top: 1.2em;
+		margin-bottom: 0.3em;
+		font-size: var(--h5-size);
+		font-weight: var(--h5-weight);
+		line-height: var(--line-height-normal);
+	}
 
-  h6 {
-    margin-top: 1.2em;
-    margin-bottom: 0.3em;
-    font-size: var(--h6-size);
-    font-weight: var(--h6-weight);
-    line-height: var(--line-height-normal);
-    color: var(--text-muted);
-  }
+	h6 {
+		margin-top: 1.2em;
+		margin-bottom: 0.3em;
+		font-size: var(--h6-size);
+		font-weight: var(--h6-weight);
+		line-height: var(--line-height-normal);
+		color: var(--text-muted);
+	}
 }
 
 /* --------------------------------------------
@@ -286,42 +302,47 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  p:not(:first-child) {
-    font-size: 1rem;
-    line-height: 1.6;
-    font-weight: normal;
-    margin-top: 1.25em;
-  }
+	p:not(:first-child) {
+		font-size: 1rem;
+		line-height: 1.6;
+		font-weight: normal;
+		margin-top: 1.25em;
+	}
 
-  strong {
-    font-weight: calc(400 + var(--bold-modifier));
-  }
+	strong {
+		font-weight: calc(400 + var(--bold-modifier));
+	}
 
-  em {
-    font-style: italic;
-  }
+	em {
+		font-style: italic;
+	}
 
-  a {
-    color: var(--text-accent);
-    text-decoration: underline;
-    text-decoration-color: hsla(var(--accent-h), var(--accent-s), var(--accent-l), 0.3);
-  }
+	a {
+		color: var(--text-accent);
+		text-decoration: underline;
+		text-decoration-color: hsla(
+			var(--accent-h),
+			var(--accent-s),
+			var(--accent-l),
+			0.3
+		);
+	}
 
-  a:hover {
-    text-decoration-color: var(--text-accent);
-  }
+	a:hover {
+		text-decoration-color: var(--text-accent);
+	}
 
-  a span {
-    text-decoration: underline;
-  }
+	a span {
+		text-decoration: underline;
+	}
 
-  s span {
-    text-decoration: line-through;
-  }
+	s span {
+		text-decoration: line-through;
+	}
 
-  u span {
-    text-decoration: underline;
-  }
+	u span {
+		text-decoration: underline;
+	}
 }
 
 /* --------------------------------------------
@@ -329,137 +350,137 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  ol,
-  ul {
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
-    padding-left: 1.5em;
+	ol,
+	ul {
+		margin-top: 1.5em;
+		margin-bottom: 1.5em;
+		padding-left: 1.5em;
 
-    &:first-child {
-      margin-top: 0;
-    }
+		&:first-child {
+			margin-top: 0;
+		}
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+		&:last-child {
+			margin-bottom: 0;
+		}
 
-    ol,
-    ul {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-  }
+		ol,
+		ul {
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+	}
 
-  li {
-    p {
-      margin-top: 0;
-      line-height: 1.6;
-    }
-  }
+	li {
+		p {
+			margin-top: 0;
+			line-height: 1.6;
+		}
+	}
 
-  ol {
-    list-style: decimal;
+	ol {
+		list-style: decimal;
 
-    ol {
-      list-style: lower-alpha;
+		ol {
+			list-style: lower-alpha;
 
-      ol {
-        list-style: lower-roman;
-      }
-    }
-  }
+			ol {
+				list-style: lower-roman;
+			}
+		}
+	}
 
-  ul:not([data-type='taskList']) {
-    list-style: disc;
+	ul:not([data-type='taskList']) {
+		list-style: disc;
 
-    ul {
-      list-style: circle;
+		ul {
+			list-style: circle;
 
-      ul {
-        list-style: square;
-      }
-    }
-  }
+			ul {
+				list-style: square;
+			}
+		}
+	}
 
-  ul[data-type='taskList'] {
-    padding-left: 0.25em;
+	ul[data-type='taskList'] {
+		padding-left: 0.25em;
 
-    li {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
+		li {
+			display: flex;
+			flex-direction: row;
+			align-items: flex-start;
 
-      &:not(:has(> p:first-child)) {
-        list-style-type: none;
-      }
+			&:not(:has(> p:first-child)) {
+				list-style-type: none;
+			}
 
-      &[data-checked='true'] {
-        > div > p {
-          opacity: 0.5;
-          text-decoration: line-through;
-        }
+			&[data-checked='true'] {
+				> div > p {
+					opacity: 0.5;
+					text-decoration: line-through;
+				}
 
-        > div > p span {
-          text-decoration: line-through;
-        }
-      }
+				> div > p span {
+					text-decoration: line-through;
+				}
+			}
 
-      label {
-        position: relative;
-        padding-top: 0.375rem;
-        padding-right: 0.5rem;
+			label {
+				position: relative;
+				padding-top: 0.375rem;
+				padding-right: 0.5rem;
 
-        input[type='checkbox'] {
-          position: absolute;
-          opacity: 0;
-          width: 0;
-          height: 0;
-        }
+				input[type='checkbox'] {
+					position: absolute;
+					opacity: 0;
+					width: 0;
+					height: 0;
+				}
 
-        span {
-          display: block;
-          width: 1em;
-          height: 1em;
-          border: 1px solid var(--checklist-border);
-          border-radius: 0.25rem;
-          position: relative;
-          cursor: pointer;
-          background-color: var(--checklist-bg);
-          transition:
-            background-color 80ms ease-out,
-            border-color 80ms ease-out;
+				span {
+					display: block;
+					width: 1em;
+					height: 1em;
+					border: 1px solid var(--checklist-border);
+					border-radius: 0.25rem;
+					position: relative;
+					cursor: pointer;
+					background-color: var(--checklist-bg);
+					transition:
+						background-color 80ms ease-out,
+						border-color 80ms ease-out;
 
-          &::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 0.75em;
-            height: 0.75em;
-            background-color: var(--checklist-check-icon);
-            opacity: 0;
-            mask: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22currentColor%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M21.4142%204.58579C22.1953%205.36683%2022.1953%206.63317%2021.4142%207.41421L10.4142%2018.4142C9.63317%2019.1953%208.36684%2019.1953%207.58579%2018.4142L2.58579%2013.4142C1.80474%2012.6332%201.80474%2011.3668%202.58579%2010.5858C3.36683%209.80474%204.63317%209.80474%205.41421%2010.5858L9%2014.1716L18.5858%204.58579C19.3668%203.80474%2020.6332%203.80474%2021.4142%204.58579Z%22%20fill%3D%22currentColor%22%2F%3E%3C%2Fsvg%3E')
-              center / contain no-repeat;
-          }
-        }
+					&::before {
+						content: '';
+						position: absolute;
+						left: 50%;
+						top: 50%;
+						transform: translate(-50%, -50%);
+						width: 0.75em;
+						height: 0.75em;
+						background-color: var(--checklist-check-icon);
+						opacity: 0;
+						mask: url('data:image/svg+xml,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22currentColor%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M21.4142%204.58579C22.1953%205.36683%2022.1953%206.63317%2021.4142%207.41421L10.4142%2018.4142C9.63317%2019.1953%208.36684%2019.1953%207.58579%2018.4142L2.58579%2013.4142C1.80474%2012.6332%201.80474%2011.3668%202.58579%2010.5858C3.36683%209.80474%204.63317%209.80474%205.41421%2010.5858L9%2014.1716L18.5858%204.58579C19.3668%203.80474%2020.6332%203.80474%2021.4142%204.58579Z%22%20fill%3D%22currentColor%22%2F%3E%3C%2Fsvg%3E')
+							center / contain no-repeat;
+					}
+				}
 
-        input[type='checkbox']:checked + span {
-          background: var(--checklist-bg-active);
-          border-color: var(--checklist-border-active);
+				input[type='checkbox']:checked + span {
+					background: var(--checklist-bg-active);
+					border-color: var(--checklist-border-active);
 
-          &::before {
-            opacity: 1;
-          }
-        }
-      }
+					&::before {
+						opacity: 1;
+					}
+				}
+			}
 
-      div {
-        flex: 1 1 0%;
-        min-width: 0;
-      }
-    }
-  }
+			div {
+				flex: 1 1 0%;
+				min-width: 0;
+			}
+		}
+	}
 }
 
 /* --------------------------------------------
@@ -467,57 +488,57 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  /* Inline code */
-  code {
-    background-color: var(--code-background);
-    color: var(--code-normal);
-    border: 1px solid var(--code-border);
-    font-family: var(--font-monospace);
-    font-size: 0.875em;
-    line-height: 1.4;
-    border-radius: 0.25rem;
-    padding: 0.15em 0.3em;
-  }
+	/* Inline code */
+	code {
+		background-color: var(--code-background);
+		color: var(--code-normal);
+		border: 1px solid var(--code-border);
+		font-family: var(--font-monospace);
+		font-size: 0.875em;
+		line-height: 1.4;
+		border-radius: 0.25rem;
+		padding: 0.15em 0.3em;
+	}
 
-  /* Code blocks */
-  pre {
-    background-color: var(--code-background);
-    color: var(--code-normal);
-    border: 1px solid var(--code-border);
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
-    padding: 1em;
-    font-size: 0.875em;
-    border-radius: 0.375rem;
-    overflow-x: auto;
-    line-height: 1.6;
+	/* Code blocks */
+	pre {
+		background-color: var(--code-background);
+		color: var(--code-normal);
+		border: 1px solid var(--code-border);
+		margin-top: 1.5em;
+		margin-bottom: 1.5em;
+		padding: 1em;
+		font-size: 0.875em;
+		border-radius: 0.375rem;
+		overflow-x: auto;
+		line-height: 1.6;
 
-    code {
-      background-color: transparent;
-      border: none;
-      border-radius: 0;
-      color: inherit;
-      padding: 0;
-      font-size: inherit;
-    }
-  }
+		code {
+			background-color: transparent;
+			border: none;
+			border-radius: 0;
+			color: inherit;
+			padding: 0;
+			font-size: inherit;
+		}
+	}
 }
 
 /* Syntax highlighting (Obsidian-style tokens) */
 .notra-editor .hljs {
-  color: var(--code-normal);
+	color: var(--code-normal);
 }
 
 .notra-editor .hljs-comment,
 .notra-editor .hljs-quote {
-  color: var(--code-comment);
-  font-style: italic;
+	color: var(--code-comment);
+	font-style: italic;
 }
 
 .notra-editor .hljs-doctag,
 .notra-editor .hljs-keyword,
 .notra-editor .hljs-formula {
-  color: var(--code-keyword);
+	color: var(--code-keyword);
 }
 
 .notra-editor .hljs-section,
@@ -525,11 +546,11 @@
 .notra-editor .hljs-selector-tag,
 .notra-editor .hljs-deletion,
 .notra-editor .hljs-subst {
-  color: var(--code-tag);
+	color: var(--code-tag);
 }
 
 .notra-editor .hljs-literal {
-  color: var(--code-operator);
+	color: var(--code-operator);
 }
 
 .notra-editor .hljs-string,
@@ -537,7 +558,7 @@
 .notra-editor .hljs-addition,
 .notra-editor .hljs-attribute,
 .notra-editor .hljs-meta .hljs-string {
-  color: var(--code-string);
+	color: var(--code-string);
 }
 
 .notra-editor .hljs-attr,
@@ -548,7 +569,7 @@
 .notra-editor .hljs-selector-attr,
 .notra-editor .hljs-selector-pseudo,
 .notra-editor .hljs-number {
-  color: var(--code-number);
+	color: var(--code-number);
 }
 
 .notra-editor .hljs-symbol,
@@ -557,25 +578,25 @@
 .notra-editor .hljs-meta,
 .notra-editor .hljs-selector-id,
 .notra-editor .hljs-title {
-  color: var(--code-function);
+	color: var(--code-function);
 }
 
 .notra-editor .hljs-built_in,
 .notra-editor .hljs-title.class_,
 .notra-editor .hljs-class .hljs-title {
-  color: var(--code-builtin);
+	color: var(--code-builtin);
 }
 
 .notra-editor .hljs-emphasis {
-  font-style: italic;
+	font-style: italic;
 }
 
 .notra-editor .hljs-strong {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 .notra-editor .hljs-link {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 
 /* --------------------------------------------
@@ -583,30 +604,30 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  blockquote {
-    position: relative;
-    padding-left: 1em;
-    padding-top: 0.375em;
-    padding-bottom: 0.375em;
-    margin: 1.5rem 0;
+	blockquote {
+		position: relative;
+		padding-left: 1em;
+		padding-top: 0.375em;
+		padding-bottom: 0.375em;
+		margin: 1.5rem 0;
 
-    p {
-      margin-top: 0;
-    }
+		p {
+			margin-top: 0;
+		}
 
-    /* Decorative left bar via pseudo-element */
-    &::before {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: var(--blockquote-border-thickness);
-      background-color: var(--blockquote-border-color);
-      content: '';
-      border-radius: var(--blockquote-border-thickness);
-    }
-  }
+		/* Decorative left bar via pseudo-element */
+		&::before {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: var(--blockquote-border-thickness);
+			background-color: var(--blockquote-border-color);
+			content: '';
+			border-radius: var(--blockquote-border-thickness);
+		}
+	}
 }
 
 /* --------------------------------------------
@@ -614,11 +635,11 @@
  * -------------------------------------------- */
 
 .notra-editor {
-  hr {
-    border: none;
-    height: 1px;
-    background-color: var(--hr-color);
-    margin-top: 2.25em;
-    margin-bottom: 2.25em;
-  }
+	hr {
+		border: none;
+		height: 1px;
+		background-color: var(--hr-color);
+		margin-top: 2.25em;
+		margin-bottom: 2.25em;
+	}
 }
