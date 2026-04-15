@@ -6,7 +6,6 @@ export type {
 	SlashCommandItem,
 	ToolbarItem,
 	ToolbarDropdownItem,
-	NotraTheme,
 	NotraEditorProps,
 	NotraViewerProps,
 	NodeSerializerFn,
@@ -27,8 +26,6 @@ export {
 export { buildMarkdownSerializer, buildMarkdownParser } from './markdown';
 
 export { defaultPlugins } from './plugins/default-plugins';
-
-export { buildThemeStyle } from './theme/theme-provider';
 
 export { FixedToolbar } from './toolbar/fixed-toolbar';
 export type { FixedToolbarProps } from './toolbar/fixed-toolbar';
