@@ -110,45 +110,12 @@ export interface ToolbarDropdownItem {
 	command: (editor: Editor) => void;
 }
 
-// --- Theme types ---
-
-export interface NotraTheme {
-	fontFamily?: string;
-	fontSize?: string;
-	lineHeight?: string;
-	borderRadius?: string;
-	bg?: string;
-	text?: string;
-	textSecondary?: string;
-	border?: string;
-	selection?: string;
-	primary?: string;
-	primaryHover?: string;
-	toolbarBg?: string;
-	toolbarBorder?: string;
-	toolbarButtonHover?: string;
-	toolbarButtonActive?: string;
-	codeBg?: string;
-	codeText?: string;
-	codeblockBg?: string;
-	codeblockText?: string;
-	blockquoteBar?: string;
-	blockquoteBg?: string;
-	link?: string;
-	hr?: string;
-	menuBg?: string;
-	menuShadow?: string;
-	menuItemHover?: string;
-	placeholder?: string;
-}
-
 // --- Component props ---
 
 export interface NotraEditorProps {
 	content?: string;
 	onChange?: (markdown: string) => void;
 	plugins?: NotraPlugin[];
-	theme?: Partial<NotraTheme>;
 	locale?: string;
 	editable?: boolean;
 	toolbar?: 'fixed' | 'floating' | 'both' | 'none';
@@ -159,6 +126,5 @@ export interface NotraEditorProps {
 export interface NotraViewerProps {
 	content: string;
 	plugins?: NotraPlugin[];
-	theme?: Partial<NotraTheme>;
 	className?: string;
 }
