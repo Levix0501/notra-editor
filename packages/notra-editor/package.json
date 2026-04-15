@@ -26,8 +26,6 @@
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		},
-		"./styles.css": "./dist/themes/obsidian-editor.css",
-		"./viewer.css": "./dist/themes/obsidian-reader.css",
 		"./themes/obsidian.css": "./dist/themes/obsidian.css",
 		"./themes/obsidian-editor.css": "./dist/themes/obsidian-editor.css",
 		"./themes/obsidian-reader.css": "./dist/themes/obsidian-reader.css"

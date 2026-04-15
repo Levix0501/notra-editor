@@ -1,7 +1,7 @@
 import { NotraEditor, defaultPlugins } from 'notra-editor';
 import { useState } from 'react';
 
-import 'notra-editor/styles.css';
+import 'notra-editor/themes/obsidian-editor.css';
 
 function App() {
 	const [markdown, setMarkdown] = useState('# Hello World\n\nStart writing...');
