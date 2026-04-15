@@ -1,2 +1,14 @@
-@import '../styles/editor.css';
-@import './_obsidian-vars.css';
+@import './obsidian.css';
+
+/* ============================================
+ * Editor-specific styles
+ * ============================================ */
+
+/* Placeholder text for empty paragraphs */
+.notra-editor .tiptap p.is-empty::before {
+  color: var(--placeholder-color);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
