@@ -231,22 +231,21 @@ export function SlashMenu({ commands, editor }: SlashMenuProps) {
 				'notra-slash-menu',
 				'z-50 w-64 overflow-y-auto rounded-lg border p-1',
 				'max-h-80',
-				'border-[var(--notra-toolbar-border)] bg-[var(--notra-menu-bg)]',
-				'shadow-lg',
-				'dark:bg-[var(--notra-menu-bg)] dark:border-[var(--notra-toolbar-border)]'
+				'border-border bg-popover',
+				'shadow-lg'
 			)}
 			role="listbox"
 			style={floatingStyles}
 		>
 			{flatItems.length === 0 ? (
-				<div className="px-3 py-2 text-sm text-[var(--notra-text-secondary)]">
+				<div className="px-3 py-2 text-sm text-muted-foreground">
 					No commands found.
 				</div>
 			) : (
 				Object.entries(grouped).map(([group, cmds]) => (
 					<div key={group || '__default'}>
 						{group && (
-							<div className="px-2 py-1.5 text-xs font-semibold text-[var(--notra-text-secondary)]">
+							<div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
 								{group}
 							</div>
 						)}
@@ -260,9 +259,9 @@ export function SlashMenu({ commands, editor }: SlashMenuProps) {
 									aria-selected={isSelected}
 									className={cn(
 										'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm',
-										'text-[var(--notra-text)]',
-										'hover:bg-[var(--notra-menu-item-hover)]',
-										isSelected && 'bg-[var(--notra-menu-item-hover)]'
+										'text-popover-foreground',
+										'hover:bg-accent hover:text-accent-foreground',
+										isSelected && 'bg-accent text-accent-foreground'
 									)}
 									data-selected={isSelected}
 									role="option"
@@ -280,7 +279,7 @@ export function SlashMenu({ commands, editor }: SlashMenuProps) {
 									<div className="flex flex-col">
 										<span>{cmd.name}</span>
 										{cmd.description && (
-											<span className="text-xs text-[var(--notra-text-secondary)]">
+											<span className="text-xs text-muted-foreground">
 												{cmd.description}
 											</span>
 										)}
