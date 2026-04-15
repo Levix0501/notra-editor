@@ -153,6 +153,16 @@
 	);
 
 	--checklist-check-icon: black;
+
+	/* Code syntax colors for dark backgrounds */
+	--code-comment: #7f848e;
+	--code-keyword: #c678dd;
+	--code-function: #61aeee;
+	--code-string: #98c379;
+	--code-number: #d19a66;
+	--code-tag: #e06c75;
+	--code-operator: #56b6c2;
+	--code-builtin: #e6c07b;
 }
 
 /* Dark mode via system preference (opt-out with .light class) */
@@ -175,6 +185,16 @@
 		);
 
 		--checklist-check-icon: black;
+
+		/* Code syntax colors for dark backgrounds */
+		--code-comment: #7f848e;
+		--code-keyword: #c678dd;
+		--code-function: #61aeee;
+		--code-string: #98c379;
+		--code-number: #d19a66;
+		--code-tag: #e06c75;
+		--code-operator: #56b6c2;
+		--code-builtin: #e6c07b;
 	}
 }
 
