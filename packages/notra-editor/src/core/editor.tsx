@@ -1,5 +1,3 @@
-import '../styles/editor.css';
-
 import { Placeholder } from '@tiptap/extensions';
 import { EditorContent, EditorContext, useEditor } from '@tiptap/react';
 import { useEffect, useMemo, useRef } from 'react';
@@ -18,7 +16,6 @@ import { buildMarkdownParser, buildMarkdownSerializer } from '../markdown';
 import { defaultPlugins } from '../plugins/default-plugins';
 import { SlashMenuExtension } from '../slash-menu/slash-extension';
 import { SlashMenu } from '../slash-menu/slash-menu';
-import { buildThemeStyle } from '../theme/theme-provider';
 import { FixedToolbar } from '../toolbar/fixed-toolbar';
 import { FloatingToolbar } from '../toolbar/floating-toolbar';
 
@@ -29,7 +26,6 @@ export function NotraEditor({
 	content = '',
 	onChange,
 	plugins = defaultPlugins,
-	theme,
 	locale = 'en',
 	editable = true,
 	toolbar = 'both',
@@ -101,12 +97,11 @@ export function NotraEditor({
 		contentInitialized.current = true;
 	}, [editor, content, markdownRules]);
 
-	const themeStyle = useMemo(() => buildThemeStyle(theme), [theme]);
 	const showFixed = toolbar === 'fixed' || toolbar === 'both';
 	const showFloating = toolbar === 'floating' || toolbar === 'both';
 
 	return (
-		<div className={cn('notra-editor', className)} style={themeStyle}>
+		<div className={cn('notra-editor', className)}>
 			<I18nProvider locale={locale as Locale}>
 				<EditorContext.Provider value={{ editor }}>
 					<NotraEditorProvider value={editor}>
