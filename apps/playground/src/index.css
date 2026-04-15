@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@source "../../../packages/notra-editor/src";
 
 body {
 	margin: 0;

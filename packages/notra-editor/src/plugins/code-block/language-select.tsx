@@ -201,16 +201,16 @@ export function LanguageSelect({
 			<PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
 				<Button
 					aria-expanded={open}
-					className="justify-between"
+					className="nta:justify-between"
 					role="combobox"
 					size="sm"
 					variant="ghost"
 				>
 					{currentLabel}
-					<ChevronDown className="opacity-50" />
+					<ChevronDown className="nta:opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent align="start" className="w-[200px] p-0">
+			<PopoverContent align="start" className="nta:w-[200px] nta:p-0">
 				<Command>
 					<CommandInput placeholder="Search language..." />
 					<CommandList>
@@ -228,8 +228,8 @@ export function LanguageSelect({
 									{lang.label}
 									<Check
 										className={cn(
-											'ml-auto',
-											language === lang.value ? 'opacity-100' : 'opacity-0'
+											'nta:ml-auto',
+											language === lang.value ? 'nta:opacity-100' : 'nta:opacity-0'
 										)}
 									/>
 								</CommandItem>

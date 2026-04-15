@@ -229,23 +229,23 @@ export function SlashMenu({ commands, editor }: SlashMenuProps) {
 			}}
 			className={cn(
 				'notra-slash-menu',
-				'z-50 w-64 overflow-y-auto rounded-lg border p-1',
-				'max-h-80',
-				'border-border bg-popover',
-				'shadow-lg'
+				'nta:z-50 nta:w-64 nta:overflow-y-auto nta:rounded-lg nta:border nta:p-1',
+				'nta:max-h-80',
+				'nta:border-border nta:bg-popover',
+				'nta:shadow-lg'
 			)}
 			role="listbox"
 			style={floatingStyles}
 		>
 			{flatItems.length === 0 ? (
-				<div className="px-3 py-2 text-sm text-muted-foreground">
+				<div className="nta:px-3 nta:py-2 nta:text-sm nta:text-muted-foreground">
 					No commands found.
 				</div>
 			) : (
 				Object.entries(grouped).map(([group, cmds]) => (
 					<div key={group || '__default'}>
 						{group && (
-							<div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+							<div className="nta:px-2 nta:py-1.5 nta:text-xs nta:font-semibold nta:text-muted-foreground">
 								{group}
 							</div>
 						)}
@@ -258,10 +258,10 @@ export function SlashMenu({ commands, editor }: SlashMenuProps) {
 									key={cmd.name}
 									aria-selected={isSelected}
 									className={cn(
-										'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm',
-										'text-popover-foreground',
-										'hover:bg-accent hover:text-accent-foreground',
-										isSelected && 'bg-accent text-accent-foreground'
+										'nta:flex nta:w-full nta:items-center nta:gap-2 nta:rounded-md nta:px-2 nta:py-1.5 nta:text-left nta:text-sm',
+										'nta:text-popover-foreground',
+										'hover:nta:bg-accent hover:nta:text-accent-foreground',
+										isSelected && 'nta:bg-accent nta:text-accent-foreground'
 									)}
 									data-selected={isSelected}
 									role="option"
@@ -272,14 +272,14 @@ export function SlashMenu({ commands, editor }: SlashMenuProps) {
 									onMouseDown={(e) => e.preventDefault()}
 								>
 									{cmd.icon && (
-										<span className="flex h-5 w-5 shrink-0 items-center justify-center">
+										<span className="nta:flex nta:h-5 nta:w-5 nta:shrink-0 nta:items-center nta:justify-center">
 											{cmd.icon}
 										</span>
 									)}
-									<div className="flex flex-col">
+									<div className="nta:flex nta:flex-col">
 										<span>{cmd.name}</span>
 										{cmd.description && (
-											<span className="text-xs text-muted-foreground">
+											<span className="nta:text-xs nta:text-muted-foreground">
 												{cmd.description}
 											</span>
 										)}

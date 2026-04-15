@@ -18,7 +18,7 @@ function Command({
 	return (
 		<CommandPrimitive
 			className={cn(
-				'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
+				'nta:bg-popover nta:text-popover-foreground nta:flex nta:h-full nta:w-full nta:flex-col nta:overflow-hidden nta:rounded-md',
 				className
 			)}
 			data-slot="command"
@@ -42,15 +42,15 @@ function CommandDialog({
 }) {
 	return (
 		<Dialog {...props}>
-			<DialogHeader className="sr-only">
+			<DialogHeader className="nta:sr-only">
 				<DialogTitle>{title}</DialogTitle>
 				<DialogDescription>{description}</DialogDescription>
 			</DialogHeader>
 			<DialogContent
-				className={cn('overflow-hidden p-0', className)}
+				className={cn('nta:overflow-hidden nta:p-0', className)}
 				showCloseButton={showCloseButton}
 			>
-				<Command className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+				<Command className="[&_[cmdk-group-heading]]:nta:text-muted-foreground **:data-[slot=command-input-wrapper]:nta:h-12 [&_[cmdk-group-heading]]:nta:px-2 [&_[cmdk-group-heading]]:nta:font-medium [&_[cmdk-group]]:nta:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:nta:pt-0 [&_[cmdk-input-wrapper]_svg]:nta:h-5 [&_[cmdk-input-wrapper]_svg]:nta:w-5 [&_[cmdk-input]]:nta:h-12 [&_[cmdk-item]]:nta:px-2 [&_[cmdk-item]]:nta:py-3 [&_[cmdk-item]_svg]:nta:h-5 [&_[cmdk-item]_svg]:nta:w-5">
 					{children}
 				</Command>
 			</DialogContent>
@@ -64,13 +64,13 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
 	return (
 		<div
-			className="flex h-9 items-center gap-2 border-b px-3"
+			className="nta:flex nta:h-9 nta:items-center nta:gap-2 nta:border-b nta:px-3"
 			data-slot="command-input-wrapper"
 		>
-			<SearchIcon className="size-4 shrink-0 opacity-50" />
+			<SearchIcon className="nta:size-4 nta:shrink-0 nta:opacity-50" />
 			<CommandPrimitive.Input
 				className={cn(
-					'placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+					'placeholder:nta:text-muted-foreground nta:flex nta:h-10 nta:w-full nta:rounded-md nta:bg-transparent nta:py-3 nta:text-sm nta:outline-hidden disabled:nta:cursor-not-allowed disabled:nta:opacity-50',
 					className
 				)}
 				data-slot="command-input"
@@ -87,7 +87,7 @@ function CommandList({
 	return (
 		<CommandPrimitive.List
 			className={cn(
-				'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
+				'nta:max-h-[300px] nta:scroll-py-1 nta:overflow-x-hidden nta:overflow-y-auto',
 				className
 			)}
 			data-slot="command-list"
@@ -101,7 +101,7 @@ function CommandEmpty({
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
 	return (
 		<CommandPrimitive.Empty
-			className="py-6 text-center text-sm"
+			className="nta:py-6 nta:text-center nta:text-sm"
 			data-slot="command-empty"
 			{...props}
 		/>
@@ -115,7 +115,7 @@ function CommandGroup({
 	return (
 		<CommandPrimitive.Group
 			className={cn(
-				'text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+				'nta:text-foreground [&_[cmdk-group-heading]]:nta:text-muted-foreground nta:overflow-hidden nta:p-1 [&_[cmdk-group-heading]]:nta:px-2 [&_[cmdk-group-heading]]:nta:py-1.5 [&_[cmdk-group-heading]]:nta:text-xs [&_[cmdk-group-heading]]:nta:font-medium',
 				className
 			)}
 			data-slot="command-group"
@@ -130,7 +130,7 @@ function CommandSeparator({
 }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
 	return (
 		<CommandPrimitive.Separator
-			className={cn('bg-border -mx-1 h-px', className)}
+			className={cn('nta:bg-border nta:-mx-1 nta:h-px', className)}
 			data-slot="command-separator"
 			{...props}
 		/>
@@ -144,7 +144,7 @@ function CommandItem({
 	return (
 		<CommandPrimitive.Item
 			className={cn(
-				"data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				"data-[selected=true]:nta:bg-accent data-[selected=true]:nta:text-accent-foreground [&_svg:not([class*='text-'])]:nta:text-muted-foreground nta:relative nta:flex nta:cursor-default nta:items-center nta:gap-2 nta:rounded-sm nta:px-2 nta:py-1.5 nta:text-sm nta:outline-hidden nta:select-none data-[disabled=true]:nta:pointer-events-none data-[disabled=true]:nta:opacity-50 [&_svg]:nta:pointer-events-none [&_svg]:nta:shrink-0 [&_svg:not([class*='size-'])]:nta:size-4",
 				className
 			)}
 			data-slot="command-item"
@@ -160,7 +160,7 @@ function CommandShortcut({
 	return (
 		<span
 			className={cn(
-				'text-muted-foreground ml-auto text-xs tracking-widest',
+				'nta:text-muted-foreground nta:ml-auto nta:text-xs nta:tracking-widest',
 				className
 			)}
 			data-slot="command-shortcut"

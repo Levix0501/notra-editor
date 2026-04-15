@@ -20,17 +20,17 @@ export function CodeBlockNodeView({ node, updateAttributes }: NodeViewProps) {
 
 	return (
 		<NodeViewWrapper>
-			<div className="relative">
-				<pre className="hljs !p-0">
-					<div className="flex h-9 items-center justify-between px-2">
+			<div className="nta:relative">
+				<pre className="hljs nta:!p-0">
+					<div className="nta:flex nta:h-9 nta:items-center nta:justify-between nta:px-2">
 						<LanguageSelect
 							language={language || 'auto'}
 							onLanguageChange={(lang) => updateAttributes({ language: lang })}
 						/>
 						<CopyButton value={node.textContent} />
 					</div>
-					<code className="!p-0">
-						<NodeViewContent className="scrollbar-hide max-h-[500px] overflow-auto p-4 pt-0" />
+					<code className="nta:!p-0">
+						<NodeViewContent className="nta:scrollbar-hide nta:max-h-[500px] nta:overflow-auto nta:p-4 nta:pt-0" />
 					</code>
 				</pre>
 			</div>

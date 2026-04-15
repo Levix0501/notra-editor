@@ -1,9 +1,11 @@
 import { NodeSelection } from '@tiptap/pm/state';
 import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { extendTailwindMerge } from 'tailwind-merge';
 
 import type { Editor } from '@tiptap/core';
 import type { Node as TiptapNode } from '@tiptap/pm/model';
+
+const twMerge = extendTailwindMerge({ prefix: 'nta' });
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));

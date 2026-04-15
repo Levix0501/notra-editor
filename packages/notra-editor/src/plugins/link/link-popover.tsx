@@ -36,16 +36,16 @@ function LinkPreview({
 	}, [url]);
 
 	return (
-		<div className="flex items-center gap-2">
+		<div className="nta:flex nta:items-center nta:gap-2">
 			<a
-				className="text-sm text-muted-foreground underline truncate max-w-48"
+				className="nta:text-sm nta:text-muted-foreground nta:underline nta:truncate nta:max-w-48"
 				href={url}
 				rel="noopener noreferrer"
 				target="_blank"
 			>
 				{url}
 			</a>
-			<div className="flex items-center gap-0.5">
+			<div className="nta:flex nta:items-center nta:gap-0.5">
 				<Button
 					aria-label="Edit link"
 					size="icon-xs"
@@ -114,16 +114,16 @@ function LinkEditForm({
 	);
 
 	return (
-		<div className="flex flex-col gap-2" onKeyDown={handleKeyDown}>
-			<div className="flex items-center gap-1">
+		<div className="nta:flex nta:flex-col nta:gap-2" onKeyDown={handleKeyDown}>
+			<div className="nta:flex nta:items-center nta:gap-1">
 				<input
 					ref={urlInputRef}
 					aria-invalid={!!urlError}
 					aria-label="URL"
 					className={cn(
-						'flex-1 rounded-md border bg-transparent px-2 py-1 text-sm outline-none',
-						'focus:ring-2 focus:ring-ring/50',
-						urlError && 'border-destructive'
+						'nta:flex-1 nta:rounded-md nta:border nta:bg-transparent nta:px-2 nta:py-1 nta:text-sm nta:outline-none',
+						'focus:nta:ring-2 focus:nta:ring-ring/50',
+						urlError && 'nta:border-destructive'
 					)}
 					placeholder="https://example.com"
 					type="url"
@@ -140,15 +140,15 @@ function LinkEditForm({
 				</Button>
 			</div>
 			{urlError && (
-				<p className="text-xs text-destructive" role="alert">
+				<p className="nta:text-xs nta:text-destructive" role="alert">
 					{urlError}
 				</p>
 			)}
 			<input
 				aria-label="Display text"
 				className={cn(
-					'rounded-md border bg-transparent px-2 py-1 text-sm outline-none',
-					'focus:ring-2 focus:ring-ring/50'
+					'nta:rounded-md nta:border nta:bg-transparent nta:px-2 nta:py-1 nta:text-sm nta:outline-none',
+					'focus:nta:ring-2 focus:nta:ring-ring/50'
 				)}
 				placeholder="Display text"
 				value={text}
@@ -247,7 +247,7 @@ export function LinkPopover(props: LinkPopoverProps) {
 				createPortal(
 					<div
 						ref={panelRef}
-						className="bg-popover text-popover-foreground z-50 w-auto rounded-md border p-3 shadow-md"
+						className="nta:bg-popover nta:text-popover-foreground nta:z-50 nta:w-auto nta:rounded-md nta:border nta:p-3 nta:shadow-md"
 						style={{
 							position: 'fixed',
 							left: anchorCoords.left,

@@ -37,6 +37,24 @@
 	--radius-s: 4px;
 	--radius-m: 8px;
 	--radius-l: 12px;
+
+	/* Tailwind/shadcn color token mappings (--nta- prefix from Tailwind v4 prefix(nta)) */
+	--nta-color-background: var(--background-primary);
+	--nta-color-foreground: var(--text-normal);
+	--nta-color-primary: var(--interactive-accent);
+	--nta-color-primary-foreground: var(--text-on-accent);
+	--nta-color-secondary: var(--background-primary-alt);
+	--nta-color-secondary-foreground: var(--text-normal);
+	--nta-color-accent: var(--background-modifier-hover);
+	--nta-color-accent-foreground: var(--text-normal);
+	--nta-color-popover: var(--background-primary);
+	--nta-color-popover-foreground: var(--text-normal);
+	--nta-color-muted: var(--background-primary-alt);
+	--nta-color-muted-foreground: var(--text-muted);
+	--nta-color-destructive: #ef4444;
+	--nta-color-border: var(--background-modifier-border);
+	--nta-color-input: var(--background-modifier-border);
+	--nta-color-ring: var(--interactive-accent);
 }
 
 /* --------------------------------------------
@@ -44,12 +62,14 @@
  * -------------------------------------------- */
 
 .notra-editor {
-	--font-default: ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui,
-		Roboto, 'Helvetica', 'Arial', 'Segoe UI', 'InterVariable', 'Inter',
+	--font-default:
+		ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+		'Helvetica', 'Arial', 'Segoe UI', 'InterVariable', 'Inter',
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
-	--font-monospace: ui-monospace, SFMono-Regular, 'Cascadia Mono',
-		'Roboto Mono', 'DejaVu Sans Mono', 'Liberation Mono', Menlo, Monaco,
-		'Consolas', 'Source Code Pro', monospace;
+	--font-monospace:
+		ui-monospace, SFMono-Regular, 'Cascadia Mono', 'Roboto Mono',
+		'DejaVu Sans Mono', 'Liberation Mono', Menlo, Monaco, 'Consolas',
+		'Source Code Pro', monospace;
 
 	--font-text-size: 16px;
 	--line-height-normal: 1.5;
@@ -680,5 +700,42 @@
 		height: var(--hr-thickness);
 		background-color: var(--hr-color);
 		margin: 2rem 0;
+	}
+}
+
+/* --------------------------------------------
+ * 13. Dark-mode overrides for portal content
+ *     (Popover, Dialog, DropdownMenu render
+ *      outside .notra-editor via React Portal)
+ * -------------------------------------------- */
+
+.dark,
+:root:has(.dark) {
+	--nta-color-background: #1e1e1e;
+	--nta-color-foreground: #dadada;
+	--nta-color-popover: #1e1e1e;
+	--nta-color-popover-foreground: #dadada;
+	--nta-color-border: #363636;
+	--nta-color-input: #363636;
+	--nta-color-ring: hsl(258, 88%, 66%);
+	--nta-color-accent: rgba(255, 255, 255, 0.067);
+	--nta-color-accent-foreground: #dadada;
+	--nta-color-muted-foreground: #b3b3b3;
+	--nta-color-destructive: #ef4444;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not(:has(.light)) {
+		--nta-color-background: #1e1e1e;
+		--nta-color-foreground: #dadada;
+		--nta-color-popover: #1e1e1e;
+		--nta-color-popover-foreground: #dadada;
+		--nta-color-border: #363636;
+		--nta-color-input: #363636;
+		--nta-color-ring: hsl(258, 88%, 66%);
+		--nta-color-accent: rgba(255, 255, 255, 0.067);
+		--nta-color-accent-foreground: #dadada;
+		--nta-color-muted-foreground: #b3b3b3;
+		--nta-color-destructive: #ef4444;
 	}
 }

@@ -26,6 +26,7 @@
 			"import": "./dist/index.js",
 			"require": "./dist/index.cjs"
 		},
+		"./ui.css": "./dist/ui.css",
 		"./themes/obsidian.css": "./dist/themes/obsidian.css",
 		"./themes/obsidian-editor.css": "./dist/themes/obsidian-editor.css",
 		"./themes/obsidian-reader.css": "./dist/themes/obsidian-reader.css"
@@ -40,8 +41,8 @@
 		"node": ">=18"
 	},
 	"scripts": {
-		"build": "tsup",
-		"dev": "tsup --watch",
+		"build": "tsup && tailwindcss -i src/styles/ui.css -o dist/ui.css --minify",
+		"dev": "tailwindcss -i src/styles/ui.css -o dist/ui.css --watch & tsup --watch",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run"
 	},
@@ -78,9 +79,11 @@
 		"tailwind-merge": "^3.3.0"
 	},
 	"devDependencies": {
+		"@tailwindcss/cli": "^4.2.2",
 		"@types/markdown-it": "^14.1.2",
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2",
+		"tailwindcss": "^4.1.18",
 		"tsup": "^8.5.0",
 		"typescript": "^5",
 		"vitest": "^4.0.18"

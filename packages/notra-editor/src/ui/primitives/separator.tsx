@@ -12,7 +12,7 @@ function Separator({
 	return (
 		<SeparatorPrimitive.Root
 			className={cn(
-				'bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
+				'nta:bg-border nta:shrink-0 data-[orientation=horizontal]:nta:h-px data-[orientation=horizontal]:nta:w-full data-[orientation=vertical]:nta:h-full data-[orientation=vertical]:nta:w-px',
 				className
 			)}
 			data-slot="separator"

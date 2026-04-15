@@ -43,7 +43,7 @@ export function CopyButton({ value }: Readonly<CopyButtonProps>) {
 
 	return (
 		<Button size="icon-xs" variant="ghost" onClick={handleCopy}>
-			<span className="sr-only">Copy</span>
+			<span className="nta:sr-only">Copy</span>
 			{isCopied ? <Check /> : <Copy />}
 		</Button>
 	);

@@ -1,0 +1,32 @@
+@import 'tailwindcss' prefix(nta);
+@source '../';
+@source './safelist.txt';
+
+@theme {
+	/* shadcn/ui color tokens — light-mode defaults (Obsidian values).
+	   These are overridden per-theme via CSS variable references
+	   in the theme file (e.g. obsidian.css). */
+	--color-background: #ffffff;
+	--color-foreground: #222222;
+	--color-primary: hsl(257, 87%, 65%);
+	--color-primary-foreground: white;
+	--color-secondary: #fafafa;
+	--color-secondary-foreground: #222222;
+	--color-accent: rgba(0, 0, 0, 0.067);
+	--color-accent-foreground: #222222;
+	--color-popover: #ffffff;
+	--color-popover-foreground: #222222;
+	--color-muted: #fafafa;
+	--color-muted-foreground: #5c5c5c;
+	--color-destructive: #ef4444;
+	--color-border: #e0e0e0;
+	--color-input: #e0e0e0;
+	--color-ring: hsl(257, 87%, 65%);
+}
+
+@utility scrollbar-hide {
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}

@@ -124,9 +124,9 @@ export function FloatingToolbar({ items, editor }: FloatingToolbarProps) {
 			ref={refs.setFloating}
 			className={cn(
 				'notra-floating-toolbar',
-				'z-50 flex items-center gap-0.5 rounded-lg border px-1 py-1',
-				'border-border bg-popover',
-				'shadow-md'
+				'nta:z-50 nta:flex nta:items-center nta:gap-0.5 nta:rounded-lg nta:border nta:px-1 nta:py-1',
+				'nta:border-border nta:bg-popover',
+				'nta:shadow-md'
 			)}
 			role="toolbar"
 			style={floatingStyles}

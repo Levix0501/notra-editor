@@ -1,0 +1,13 @@
+nta:ring-2
+nta:ring-ring
+nta:ring-ring/50
+nta:ring-destructive/20
+nta:ring-destructive/40
+nta:ring-offset-2
+nta:ring-offset-background
+nta:ring-[3px]
+nta:bg-input/30
+nta:bg-input/50
+nta:bg-muted
+nta:border-input
+nta:border-ring

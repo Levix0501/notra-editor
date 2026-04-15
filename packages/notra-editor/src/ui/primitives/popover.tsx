@@ -26,7 +26,7 @@ function PopoverContent({
 			<PopoverPrimitive.Content
 				align={align}
 				className={cn(
-					'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden',
+					'nta:bg-popover nta:text-popover-foreground data-[state=open]:nta:animate-in data-[state=closed]:nta:animate-out data-[state=closed]:nta:fade-out-0 data-[state=open]:nta:fade-in-0 data-[state=closed]:nta:zoom-out-95 data-[state=open]:nta:zoom-in-95 data-[side=bottom]:nta:slide-in-from-top-2 data-[side=left]:nta:slide-in-from-right-2 data-[side=right]:nta:slide-in-from-left-2 data-[side=top]:nta:slide-in-from-bottom-2 nta:z-50 nta:w-72 nta:origin-(--radix-popover-content-transform-origin) nta:rounded-md nta:border nta:p-4 nta:shadow-md nta:outline-hidden',
 					className
 				)}
 				data-slot="popover-content"
@@ -46,7 +46,7 @@ function PopoverAnchor({
 function PopoverHeader({ className, ...props }: React.ComponentProps<'div'>) {
 	return (
 		<div
-			className={cn('flex flex-col gap-1 text-sm', className)}
+			className={cn('nta:flex nta:flex-col nta:gap-1 nta:text-sm', className)}
 			data-slot="popover-header"
 			{...props}
 		/>
@@ -56,7 +56,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<'div'>) {
 function PopoverTitle({ className, ...props }: React.ComponentProps<'h2'>) {
 	return (
 		<div
-			className={cn('font-medium', className)}
+			className={cn('nta:font-medium', className)}
 			data-slot="popover-title"
 			{...props}
 		/>
@@ -69,7 +69,7 @@ function PopoverDescription({
 }: React.ComponentProps<'p'>) {
 	return (
 		<p
-			className={cn('text-muted-foreground', className)}
+			className={cn('nta:text-muted-foreground', className)}
 			data-slot="popover-description"
 			{...props}
 		/>

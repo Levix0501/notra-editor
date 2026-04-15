@@ -64,7 +64,7 @@ export function NotraEditor({
 				autocapitalize: 'off',
 				'aria-label': dictionary['editor.ariaLabel'],
 				class:
-					'flex-1 px-4 sm:px-[max(64px,calc(50%-375px))] pb-[30vh] pt-15 sm:pt-23 outline-none'
+					'nta:flex-1 nta:px-4 sm:nta:px-[max(64px,calc(50%-375px))] nta:pb-[30vh] nta:pt-15 sm:nta:pt-23 nta:outline-none'
 			}
 		},
 		onUpdate: ({ editor: ed }) => {
@@ -106,7 +106,7 @@ export function NotraEditor({
 				<EditorContext.Provider value={{ editor }}>
 					<NotraEditorProvider value={editor}>
 						{showFixed && <FixedToolbar editor={editor} items={toolbarItems} />}
-						<EditorContent className="relative" editor={editor} />
+						<EditorContent className="nta:relative" editor={editor} />
 						{showFloating && (
 							<FloatingToolbar editor={editor} items={floatingItems} />
 						)}

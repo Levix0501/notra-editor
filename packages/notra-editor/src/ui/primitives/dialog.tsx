@@ -36,7 +36,7 @@ function DialogOverlay({
 	return (
 		<DialogPrimitive.Overlay
 			className={cn(
-				'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50',
+				'data-[state=open]:nta:animate-in data-[state=closed]:nta:animate-out data-[state=closed]:nta:fade-out-0 data-[state=open]:nta:fade-in-0 nta:fixed nta:inset-0 nta:z-50 nta:bg-black/50',
 				className
 			)}
 			data-slot="dialog-overlay"
@@ -58,7 +58,7 @@ function DialogContent({
 			<DialogOverlay />
 			<DialogPrimitive.Content
 				className={cn(
-					'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 outline-none sm:max-w-lg',
+					'nta:bg-background data-[state=open]:nta:animate-in data-[state=closed]:nta:animate-out data-[state=closed]:nta:fade-out-0 data-[state=open]:nta:fade-in-0 data-[state=closed]:nta:zoom-out-95 data-[state=open]:nta:zoom-in-95 nta:fixed nta:top-[50%] nta:left-[50%] nta:z-50 nta:grid nta:w-full nta:max-w-[calc(100%-2rem)] nta:translate-x-[-50%] nta:translate-y-[-50%] nta:gap-4 nta:rounded-lg nta:border nta:p-6 nta:shadow-lg nta:duration-200 nta:outline-none sm:nta:max-w-lg',
 					className
 				)}
 				data-slot="dialog-content"
@@ -67,11 +67,11 @@ function DialogContent({
 				{children}
 				{showCloseButton && (
 					<DialogPrimitive.Close
-						className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+						className="nta:ring-offset-background focus:nta:ring-ring data-[state=open]:nta:bg-accent data-[state=open]:nta:text-muted-foreground nta:absolute nta:top-4 nta:right-4 nta:rounded-xs nta:opacity-70 nta:transition-opacity hover:nta:opacity-100 focus:nta:ring-2 focus:nta:ring-offset-2 focus:nta:outline-hidden disabled:nta:pointer-events-none [&_svg]:nta:pointer-events-none [&_svg]:nta:shrink-0 [&_svg:not([class*='size-'])]:nta:size-4"
 						data-slot="dialog-close"
 					>
 						<XIcon />
-						<span className="sr-only">Close</span>
+						<span className="nta:sr-only">Close</span>
 					</DialogPrimitive.Close>
 				)}
 			</DialogPrimitive.Content>
@@ -82,7 +82,7 @@ function DialogContent({
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
 	return (
 		<div
-			className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
+			className={cn('nta:flex nta:flex-col nta:gap-2 nta:text-center sm:nta:text-left', className)}
 			data-slot="dialog-header"
 			{...props}
 		/>
@@ -100,7 +100,7 @@ function DialogFooter({
 	return (
 		<div
 			className={cn(
-				'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+				'nta:flex nta:flex-col-reverse nta:gap-2 sm:nta:flex-row sm:nta:justify-end',
 				className
 			)}
 			data-slot="dialog-footer"
@@ -122,7 +122,7 @@ function DialogTitle({
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
 	return (
 		<DialogPrimitive.Title
-			className={cn('text-lg leading-none font-semibold', className)}
+			className={cn('nta:text-lg nta:leading-none nta:font-semibold', className)}
 			data-slot="dialog-title"
 			{...props}
 		/>
@@ -135,7 +135,7 @@ function DialogDescription({
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
 	return (
 		<DialogPrimitive.Description
-			className={cn('text-muted-foreground text-sm', className)}
+			className={cn('nta:text-muted-foreground nta:text-sm', className)}
 			data-slot="dialog-description"
 			{...props}
 		/>

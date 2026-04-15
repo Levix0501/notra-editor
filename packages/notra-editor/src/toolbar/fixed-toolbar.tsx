@@ -50,16 +50,16 @@ export function FixedToolbar({ items, editor, className }: FixedToolbarProps) {
 		<div
 			aria-label="Formatting toolbar"
 			className={cn(
-				'notra-fixed-toolbar flex items-center gap-0.5 border-b px-1 py-1',
-				'border-border bg-background',
+				'notra-fixed-toolbar nta:flex nta:items-center nta:gap-0.5 nta:border-b nta:px-1 nta:py-1',
+				'nta:border-border nta:bg-background',
 				className
 			)}
 			role="toolbar"
 		>
 			{groups.map((group, groupIndex) => (
-				<div key={groupIndex} className="flex items-center gap-0.5">
+				<div key={groupIndex} className="nta:flex nta:items-center nta:gap-0.5">
 					{groupIndex > 0 && (
-						<Separator className="mx-0.5 h-5" orientation="vertical" />
+						<Separator className="nta:mx-0.5 nta:h-5" orientation="vertical" />
 					)}
 					{group.map((item) => {
 						if (item.type === 'dropdown' && item.items?.length) {

@@ -41,7 +41,7 @@ export function CursorOverlay({ editor }: CursorOverlayProps) {
 	return (
 		<div
 			aria-hidden
-			className="pointer-events-none fixed z-50 w-px"
+			className="nta:pointer-events-none nta:fixed nta:z-50 nta:w-px"
 			style={style}
 		/>
 	);
