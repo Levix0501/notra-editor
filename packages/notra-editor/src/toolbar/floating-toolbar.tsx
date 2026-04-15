@@ -125,9 +125,8 @@ export function FloatingToolbar({ items, editor }: FloatingToolbarProps) {
 			className={cn(
 				'notra-floating-toolbar',
 				'z-50 flex items-center gap-0.5 rounded-lg border px-1 py-1',
-				'border-[var(--notra-toolbar-border)] bg-[var(--notra-menu-bg)]',
-				'shadow-md',
-				'dark:bg-[var(--notra-menu-bg)] dark:border-[var(--notra-toolbar-border)]'
+				'border-border bg-popover',
+				'shadow-md'
 			)}
 			role="toolbar"
 			style={floatingStyles}

@@ -51,7 +51,7 @@ export function FixedToolbar({ items, editor, className }: FixedToolbarProps) {
 			aria-label="Formatting toolbar"
 			className={cn(
 				'notra-fixed-toolbar flex items-center gap-0.5 border-b px-1 py-1',
-				'border-[var(--notra-toolbar-border)] bg-[var(--notra-toolbar-bg)]',
+				'border-border bg-background',
 				className
 			)}
 			role="toolbar"
