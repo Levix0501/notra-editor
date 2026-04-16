@@ -229,7 +229,9 @@ export function LanguageSelect({
 									<Check
 										className={cn(
 											'nta:ml-auto',
-											language === lang.value ? 'nta:opacity-100' : 'nta:opacity-0'
+											language === lang.value
+												? 'nta:opacity-100'
+												: 'nta:opacity-0'
 										)}
 									/>
 								</CommandItem>

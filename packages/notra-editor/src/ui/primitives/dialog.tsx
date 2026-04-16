@@ -82,7 +82,10 @@ function DialogContent({
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
 	return (
 		<div
-			className={cn('nta:flex nta:flex-col nta:gap-2 nta:text-center sm:nta:text-left', className)}
+			className={cn(
+				'nta:flex nta:flex-col nta:gap-2 nta:text-center sm:nta:text-left',
+				className
+			)}
 			data-slot="dialog-header"
 			{...props}
 		/>
@@ -122,7 +125,10 @@ function DialogTitle({
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
 	return (
 		<DialogPrimitive.Title
-			className={cn('nta:text-lg nta:leading-none nta:font-semibold', className)}
+			className={cn(
+				'nta:text-lg nta:leading-none nta:font-semibold',
+				className
+			)}
 			data-slot="dialog-title"
 			{...props}
 		/>

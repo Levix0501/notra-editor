@@ -9,7 +9,8 @@ const buttonVariants = cva(
 	{
 		variants: {
 			variant: {
-				default: 'nta:bg-primary nta:text-primary-foreground hover:nta:bg-primary/90',
+				default:
+					'nta:bg-primary nta:text-primary-foreground hover:nta:bg-primary/90',
 				destructive:
 					'nta:bg-destructive nta:text-white hover:nta:bg-destructive/90 focus-visible:nta:ring-destructive/20 dark:focus-visible:nta:ring-destructive/40 dark:nta:bg-destructive/60',
 				outline:
