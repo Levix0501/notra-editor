@@ -1,7 +1,7 @@
 {
 	"name": "notra-editor",
 	"type": "module",
-	"version": "2.0.0-alpha.0",
+	"version": "2.0.0",
 	"description": "A Markdown-first rich text editor with plugin system, built on Tiptap 3 and React 19",
 	"license": "MIT",
 	"repository": {
