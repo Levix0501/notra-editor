@@ -44,20 +44,25 @@ jobs:
       - name: Install NPM Dependencies
         run: pnpm install
 
+      - name: Build the package
+        run: pnpm --filter notra-editor build
+
       - name: Modify package.json version
         run: node .github/version-script-beta.js
 
       - name: Publish Beta to NPM
         run: pnpm pub:beta
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: get-npm-version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@main
         with:
-          path: packages/cli
+          path: packages/notra-editor
 
       - name: Upload packaged artifact
         uses: actions/upload-artifact@v4
         with:
           name: npm-package-notra-editor@${{ steps.package-version.outputs.current-version }}-pr-${{ github.event.number }}
-          path: packages/cli/dist/index.js
+          path: packages/notra-editor/dist

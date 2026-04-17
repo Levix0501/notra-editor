@@ -4,7 +4,7 @@
 import { exec } from 'child_process';
 import fs from 'fs';
 
-const pkgJsonPath = 'packages/cli/package.json';
+const pkgJsonPath = 'packages/notra-editor/package.json';
 
 try {
 	const pkg = JSON.parse(fs.readFileSync(pkgJsonPath));

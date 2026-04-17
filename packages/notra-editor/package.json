@@ -44,7 +44,9 @@
 		"build": "tsup && tailwindcss -i src/styles/ui.css -o dist/ui.css --minify",
 		"dev": "tailwindcss -i src/styles/ui.css -o dist/ui.css --watch & tsup --watch",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"pub:beta": "npm publish --tag beta --access public --no-git-checks",
+		"pub:release": "npm publish --access public --no-git-checks"
 	},
 	"peerDependencies": {
 		"react": "^19.0.0",
