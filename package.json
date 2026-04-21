@@ -1,0 +1,58 @@
+{
+	"name": "notra-editor",
+	"version": "0.0.0",
+	"private": true,
+	"packageManager": "pnpm@9.0.6",
+	"description": "A Markdown-first rich text editor with plugin system",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"scripts": {
+		"dev": "pnpm --filter playground dev",
+		"build": "pnpm -r build",
+		"test": "pnpm -r test",
+		"lint": "eslint . && prettier --check . && pnpm check-types",
+		"lint:fix": "eslint . --fix && prettier --write .",
+		"check-types": "tsc --noEmit",
+		"prepare": "husky",
+		"commit": "git add -A && git-cz",
+		"release": "changeset version",
+		"pub:beta": "cd packages/notra-editor && pnpm pub:beta",
+		"pub:release": "cd packages/notra-editor && pnpm pub:release"
+	},
+	"devDependencies": {
+		"@changesets/changelog-github": "^0.4.8",
+		"@changesets/cli": "^2.26.1",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@eslint/eslintrc": "^3",
+		"@types/node": "^20",
+		"commitlint": "^19.8.1",
+		"cz-git": "^1.12.0",
+		"eslint": "^9",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-import-resolver-typescript": "^4.4.4",
+		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-jsonc": "^2.21.0",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-tailwindcss": "4.0.0-beta.0",
+		"fast-check": "^3.19.0",
+		"husky": "^9.1.7",
+		"prettier": "^3.6.2",
+		"tsx": "^4.1.4",
+		"typescript": "^5",
+		"typescript-eslint": "^8.34.0",
+		"vitest": "^4.0.18"
+	},
+	"config": {
+		"commitizen": {
+			"path": "node_modules/cz-git"
+		}
+	},
+	"pnpm": {
+		"overrides": {
+			"@types/react": "19.2.2",
+			"@types/react-dom": "19.2.2"
+		}
+	}
+}
