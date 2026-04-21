@@ -115,7 +115,8 @@ const eslintConfig = defineConfig([
 		'**/.next/**',
 		'**/out/**',
 		'.ui-main/**',
-		'.notra/**'
+		'.notra/**',
+		'demo/**'
 	]),
 	...compat.extends('plugin:import/recommended', 'plugin:import/typescript'),
 	...compat.plugins('import', 'react'),
