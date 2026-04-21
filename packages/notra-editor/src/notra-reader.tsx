@@ -14,6 +14,7 @@ export interface NotraReaderProps {
 export function NotraReader({ content, className }: NotraReaderProps) {
 	const rendered = useMemo(() => {
 		const json = markdownToJSON(content);
+
 		return renderToReactElement({
 			extensions: defaultExtensions,
 			content: json

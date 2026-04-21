@@ -32,7 +32,9 @@
 	background: transparent;
 }
 
-.notra-editor .tiptap.ProseMirror .ProseMirror-selectednode:not(img):not(pre):not(.react-renderer) {
+.notra-editor
+	.tiptap.ProseMirror
+	.ProseMirror-selectednode:not(img):not(pre):not(.react-renderer) {
 	border-radius: var(--notra-radius);
 	background-color: var(--notra-selection-color);
 }
@@ -44,7 +46,11 @@
 	position: relative;
 }
 
-.notra-editor .tiptap.ProseMirror .is-empty[data-placeholder]:has(> .ProseMirror-trailingBreak:only-child)::before {
+.notra-editor
+	.tiptap.ProseMirror
+	.is-empty[data-placeholder]:has(
+		> .ProseMirror-trailingBreak:only-child
+	)::before {
 	content: attr(data-placeholder);
 	pointer-events: none;
 	height: 0;

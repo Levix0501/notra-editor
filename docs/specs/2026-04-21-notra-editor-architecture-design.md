@@ -6,22 +6,23 @@ notra-editor is an open-source, markdown-first, Notion-like rich text editor pub
 
 ## Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Package strategy | Single package `notra-editor` | Simplicity; users install once and get everything |
-| Data model | Markdown as source of truth | Users store/pass Markdown strings; internal state uses Tiptap JSON |
-| Markdown conversion | `tiptap-markdown` extension | Mature, battle-tested, integrates deeply with Tiptap |
-| Static reader | Tiptap official `@tiptap/static-renderer` | Official support, `renderToReactElement` for React output |
-| Styling | Pure CSS + CSS custom properties | Zero framework dependency, easy theming via variable overrides |
-| Default theme | Exact visual replica of `demo/notion-*` | High design quality out of the box |
-| Component API | Controlled component | `<NotraEditor value={md} onChange={setMd} />` |
-| Extension system | None (V1) | Keep scope minimal; built-in features only |
-| UI controls | None (V1) | Pure editing area; users interact via Markdown shortcuts |
-| File naming | kebab-case | Consistent with project conventions |
+| Decision            | Choice                                    | Rationale                                                          |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| Package strategy    | Single package `notra-editor`             | Simplicity; users install once and get everything                  |
+| Data model          | Markdown as source of truth               | Users store/pass Markdown strings; internal state uses Tiptap JSON |
+| Markdown conversion | `tiptap-markdown` extension               | Mature, battle-tested, integrates deeply with Tiptap               |
+| Static reader       | Tiptap official `@tiptap/static-renderer` | Official support, `renderToReactElement` for React output          |
+| Styling             | Pure CSS + CSS custom properties          | Zero framework dependency, easy theming via variable overrides     |
+| Default theme       | Exact visual replica of `demo/notion-*`   | High design quality out of the box                                 |
+| Component API       | Controlled component                      | `<NotraEditor value={md} onChange={setMd} />`                      |
+| Extension system    | None (V1)                                 | Keep scope minimal; built-in features only                         |
+| UI controls         | None (V1)                                 | Pure editing area; users interact via Markdown shortcuts           |
+| File naming         | kebab-case                                | Consistent with project conventions                                |
 
 ## V1 Feature Scope
 
 ### Block elements
+
 - Headings (H1-H6)
 - Ordered lists
 - Unordered lists
@@ -31,6 +32,7 @@ notra-editor is an open-source, markdown-first, Notion-like rich text editor pub
 - Horizontal rules
 
 ### Inline marks
+
 - Bold
 - Italic
 - Strikethrough
@@ -38,6 +40,7 @@ notra-editor is an open-source, markdown-first, Notion-like rich text editor pub
 - Links
 
 ### NOT included in V1
+
 - Toolbar / floating menu / slash command menu
 - Images
 - Tables
@@ -78,16 +81,16 @@ Playground app lives at `apps/playground/`.
 
 ```tsx
 interface NotraEditorProps {
-  /** Markdown content (source of truth) */
-  value: string;
-  /** Called when content changes, receives updated Markdown */
-  onChange: (value: string) => void;
-  /** Placeholder text shown when editor is empty */
-  placeholder?: string;
-  /** Disable editing */
-  readOnly?: boolean;
-  /** Additional CSS class on the wrapper element */
-  className?: string;
+	/** Markdown content (source of truth) */
+	value: string;
+	/** Called when content changes, receives updated Markdown */
+	onChange: (value: string) => void;
+	/** Placeholder text shown when editor is empty */
+	placeholder?: string;
+	/** Disable editing */
+	readOnly?: boolean;
+	/** Additional CSS class on the wrapper element */
+	className?: string;
 }
 ```
 
@@ -95,10 +98,10 @@ interface NotraEditorProps {
 
 ```tsx
 interface NotraReaderProps {
-  /** Markdown content to render */
-  content: string;
-  /** Additional CSS class on the wrapper element */
-  className?: string;
+	/** Markdown content to render */
+	content: string;
+	/** Additional CSS class on the wrapper element */
+	className?: string;
 }
 ```
 
@@ -110,8 +113,8 @@ import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/editor.css';
 
 function App() {
-  const [content, setContent] = useState('# Hello\n\nStart writing...');
-  return <NotraEditor value={content} onChange={setContent} />;
+	const [content, setContent] = useState('# Hello\n\nStart writing...');
+	return <NotraEditor value={content} onChange={setContent} />;
 }
 ```
 
@@ -121,7 +124,7 @@ import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/reader.css';
 
 function ReadOnlyView({ markdown }: { markdown: string }) {
-  return <NotraReader content={markdown} />;
+	return <NotraReader content={markdown} />;
 }
 ```
 
@@ -176,23 +179,23 @@ import Link from '@tiptap/extension-link';
 import { Markdown } from 'tiptap-markdown';
 
 export const defaultExtensions = [
-  StarterKit.configure({
-    heading: { levels: [1, 2, 3, 4, 5, 6] },
-    // Disable StarterKit's built-in list handling; use @tiptap/extension-list instead
-    bulletList: false,
-    orderedList: false,
-    listItem: false,
-  }),
-  List,  // Unified list extension: bullet, ordered, task lists
-  Link.configure({
-    openOnClick: false,
-    autolink: true,
-  }),
-  Markdown.configure({
-    html: false,
-    transformPastedText: true,
-    transformCopiedText: true,
-  }),
+	StarterKit.configure({
+		heading: { levels: [1, 2, 3, 4, 5, 6] },
+		// Disable StarterKit's built-in list handling; use @tiptap/extension-list instead
+		bulletList: false,
+		orderedList: false,
+		listItem: false
+	}),
+	List, // Unified list extension: bullet, ordered, task lists
+	Link.configure({
+		openOnClick: false,
+		autolink: true
+	}),
+	Markdown.configure({
+		html: false,
+		transformPastedText: true,
+		transformCopiedText: true
+	})
 ];
 ```
 
@@ -211,15 +214,15 @@ themes/default/
 
 ```css
 .notra {
-  --notra-font-body: system-ui, -apple-system, sans-serif;
-  --notra-font-mono: ui-monospace, 'SF Mono', monospace;
-  --notra-font-size: 16px;
-  --notra-line-height: 1.6;
-  --notra-color-text: #1a1a1a;
-  --notra-color-bg: #ffffff;
-  --notra-color-border: #e5e5e5;
-  --notra-color-code-bg: #f5f5f5;
-  --notra-radius: 4px;
+	--notra-font-body: system-ui, -apple-system, sans-serif;
+	--notra-font-mono: ui-monospace, 'SF Mono', monospace;
+	--notra-font-size: 16px;
+	--notra-line-height: 1.6;
+	--notra-color-text: #1a1a1a;
+	--notra-color-bg: #ffffff;
+	--notra-color-border: #e5e5e5;
+	--notra-color-code-bg: #f5f5f5;
+	--notra-radius: 4px;
 }
 ```
 
@@ -235,31 +238,31 @@ The default theme visually replicates the `demo/notion-vite/` and `demo/notion-n
 
 ```json
 {
-  "name": "notra-editor",
-  "version": "0.1.0",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
-    },
-    "./themes/default/shared.css": "./dist/themes/default/shared.css",
-    "./themes/default/editor.css": "./dist/themes/default/editor.css",
-    "./themes/default/reader.css": "./dist/themes/default/reader.css"
-  },
-  "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
-  },
-  "dependencies": {
-    "@tiptap/core": "^3.22.4",
-    "@tiptap/react": "^3.22.4",
-    "@tiptap/starter-kit": "^3.22.4",
-    "@tiptap/extension-list": "^3.22.4",
-    "@tiptap/extension-link": "^3.22.4",
-    "@tiptap/static-renderer": "^3.22.4",
-    "tiptap-markdown": "^0.8.10"
-  }
+	"name": "notra-editor",
+	"version": "0.1.0",
+	"exports": {
+		".": {
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs",
+			"types": "./dist/index.d.ts"
+		},
+		"./themes/default/shared.css": "./dist/themes/default/shared.css",
+		"./themes/default/editor.css": "./dist/themes/default/editor.css",
+		"./themes/default/reader.css": "./dist/themes/default/reader.css"
+	},
+	"peerDependencies": {
+		"react": "^18.0.0 || ^19.0.0",
+		"react-dom": "^18.0.0 || ^19.0.0"
+	},
+	"dependencies": {
+		"@tiptap/core": "^3.22.4",
+		"@tiptap/react": "^3.22.4",
+		"@tiptap/starter-kit": "^3.22.4",
+		"@tiptap/extension-list": "^3.22.4",
+		"@tiptap/extension-link": "^3.22.4",
+		"@tiptap/static-renderer": "^3.22.4",
+		"tiptap-markdown": "^0.8.10"
+	}
 }
 ```
 
@@ -275,6 +278,7 @@ Uses changesets (already configured in the monorepo) for versioning and publishi
 ## Playground App
 
 Located at `apps/playground/`, provides a development environment:
+
 - Vite + React
 - Imports `notra-editor` from workspace (via pnpm workspace protocol)
 - Demonstrates both `NotraEditor` and `NotraReader` usage

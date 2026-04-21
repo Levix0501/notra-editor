@@ -6,13 +6,15 @@ import { NotraReader } from '../src/notra-reader';
 describe('NotraReader', () => {
 	it('renders the reader container', () => {
 		const { container } = render(<NotraReader content="# Hello" />);
+
 		expect(container.querySelector('.notra-reader')).toBeInTheDocument();
 	});
 
 	it('applies custom className', () => {
 		const { container } = render(
-			<NotraReader content="# Hello" className="custom" />
+			<NotraReader className="custom" content="# Hello" />
 		);
+
 		expect(container.querySelector('.notra-reader.custom')).toBeInTheDocument();
 	});
 
@@ -24,6 +26,7 @@ describe('NotraReader', () => {
 	it('renders bold text from markdown', () => {
 		const { container } = render(<NotraReader content="**bold text**" />);
 		const strong = container.querySelector('strong');
+
 		expect(strong).toBeInTheDocument();
 		expect(strong).toHaveTextContent('bold text');
 	});
@@ -31,6 +34,7 @@ describe('NotraReader', () => {
 	it('renders links from markdown', () => {
 		render(<NotraReader content="[click here](https://example.com)" />);
 		const link = screen.getByRole('link', { name: 'click here' });
+
 		expect(link).toHaveAttribute('href', 'https://example.com');
 	});
 
@@ -39,6 +43,7 @@ describe('NotraReader', () => {
 			<NotraReader content={'```\nconsole.log("hi")\n```'} />
 		);
 		const pre = container.querySelector('pre');
+
 		expect(pre).toBeInTheDocument();
 	});
 });

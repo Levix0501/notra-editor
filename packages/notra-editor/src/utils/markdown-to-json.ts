@@ -11,6 +11,7 @@ function getParserEditor(): Editor {
 			content: ''
 		});
 	}
+
 	return parserEditor;
 }
 
@@ -20,6 +21,8 @@ function getParserEditor(): Editor {
  */
 export function markdownToJSON(markdown: string): Record<string, unknown> {
 	const editor = getParserEditor();
+
 	editor.commands.setContent(markdown);
+
 	return editor.getJSON() as Record<string, unknown>;
 }

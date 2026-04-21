@@ -282,14 +282,36 @@
 		center / contain no-repeat;
 }
 
-.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox']:checked + span,
-.notra-reader ul[data-type='taskList'] li label input[type='checkbox']:checked + span {
+.notra
+	.tiptap
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span,
+.notra-reader
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span {
 	background: var(--notra-checklist-bg-active);
 	border-color: var(--notra-checklist-border-active);
 }
 
-.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox']:checked + span::before,
-.notra-reader ul[data-type='taskList'] li label input[type='checkbox']:checked + span::before {
+.notra
+	.tiptap
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span::before,
+.notra-reader
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span::before {
 	opacity: 1;
 }
 

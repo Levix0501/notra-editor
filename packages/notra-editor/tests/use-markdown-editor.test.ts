@@ -1,12 +1,17 @@
 import { renderHook, act } from '@testing-library/react';
-import type { MarkdownStorage } from 'tiptap-markdown';
 import { describe, expect, it, vi } from 'vitest';
 
 import { useMarkdownEditor } from '../src/hooks/use-markdown-editor';
 
-function getMarkdownFromEditor(editor: { storage: unknown } | null | undefined): string {
+import type { MarkdownStorage } from 'tiptap-markdown';
+
+function getMarkdownFromEditor(
+	editor: { storage: unknown } | null | undefined
+): string {
 	if (!editor) return '';
+
 	const storage = editor.storage as Record<string, MarkdownStorage>;
+
 	return storage.markdown.getMarkdown();
 }
 
@@ -16,6 +21,7 @@ describe('useMarkdownEditor', () => {
 		const { result } = renderHook(() =>
 			useMarkdownEditor({ value: '# Hello', onChange })
 		);
+
 		expect(result.current.editor).not.toBeNull();
 	});
 
@@ -25,6 +31,7 @@ describe('useMarkdownEditor', () => {
 			useMarkdownEditor({ value: '# Hello', onChange })
 		);
 		const md = getMarkdownFromEditor(result.current.editor);
+
 		expect(md.trim()).toBe('# Hello');
 	});
 
@@ -40,6 +47,7 @@ describe('useMarkdownEditor', () => {
 
 		expect(onChange).toHaveBeenCalled();
 		const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1][0];
+
 		expect(lastCall).toContain('new content');
 	});
 
@@ -53,6 +61,7 @@ describe('useMarkdownEditor', () => {
 		rerender({ value: '## New Heading' });
 
 		const md = getMarkdownFromEditor(result.current.editor);
+
 		expect(md.trim()).toBe('## New Heading');
 	});
 });

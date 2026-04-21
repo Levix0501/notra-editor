@@ -8,26 +8,77 @@ describe('NotraEditor', () => {
 		const { container } = render(
 			<NotraEditor value="# Hello" onChange={vi.fn()} />
 		);
+
 		expect(container.querySelector('.notra-editor')).toBeInTheDocument();
 	});
 
 	it('applies custom className', () => {
 		const { container } = render(
-			<NotraEditor value="" onChange={vi.fn()} className="custom" />
+			<NotraEditor className="custom" value="" onChange={vi.fn()} />
 		);
+
 		expect(container.querySelector('.notra-editor.custom')).toBeInTheDocument();
 	});
 
 	it('renders content from value prop', () => {
 		render(<NotraEditor value="# Hello" onChange={vi.fn()} />);
-		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Hello');
+		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+			'Hello'
+		);
 	});
 
 	it('sets contenteditable to false when readOnly is true', () => {
 		const { container } = render(
-			<NotraEditor value="# Hello" onChange={vi.fn()} readOnly />
+			<NotraEditor readOnly value="# Hello" onChange={vi.fn()} />
 		);
 		const prosemirror = container.querySelector('.ProseMirror');
+
 		expect(prosemirror).toHaveAttribute('contenteditable', 'false');
+	});
+});
+
+describe('NotraEditor — markdown features', () => {
+	it('renders headings from markdown', () => {
+		render(<NotraEditor value="## Sub Heading" onChange={vi.fn()} />);
+		expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+			'Sub Heading'
+		);
+	});
+
+	it('renders unordered lists from markdown', () => {
+		const { container } = render(
+			<NotraEditor value={'- item one\n- item two'} onChange={vi.fn()} />
+		);
+		const items = container.querySelectorAll('li');
+		expect(items.length).toBe(2);
+	});
+
+	it('renders code blocks from markdown', () => {
+		const { container } = render(
+			<NotraEditor value={'```\ncode here\n```'} onChange={vi.fn()} />
+		);
+		expect(container.querySelector('pre')).toBeInTheDocument();
+	});
+
+	it('renders blockquotes from markdown', () => {
+		const { container } = render(
+			<NotraEditor value="> quoted text" onChange={vi.fn()} />
+		);
+		expect(container.querySelector('blockquote')).toBeInTheDocument();
+	});
+
+	it('renders horizontal rules from markdown', () => {
+		const { container } = render(
+			<NotraEditor value={'text\n\n---\n\nmore text'} onChange={vi.fn()} />
+		);
+		expect(container.querySelector('hr')).toBeInTheDocument();
+	});
+
+	it('renders inline marks from markdown', () => {
+		const { container } = render(
+			<NotraEditor value="**bold** and *italic*" onChange={vi.fn()} />
+		);
+		expect(container.querySelector('strong')).toHaveTextContent('bold');
+		expect(container.querySelector('em')).toHaveTextContent('italic');
 	});
 });

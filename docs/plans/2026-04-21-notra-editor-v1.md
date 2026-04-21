@@ -52,6 +52,7 @@ apps/playground/
 ### Task 1: Package Scaffolding
 
 **Files:**
+
 - Create: `packages/notra-editor/package.json`
 - Create: `packages/notra-editor/tsconfig.json`
 - Create: `packages/notra-editor/tsconfig.build.json`
@@ -222,6 +223,7 @@ git commit -m "feat: scaffold notra-editor package with tsup build"
 ### Task 2: Extensions Configuration
 
 **Files:**
+
 - Create: `packages/notra-editor/src/extensions/index.ts`
 
 - [ ] **Step 1: Create extensions/index.ts**
@@ -270,6 +272,7 @@ git commit -m "feat: configure Tiptap extensions for V1 features"
 ### Task 3: Core Hook — useMarkdownEditor
 
 **Files:**
+
 - Create: `packages/notra-editor/src/hooks/use-markdown-editor.ts`
 - Create: `packages/notra-editor/tests/use-markdown-editor.test.ts`
 
@@ -297,8 +300,7 @@ describe('useMarkdownEditor', () => {
 		const { result } = renderHook(() =>
 			useMarkdownEditor({ value: '# Hello', onChange })
 		);
-		const md =
-			result.current.editor?.storage.markdown.getMarkdown() as string;
+		const md = result.current.editor?.storage.markdown.getMarkdown() as string;
 		expect(md.trim()).toBe('# Hello');
 	});
 
@@ -349,8 +351,7 @@ describe('useMarkdownEditor', () => {
 
 		rerender({ value: '## New Heading' });
 
-		const md =
-			result.current.editor?.storage.markdown.getMarkdown() as string;
+		const md = result.current.editor?.storage.markdown.getMarkdown() as string;
 		expect(md.trim()).toBe('## New Heading');
 	});
 });
@@ -455,6 +456,7 @@ git commit -m "feat: implement useMarkdownEditor hook with controlled component 
 ### Task 4: NotraEditor Component
 
 **Files:**
+
 - Create: `packages/notra-editor/src/notra-editor.tsx`
 - Create: `packages/notra-editor/tests/notra-editor.test.tsx`
 
@@ -570,6 +572,7 @@ git commit -m "feat: implement NotraEditor controlled component"
 ### Task 5: NotraReader Component
 
 **Files:**
+
 - Create: `packages/notra-editor/src/notra-reader.tsx`
 - Create: `packages/notra-editor/tests/notra-reader.test.tsx`
 
@@ -577,7 +580,7 @@ git commit -m "feat: implement NotraEditor controlled component"
 
 Create `packages/notra-editor/tests/notra-reader.test.tsx`:
 
-```tsx
+````tsx
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -623,7 +626,7 @@ describe('NotraReader', () => {
 		expect(pre).toHaveTextContent('console.log("hi")');
 	});
 });
-```
+````
 
 - [ ] **Step 2: Run tests to verify they fail**
 
@@ -715,6 +718,7 @@ git commit -m "feat: implement NotraReader static rendering component"
 ### Task 6: Public API Exports
 
 **Files:**
+
 - Modify: `packages/notra-editor/src/index.ts`
 
 - [ ] **Step 1: Update index.ts with public API**
@@ -744,6 +748,7 @@ git commit -m "feat: expose NotraEditor and NotraReader as public API"
 ### Task 7: Default Theme — shared.css
 
 **Files:**
+
 - Create: `packages/notra-editor/src/themes/default/shared.css`
 
 - [ ] **Step 1: Create shared.css**
@@ -1035,14 +1040,36 @@ This CSS replicates the Notion demo's typography styles. Uses `.notra` as the sc
 		center / contain no-repeat;
 }
 
-.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox']:checked + span,
-.notra-reader ul[data-type='taskList'] li label input[type='checkbox']:checked + span {
+.notra
+	.tiptap
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span,
+.notra-reader
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span {
 	background: var(--notra-checklist-bg-active);
 	border-color: var(--notra-checklist-border-active);
 }
 
-.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox']:checked + span::before,
-.notra-reader ul[data-type='taskList'] li label input[type='checkbox']:checked + span::before {
+.notra
+	.tiptap
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span::before,
+.notra-reader
+	ul[data-type='taskList']
+	li
+	label
+	input[type='checkbox']:checked
+	+ span::before {
 	opacity: 1;
 }
 
@@ -1179,6 +1206,7 @@ git commit -m "feat: add default theme shared.css with Notion-style typography"
 ### Task 8: Default Theme — editor.css
 
 **Files:**
+
 - Create: `packages/notra-editor/src/themes/default/editor.css`
 
 - [ ] **Step 1: Create editor.css**
@@ -1218,7 +1246,9 @@ git commit -m "feat: add default theme shared.css with Notion-style typography"
 	background: transparent;
 }
 
-.notra-editor .tiptap.ProseMirror .ProseMirror-selectednode:not(img):not(pre):not(.react-renderer) {
+.notra-editor
+	.tiptap.ProseMirror
+	.ProseMirror-selectednode:not(img):not(pre):not(.react-renderer) {
 	border-radius: var(--notra-radius);
 	background-color: var(--notra-selection-color);
 }
@@ -1230,7 +1260,11 @@ git commit -m "feat: add default theme shared.css with Notion-style typography"
 	position: relative;
 }
 
-.notra-editor .tiptap.ProseMirror .is-empty[data-placeholder]:has(> .ProseMirror-trailingBreak:only-child)::before {
+.notra-editor
+	.tiptap.ProseMirror
+	.is-empty[data-placeholder]:has(
+		> .ProseMirror-trailingBreak:only-child
+	)::before {
 	content: attr(data-placeholder);
 	pointer-events: none;
 	height: 0;
@@ -1273,6 +1307,7 @@ git commit -m "feat: add editor.css with cursor, selection, and placeholder styl
 ### Task 9: Default Theme — reader.css
 
 **Files:**
+
 - Create: `packages/notra-editor/src/themes/default/reader.css`
 
 - [ ] **Step 1: Create reader.css**
@@ -1312,6 +1347,7 @@ git commit -m "feat: add reader.css for static rendering styles"
 ### Task 10: Playground App
 
 **Files:**
+
 - Create: `apps/playground/package.json`
 - Create: `apps/playground/index.html`
 - Create: `apps/playground/vite.config.ts`
@@ -1499,7 +1535,10 @@ export function App() {
 }
 
 body {
-	font-family: system-ui, -apple-system, sans-serif;
+	font-family:
+		system-ui,
+		-apple-system,
+		sans-serif;
 	background-color: #fafafa;
 }
 
@@ -1568,13 +1607,14 @@ git commit -m "feat: add playground app for development and visual testing"
 ### Task 11: Integration Test & Final Verification
 
 **Files:**
+
 - Modify: `packages/notra-editor/tests/notra-editor.test.tsx` (add integration tests)
 
 - [ ] **Step 1: Add markdown round-trip integration test**
 
 Add to `packages/notra-editor/tests/notra-editor.test.tsx`:
 
-```tsx
+````tsx
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -1625,7 +1665,7 @@ describe('NotraEditor — markdown features', () => {
 		expect(container.querySelector('em')).toHaveTextContent('italic');
 	});
 });
-```
+````
 
 - [ ] **Step 2: Run full test suite**
 
@@ -1656,6 +1696,7 @@ git commit -m "test: add integration tests for markdown feature rendering"
 - [ ] **Step 1: Verify the built package has correct exports**
 
 Run:
+
 ```bash
 cd /Users/a11/Desktop/code/earn/notra-editor/packages/notra-editor
 pnpm build
@@ -1664,6 +1705,7 @@ ls dist/themes/default/
 ```
 
 Expected output:
+
 ```
 dist/index.mjs dist/index.cjs dist/index.d.mts dist/index.d.cts themes/
 dist/themes/default/shared.css dist/themes/default/editor.css dist/themes/default/reader.css
@@ -1672,6 +1714,7 @@ dist/themes/default/shared.css dist/themes/default/editor.css dist/themes/defaul
 - [ ] **Step 2: Verify package can be consumed as ESM**
 
 Run:
+
 ```bash
 cd /Users/a11/Desktop/code/earn/notra-editor/packages/notra-editor
 node -e "import('./dist/index.mjs').then(m => console.log(Object.keys(m)))"
@@ -1682,6 +1725,7 @@ Expected: `['NotraEditor', 'NotraReader']`
 - [ ] **Step 3: Run pnpm pack dry-run to verify published files**
 
 Run:
+
 ```bash
 cd /Users/a11/Desktop/code/earn/notra-editor/packages/notra-editor
 pnpm pack --dry-run

@@ -57,13 +57,13 @@ export function App() {
 			</header>
 			<main className="playground-main">
 				{showReader ? (
-					<NotraReader content={content} className="playground-reader" />
+					<NotraReader className="playground-reader" content={content} />
 				) : (
 					<NotraEditor
+						className="playground-editor"
+						placeholder="Start writing..."
 						value={content}
 						onChange={setContent}
-						placeholder="Start writing..."
-						className="playground-editor"
 					/>
 				)}
 			</main>
