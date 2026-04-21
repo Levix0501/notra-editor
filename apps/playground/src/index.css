@@ -1,0 +1,51 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: system-ui, -apple-system, sans-serif;
+	background-color: #fafafa;
+}
+
+.playground {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+.playground-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 2rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.playground-header h1 {
+	font-size: 1.25rem;
+	font-weight: 600;
+}
+
+.playground-header button {
+	padding: 0.5rem 1rem;
+	border: 1px solid #e5e5e5;
+	border-radius: 6px;
+	background: white;
+	cursor: pointer;
+	font-size: 0.875rem;
+}
+
+.playground-header button:hover {
+	background: #f5f5f5;
+}
+
+.playground-main {
+	background: white;
+	border: 1px solid #e5e5e5;
+	border-radius: 8px;
+	padding: 2rem;
+	min-height: 400px;
+}

@@ -1,1 +1,409 @@
-/* Shared theme styles for notra-editor */
+/* =====================
+   CSS Custom Properties
+   ===================== */
+.notra {
+	--notra-font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+	--notra-font-mono: 'JetBrains Mono NL', ui-monospace, 'SF Mono', monospace;
+	--notra-font-size: 1rem;
+	--notra-line-height: 1.6;
+
+	/* Light mode colors */
+	--notra-color-text: rgba(29, 30, 32, 0.98);
+	--notra-color-bg: #ffffff;
+	--notra-color-border: rgba(37, 39, 45, 0.1);
+	--notra-color-link: rgba(98, 41, 255, 1);
+
+	/* Code */
+	--notra-code-bg: rgba(15, 22, 36, 0.05);
+	--notra-code-text: rgba(35, 37, 42, 0.87);
+	--notra-code-border: rgba(37, 39, 45, 0.1);
+	--notra-codeblock-bg: rgba(56, 56, 56, 0.04);
+	--notra-codeblock-text: rgba(30, 32, 36, 0.95);
+	--notra-codeblock-border: rgba(37, 39, 45, 0.1);
+
+	/* Blockquote */
+	--notra-blockquote-bar: rgba(29, 30, 32, 0.98);
+
+	/* Horizontal rule */
+	--notra-hr-color: rgba(37, 39, 45, 0.1);
+
+	/* Task list */
+	--notra-checklist-bg: rgba(15, 22, 36, 0.05);
+	--notra-checklist-bg-active: rgba(29, 30, 32, 0.98);
+	--notra-checklist-border: rgba(37, 39, 45, 0.1);
+	--notra-checklist-border-active: rgba(29, 30, 32, 0.98);
+	--notra-checklist-check-color: #ffffff;
+	--notra-checklist-text-active: rgba(52, 55, 60, 0.64);
+
+	--notra-radius: 6px;
+}
+
+/* =====================
+   Base Typography
+   ===================== */
+.notra .tiptap,
+.notra-reader {
+	font-family: var(--notra-font-body);
+	font-size: var(--notra-font-size);
+	line-height: var(--notra-line-height);
+	color: var(--notra-color-text);
+}
+
+/* =====================
+   Paragraphs
+   ===================== */
+.notra .tiptap p:not(:first-child):not(td p):not(th p),
+.notra-reader p:not(:first-child) {
+	font-size: 1rem;
+	line-height: 1.6;
+	font-weight: normal;
+	margin-top: 20px;
+}
+
+/* =====================
+   Headings
+   ===================== */
+.notra .tiptap h1,
+.notra .tiptap h2,
+.notra .tiptap h3,
+.notra .tiptap h4,
+.notra .tiptap h5,
+.notra .tiptap h6,
+.notra-reader h1,
+.notra-reader h2,
+.notra-reader h3,
+.notra-reader h4,
+.notra-reader h5,
+.notra-reader h6 {
+	position: relative;
+	color: inherit;
+	font-style: inherit;
+}
+
+.notra .tiptap > h1:first-child,
+.notra .tiptap > h2:first-child,
+.notra .tiptap > h3:first-child,
+.notra .tiptap > h4:first-child,
+.notra-reader > h1:first-child,
+.notra-reader > h2:first-child,
+.notra-reader > h3:first-child,
+.notra-reader > h4:first-child {
+	margin-top: 0;
+}
+
+.notra .tiptap h1,
+.notra-reader h1 {
+	font-size: 1.5em;
+	font-weight: 700;
+	margin-top: 3em;
+}
+
+.notra .tiptap h2,
+.notra-reader h2 {
+	font-size: 1.25em;
+	font-weight: 700;
+	margin-top: 2.5em;
+}
+
+.notra .tiptap h3,
+.notra-reader h3 {
+	font-size: 1.125em;
+	font-weight: 600;
+	margin-top: 2em;
+}
+
+.notra .tiptap h4,
+.notra-reader h4 {
+	font-size: 1em;
+	font-weight: 600;
+	margin-top: 2em;
+}
+
+.notra .tiptap h5,
+.notra-reader h5 {
+	font-size: 0.875em;
+	font-weight: 600;
+	margin-top: 1.5em;
+}
+
+.notra .tiptap h6,
+.notra-reader h6 {
+	font-size: 0.75em;
+	font-weight: 600;
+	margin-top: 1.5em;
+}
+
+/* =====================
+   Lists — Common
+   ===================== */
+.notra .tiptap ol,
+.notra .tiptap ul,
+.notra-reader ol,
+.notra-reader ul {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+	padding-left: 1.5em;
+}
+
+.notra .tiptap ol:first-child,
+.notra .tiptap ul:first-child,
+.notra-reader ol:first-child,
+.notra-reader ul:first-child {
+	margin-top: 0;
+}
+
+.notra .tiptap ol:last-child,
+.notra .tiptap ul:last-child,
+.notra-reader ol:last-child,
+.notra-reader ul:last-child {
+	margin-bottom: 0;
+}
+
+.notra .tiptap ol ol,
+.notra .tiptap ol ul,
+.notra .tiptap ul ol,
+.notra .tiptap ul ul,
+.notra-reader ol ol,
+.notra-reader ol ul,
+.notra-reader ul ol,
+.notra-reader ul ul {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.notra .tiptap li p,
+.notra-reader li p {
+	margin-top: 0;
+	line-height: 1.6;
+}
+
+/* =====================
+   Ordered Lists — Nested styles
+   ===================== */
+.notra .tiptap ol,
+.notra-reader ol {
+	list-style: decimal;
+}
+
+.notra .tiptap ol ol,
+.notra-reader ol ol {
+	list-style: lower-alpha;
+}
+
+.notra .tiptap ol ol ol,
+.notra-reader ol ol ol {
+	list-style: lower-roman;
+}
+
+/* =====================
+   Unordered Lists — Nested styles
+   ===================== */
+.notra .tiptap ul:not([data-type='taskList']),
+.notra-reader ul:not([data-type='taskList']) {
+	list-style: disc;
+}
+
+.notra .tiptap ul:not([data-type='taskList']) ul,
+.notra-reader ul:not([data-type='taskList']) ul {
+	list-style: circle;
+}
+
+.notra .tiptap ul:not([data-type='taskList']) ul ul,
+.notra-reader ul:not([data-type='taskList']) ul ul {
+	list-style: square;
+}
+
+/* =====================
+   Task Lists
+   ===================== */
+.notra .tiptap ul[data-type='taskList'],
+.notra-reader ul[data-type='taskList'] {
+	padding-left: 0.25em;
+	list-style: none;
+}
+
+.notra .tiptap ul[data-type='taskList'] li,
+.notra-reader ul[data-type='taskList'] li {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+}
+
+.notra .tiptap ul[data-type='taskList'] li[data-checked='true'] > div > p,
+.notra-reader ul[data-type='taskList'] li[data-checked='true'] > div > p {
+	opacity: 0.5;
+	text-decoration: line-through;
+}
+
+.notra .tiptap ul[data-type='taskList'] li label,
+.notra-reader ul[data-type='taskList'] li label {
+	position: relative;
+	padding-top: 0.375rem;
+	padding-right: 0.5rem;
+}
+
+.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox'],
+.notra-reader ul[data-type='taskList'] li label input[type='checkbox'] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.notra .tiptap ul[data-type='taskList'] li label span,
+.notra-reader ul[data-type='taskList'] li label span {
+	display: block;
+	width: 1em;
+	height: 1em;
+	border: 1px solid var(--notra-checklist-border);
+	border-radius: 0.25rem;
+	position: relative;
+	cursor: pointer;
+	background-color: var(--notra-checklist-bg);
+	transition:
+		background-color 80ms ease-out,
+		border-color 80ms ease-out;
+}
+
+.notra .tiptap ul[data-type='taskList'] li label span::before,
+.notra-reader ul[data-type='taskList'] li label span::before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 0.75em;
+	height: 0.75em;
+	background-color: var(--notra-checklist-check-color);
+	opacity: 0;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M21.4142 4.58579C22.1953 5.36683 22.1953 6.63317 21.4142 7.41421L10.4142 18.4142C9.63317 19.1953 8.36684 19.1953 7.58579 18.4142L2.58579 13.4142C1.80474 12.6332 1.80474 11.3668 2.58579 10.5858C3.36683 9.80474 4.63317 9.80474 5.41421 10.5858L9 14.1716L18.5858 4.58579C19.3668 3.80474 20.6332 3.80474 21.4142 4.58579Z' fill='currentColor'/%3E%3C/svg%3E")
+		center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M21.4142 4.58579C22.1953 5.36683 22.1953 6.63317 21.4142 7.41421L10.4142 18.4142C9.63317 19.1953 8.36684 19.1953 7.58579 18.4142L2.58579 13.4142C1.80474 12.6332 1.80474 11.3668 2.58579 10.5858C3.36683 9.80474 4.63317 9.80474 5.41421 10.5858L9 14.1716L18.5858 4.58579C19.3668 3.80474 20.6332 3.80474 21.4142 4.58579Z' fill='currentColor'/%3E%3C/svg%3E")
+		center / contain no-repeat;
+}
+
+.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox']:checked + span,
+.notra-reader ul[data-type='taskList'] li label input[type='checkbox']:checked + span {
+	background: var(--notra-checklist-bg-active);
+	border-color: var(--notra-checklist-border-active);
+}
+
+.notra .tiptap ul[data-type='taskList'] li label input[type='checkbox']:checked + span::before,
+.notra-reader ul[data-type='taskList'] li label input[type='checkbox']:checked + span::before {
+	opacity: 1;
+}
+
+.notra .tiptap ul[data-type='taskList'] li div,
+.notra-reader ul[data-type='taskList'] li div {
+	flex: 1 1 0%;
+	min-width: 0;
+}
+
+/* =====================
+   Code — Inline
+   ===================== */
+.notra .tiptap code,
+.notra-reader code {
+	background-color: var(--notra-code-bg);
+	color: var(--notra-code-text);
+	border: 1px solid var(--notra-code-border);
+	font-family: var(--notra-font-mono);
+	font-size: 0.875em;
+	line-height: 1.4;
+	border-radius: var(--notra-radius);
+	padding: 0.1em 0.2em;
+}
+
+/* =====================
+   Code — Block
+   ===================== */
+.notra .tiptap pre,
+.notra-reader pre {
+	background-color: var(--notra-codeblock-bg);
+	color: var(--notra-codeblock-text);
+	border: 1px solid var(--notra-codeblock-border);
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+	padding: 1em;
+	font-size: 1rem;
+	border-radius: var(--notra-radius);
+}
+
+.notra .tiptap pre code,
+.notra-reader pre code {
+	background-color: transparent;
+	border: none;
+	border-radius: 0;
+	color: inherit;
+	padding: 0;
+}
+
+/* =====================
+   Blockquote
+   ===================== */
+.notra .tiptap blockquote,
+.notra-reader blockquote {
+	position: relative;
+	padding-left: 1em;
+	padding-top: 0.375em;
+	padding-bottom: 0.375em;
+	margin: 1.5rem 0;
+}
+
+.notra .tiptap blockquote p,
+.notra-reader blockquote p {
+	margin-top: 0;
+}
+
+.notra .tiptap blockquote::before,
+.notra-reader blockquote::before {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 0.25em;
+	background-color: var(--notra-blockquote-bar);
+	content: '';
+	border-radius: 0;
+}
+
+/* =====================
+   Horizontal Rule
+   ===================== */
+.notra .tiptap hr,
+.notra-reader hr {
+	border: none;
+	height: 1px;
+	background-color: var(--notra-hr-color);
+}
+
+.notra .tiptap [data-type='horizontalRule'],
+.notra-reader [data-type='horizontalRule'] {
+	margin-top: 2.25em;
+	margin-bottom: 2.25em;
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+}
+
+/* =====================
+   Links
+   ===================== */
+.notra .tiptap a,
+.notra-reader a {
+	color: var(--notra-color-link);
+	text-decoration: underline;
+}
+
+/* =====================
+   Inline Text Decoration
+   ===================== */
+.notra .tiptap a span,
+.notra-reader a span {
+	text-decoration: underline;
+}
+
+.notra .tiptap s span,
+.notra-reader s span {
+	text-decoration: line-through;
+}

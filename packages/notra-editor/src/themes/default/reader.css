@@ -1,1 +1,14 @@
-/* Reader theme styles for notra-editor */
+/* =====================
+   Reader-specific Styles
+   ===================== */
+.notra-reader {
+	font-family: var(--notra-font-body);
+	font-size: var(--notra-font-size);
+	line-height: var(--notra-line-height);
+	color: var(--notra-color-text);
+}
+
+/* Ensure native selection in reader mode */
+.notra-reader *::selection {
+	background-color: highlight;
+}
