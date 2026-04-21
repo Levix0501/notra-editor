@@ -50,6 +50,7 @@ describe('NotraEditor — markdown features', () => {
 			<NotraEditor value={'- item one\n- item two'} onChange={vi.fn()} />
 		);
 		const items = container.querySelectorAll('li');
+
 		expect(items.length).toBe(2);
 	});
 
@@ -57,6 +58,7 @@ describe('NotraEditor — markdown features', () => {
 		const { container } = render(
 			<NotraEditor value={'```\ncode here\n```'} onChange={vi.fn()} />
 		);
+
 		expect(container.querySelector('pre')).toBeInTheDocument();
 	});
 
@@ -64,6 +66,7 @@ describe('NotraEditor — markdown features', () => {
 		const { container } = render(
 			<NotraEditor value="> quoted text" onChange={vi.fn()} />
 		);
+
 		expect(container.querySelector('blockquote')).toBeInTheDocument();
 	});
 
@@ -71,6 +74,7 @@ describe('NotraEditor — markdown features', () => {
 		const { container } = render(
 			<NotraEditor value={'text\n\n---\n\nmore text'} onChange={vi.fn()} />
 		);
+
 		expect(container.querySelector('hr')).toBeInTheDocument();
 	});
 
@@ -78,6 +82,7 @@ describe('NotraEditor — markdown features', () => {
 		const { container } = render(
 			<NotraEditor value="**bold** and *italic*" onChange={vi.fn()} />
 		);
+
 		expect(container.querySelector('strong')).toHaveTextContent('bold');
 		expect(container.querySelector('em')).toHaveTextContent('italic');
 	});
