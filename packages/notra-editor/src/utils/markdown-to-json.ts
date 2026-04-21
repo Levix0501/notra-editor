@@ -1,13 +1,21 @@
 import { Editor } from '@tiptap/core';
+import { Markdown } from 'tiptap-markdown';
 
-import { defaultExtensions } from '../extensions';
+import { sharedExtensions } from '../extensions';
+
+// Parser needs shared content model + Markdown for markdown→JSON conversion
+// No clipboard features needed (transformPastedText/transformCopiedText are editor-only)
+const parserExtensions = [
+	...sharedExtensions,
+	Markdown.configure({ html: false })
+];
 
 let parserEditor: Editor | null = null;
 
 function getParserEditor(): Editor {
 	if (!parserEditor) {
 		parserEditor = new Editor({
-			extensions: defaultExtensions,
+			extensions: parserExtensions,
 			content: ''
 		});
 	}

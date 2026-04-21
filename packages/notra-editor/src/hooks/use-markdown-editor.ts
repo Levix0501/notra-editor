@@ -1,7 +1,7 @@
 import { useEditor } from '@tiptap/react';
 import { useEffect, useRef } from 'react';
 
-import { defaultExtensions } from '../extensions';
+import { editorExtensions } from '../extensions';
 
 import type { MarkdownStorage } from 'tiptap-markdown';
 
@@ -27,7 +27,7 @@ export function useMarkdownEditor({
 	onChangeRef.current = onChange;
 
 	const editor = useEditor({
-		extensions: defaultExtensions,
+		extensions: editorExtensions,
 		editable,
 		content: value,
 		onUpdate({ editor }) {
