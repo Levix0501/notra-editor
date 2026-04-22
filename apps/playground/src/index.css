@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=DM+Sans:opsz,wght@9..40,100..1000&display=swap');
+
 * {
 	margin: 0;
 	padding: 0;
@@ -5,50 +7,60 @@
 }
 
 body {
-	font-family:
-		system-ui,
-		-apple-system,
-		sans-serif;
-	background-color: #fafafa;
+	font-family: 'Inter', sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	background-color: #ffffff;
+	overscroll-behavior-y: none;
 }
 
-.playground {
-	max-width: 800px;
+/* Scrollbar */
+::-webkit-scrollbar {
+	width: 0.25rem;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(37, 39, 45, 0.1);
+	border-radius: 9999px;
+}
+
+/* Editor wrapper — full viewport */
+.simple-editor-wrapper {
+	width: 100vw;
+	height: 100vh;
+	overflow: auto;
+}
+
+/* Editor content — centered, constrained width */
+.simple-editor-content {
+	max-width: 648px;
+	width: 100%;
 	margin: 0 auto;
-	padding: 2rem;
-}
-
-.playground-header {
+	height: 100%;
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 2rem;
-	padding-bottom: 1rem;
-	border-bottom: 1px solid #e5e5e5;
+	flex-direction: column;
+	flex: 1;
 }
 
-.playground-header h1 {
-	font-size: 1.25rem;
-	font-weight: 600;
+/* Editor wrapper — fill content area */
+.simple-editor-content .notra-editor {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
 }
 
-.playground-header button {
-	padding: 0.5rem 1rem;
-	border: 1px solid #e5e5e5;
-	border-radius: 6px;
-	background: white;
-	cursor: pointer;
-	font-size: 0.875rem;
+/* Editor area — fill available space with generous padding */
+.simple-editor-content .notra-editor .tiptap.ProseMirror {
+	flex: 1;
+	padding: 3rem 3rem 30vh;
 }
 
-.playground-header button:hover {
-	background: #f5f5f5;
-}
-
-.playground-main {
-	background: white;
-	border: 1px solid #e5e5e5;
-	border-radius: 8px;
-	padding: 2rem;
-	min-height: 400px;
+@media screen and (max-width: 480px) {
+	.simple-editor-content .notra-editor .tiptap.ProseMirror {
+		padding: 1rem 1.5rem 30vh;
+	}
 }
