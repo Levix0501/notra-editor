@@ -37,7 +37,9 @@ export function DropdownMenu({
 
 		const updatePosition = () => {
 			if (!triggerRef.current) return;
+
 			const rect = triggerRef.current.getBoundingClientRect();
+
 			setPosition({
 				top: rect.bottom + 4,
 				left: rect.left + rect.width / 2

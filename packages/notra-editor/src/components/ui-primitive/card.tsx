@@ -7,6 +7,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = forwardRef<HTMLDivElement, CardProps>(
 	({ className, style, ...props }, ref) => {
 		const classNames = ['tiptap-card', className].filter(Boolean).join(' ');
+
 		return <div ref={ref} className={classNames} style={style} {...props} />;
 	}
 );
@@ -19,7 +20,10 @@ export interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
 	({ className, style, ...props }, ref) => {
-		const classNames = ['tiptap-card-body', className].filter(Boolean).join(' ');
+		const classNames = ['tiptap-card-body', className]
+			.filter(Boolean)
+			.join(' ');
+
 		return <div ref={ref} className={classNames} style={style} {...props} />;
 	}
 );
@@ -36,6 +40,7 @@ export const CardItemGroup = forwardRef<HTMLDivElement, CardItemGroupProps>(
 		const classNames = ['tiptap-card-item-group', className]
 			.filter(Boolean)
 			.join(' ');
+
 		return (
 			<div
 				ref={ref}

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { BoldIcon } from '../../icons/bold-icon';
+import { CodeIcon } from '../../icons/code-icon';
 import { ItalicIcon } from '../../icons/italic-icon';
 import { StrikethroughIcon } from '../../icons/strikethrough-icon';
-import { CodeIcon } from '../../icons/code-icon';
 
 import type { Editor } from '@tiptap/core';
 
@@ -37,9 +37,7 @@ export function useMark({ editor, type }: UseMarkConfig) {
 
 		const handleUpdate = () => {
 			setIsActive(editor.isActive(type));
-			setCanToggle(
-				editor.isEditable && editor.can().toggleMark(type)
-			);
+			setCanToggle(editor.isEditable && editor.can().toggleMark(type));
 		};
 
 		handleUpdate();

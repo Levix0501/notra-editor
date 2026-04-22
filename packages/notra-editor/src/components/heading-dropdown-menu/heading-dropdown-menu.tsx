@@ -1,16 +1,18 @@
 import { forwardRef } from 'react';
 
+import { HeadingButton } from './heading-button';
+import { getHeadingTriggerIcon, useActiveHeadingLevel } from './use-heading';
 import { ChevronDownIcon } from '../../icons/chevron-down-icon';
 import { Button } from '../button/button';
 import { DropdownMenu } from '../ui-primitive/dropdown-menu';
-import { HeadingButton } from './heading-button';
-import { getHeadingTriggerIcon, useActiveHeadingLevel } from './use-heading';
 
 import type { HeadingLevel } from './use-heading';
 import type { Editor } from '@tiptap/core';
 
-export interface HeadingDropdownMenuProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+export interface HeadingDropdownMenuProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
 	editor: Editor | null;
 	levels?: HeadingLevel[];
 }
@@ -40,7 +42,7 @@ export const HeadingDropdownMenu = forwardRef<
 			}
 		>
 			{levels.map((level) => (
-				<HeadingButton editor={editor} key={level} level={level} />
+				<HeadingButton key={level} editor={editor} level={level} />
 			))}
 		</DropdownMenu>
 	);

@@ -15,9 +15,7 @@ export interface BlockquoteButtonProps extends Omit<
 function canToggleBlockquote(editor: Editor | null): boolean {
 	if (!editor || !editor.isEditable) return false;
 
-	return (
-		editor.can().toggleWrap('blockquote') || editor.can().clearNodes()
-	);
+	return editor.can().toggleWrap('blockquote') || editor.can().clearNodes();
 }
 
 export const BlockquoteButton = forwardRef<
@@ -51,6 +49,7 @@ export const BlockquoteButton = forwardRef<
 			onClick?.(event);
 
 			if (event.defaultPrevented) return;
+
 			if (!editor) return;
 
 			if (editor.isActive('blockquote')) {

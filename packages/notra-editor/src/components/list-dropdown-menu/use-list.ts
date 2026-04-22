@@ -79,12 +79,7 @@ export function useList({
 
 		// clearNodes first to convert any block type to paragraph,
 		// then toggle list
-		return editor
-			.chain()
-			.focus()
-			.clearNodes()
-			.toggleList(type, itemType)
-			.run();
+		return editor.chain().focus().clearNodes().toggleList(type, itemType).run();
 	}, [editor, type]);
 
 	return {

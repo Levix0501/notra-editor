@@ -31,8 +31,7 @@ function canToggleHeading(editor: Editor | null, level: HeadingLevel): boolean {
 	if (!editor || !editor.isEditable) return false;
 
 	return (
-		editor.can().setNode('heading', { level }) ||
-		editor.can().clearNodes()
+		editor.can().setNode('heading', { level }) || editor.can().clearNodes()
 	);
 }
 

@@ -52,6 +52,7 @@ export const CodeBlockButton = forwardRef<
 			onClick?.(event);
 
 			if (event.defaultPrevented) return;
+
 			if (!editor) return;
 
 			if (editor.isActive('codeBlock')) {

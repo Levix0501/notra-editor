@@ -20,32 +20,41 @@ export interface ListDropdownMenuProps extends Omit<
 export const ListDropdownMenu = forwardRef<
 	HTMLButtonElement,
 	ListDropdownMenuProps
->(({ editor, types = ['bulletList', 'orderedList', 'taskList'], ...buttonProps }, ref) => {
-	const activeType = useActiveListType(editor, types);
-	const TriggerIcon = getListTriggerIcon(activeType);
+>(
+	(
+		{
+			editor,
+			types = ['bulletList', 'orderedList', 'taskList'],
+			...buttonProps
+		},
+		ref
+	) => {
+		const activeType = useActiveListType(editor, types);
+		const TriggerIcon = getListTriggerIcon(activeType);
 
-	return (
-		<DropdownMenu
-			trigger={
-				<Button
-					ref={ref}
-					aria-label="List"
-					data-active-state={activeType !== null ? 'on' : 'off'}
-					tabIndex={-1}
-					type="button"
-					variant="ghost"
-					{...buttonProps}
-				>
-					<TriggerIcon className="tiptap-button-icon" />
-					<ChevronDownIcon className="tiptap-button-dropdown-arrows" />
-				</Button>
-			}
-		>
-			{types.map((type) => (
-				<ListButton key={type} editor={editor} listType={type} />
-			))}
-		</DropdownMenu>
-	);
-});
+		return (
+			<DropdownMenu
+				trigger={
+					<Button
+						ref={ref}
+						aria-label="List"
+						data-active-state={activeType !== null ? 'on' : 'off'}
+						tabIndex={-1}
+						type="button"
+						variant="ghost"
+						{...buttonProps}
+					>
+						<TriggerIcon className="tiptap-button-icon" />
+						<ChevronDownIcon className="tiptap-button-dropdown-arrows" />
+					</Button>
+				}
+			>
+				{types.map((type) => (
+					<ListButton key={type} editor={editor} listType={type} />
+				))}
+			</DropdownMenu>
+		);
+	}
+);
 
 ListDropdownMenu.displayName = 'ListDropdownMenu';

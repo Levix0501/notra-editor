@@ -1,14 +1,16 @@
 import { forwardRef, useCallback } from 'react';
 
+import { useHeading } from './use-heading';
 import { CheckIcon } from '../../icons/check-icon';
 import { Button } from '../button/button';
-import { useHeading } from './use-heading';
 
 import type { HeadingLevel } from './use-heading';
 import type { Editor } from '@tiptap/core';
 
-export interface HeadingButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+export interface HeadingButtonProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
 	editor: Editor | null;
 	level: HeadingLevel;
 }

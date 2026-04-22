@@ -1,20 +1,22 @@
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { useLinkPopover } from './use-link-popover';
+import { CornerDownLeftIcon } from '../../icons/corner-down-left-icon';
+import { ExternalLinkIcon } from '../../icons/external-link-icon';
+import { LinkIcon } from '../../icons/link-icon';
+import { TrashIcon } from '../../icons/trash-icon';
 import { Button } from '../button/button';
 import { ToolbarSeparator } from '../toolbar/toolbar';
 import { Card, CardBody, CardItemGroup } from '../ui-primitive/card';
 import { Input } from '../ui-primitive/input';
 import { Popover } from '../ui-primitive/popover';
-import { CornerDownLeftIcon } from '../../icons/corner-down-left-icon';
-import { ExternalLinkIcon } from '../../icons/external-link-icon';
-import { LinkIcon } from '../../icons/link-icon';
-import { TrashIcon } from '../../icons/trash-icon';
 
 import type { Editor } from '@tiptap/core';
 
-export interface LinkPopoverProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+export interface LinkPopoverProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
 	editor: Editor | null;
 }
 
@@ -55,7 +57,6 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
 		return (
 			<Popover
 				open={isOpen}
-				onOpenChange={setIsOpen}
 				trigger={
 					<Button
 						ref={ref}
@@ -72,6 +73,7 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
 						<LinkIcon className="tiptap-button-icon" />
 					</Button>
 				}
+				onOpenChange={setIsOpen}
 			>
 				<Card>
 					<CardBody>
