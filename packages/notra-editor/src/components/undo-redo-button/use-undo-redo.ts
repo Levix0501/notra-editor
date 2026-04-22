@@ -1,8 +1,9 @@
-import type { Editor } from '@tiptap/core';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RedoIcon } from '../../icons/redo-icon';
 import { UndoIcon } from '../../icons/undo-icon';
+
+import type { Editor } from '@tiptap/core';
 
 export type UndoRedoAction = 'undo' | 'redo';
 
@@ -26,6 +27,7 @@ function canExecuteAction(
 	action: UndoRedoAction
 ): boolean {
 	if (!editor || !editor.isEditable) return false;
+
 	return action === 'undo' ? editor.can().undo() : editor.can().redo();
 }
 
@@ -50,9 +52,11 @@ export function useUndoRedo({ editor, action }: UseUndoRedoConfig) {
 
 	const handleAction = useCallback(() => {
 		if (!editor || !editor.isEditable) return false;
+
 		if (!canExecuteAction(editor, action)) return false;
 
 		const chain = editor.chain().focus();
+
 		return action === 'undo' ? chain.undo().run() : chain.redo().run();
 	}, [editor, action]);
 

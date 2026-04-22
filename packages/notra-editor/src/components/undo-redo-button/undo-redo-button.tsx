@@ -1,13 +1,15 @@
-import type { Editor } from '@tiptap/core';
 import { forwardRef, useCallback } from 'react';
 
+import { useUndoRedo } from './use-undo-redo';
 import { Button } from '../button/button';
 
 import type { UndoRedoAction } from './use-undo-redo';
-import { useUndoRedo } from './use-undo-redo';
+import type { Editor } from '@tiptap/core';
 
-export interface UndoRedoButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+export interface UndoRedoButtonProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
 	editor: Editor | null;
 	action: UndoRedoAction;
 }
@@ -24,7 +26,9 @@ export const UndoRedoButton = forwardRef<
 	const handleClick = useCallback(
 		(event: React.MouseEvent<HTMLButtonElement>) => {
 			onClick?.(event);
+
 			if (event.defaultPrevented) return;
+
 			handleAction();
 		},
 		[handleAction, onClick]

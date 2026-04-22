@@ -1,4 +1,5 @@
 import { useEditor } from '@tiptap/react';
+import { EditorState } from '@tiptap/pm/state';
 import { useEffect, useRef } from 'react';
 
 import { editorExtensions } from '../extensions';
@@ -37,6 +38,24 @@ export function useMarkdownEditor({
 
 			externalValue.current = md;
 			onChangeRef.current(md);
+		},
+		onCreate({ editor }) {
+			// Browser-specific behaviors (MutationObserver, DOM reconciliation)
+			// may create unwanted transactions during mount, polluting the history
+			// and making undo available before the user has made any changes.
+			// Reset the editor state after initialization to ensure a clean history.
+			setTimeout(() => {
+				if (editor.isDestroyed) return;
+				const { state } = editor;
+				const freshState = EditorState.create({
+					doc: state.doc,
+					selection: state.selection,
+					plugins: state.plugins,
+				});
+				editor.view.updateState(freshState);
+				// Dispatch empty transaction to notify state listeners (undo/redo buttons)
+				editor.view.dispatch(editor.view.state.tr);
+			}, 0);
 		}
 	});
 

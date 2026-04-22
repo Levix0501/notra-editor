@@ -25,15 +25,15 @@ import 'notra-editor/themes/default/editor.css';
 import { useState } from 'react';
 
 function App() {
-  const [content, setContent] = useState('# Hello\n\nStart writing...');
+	const [content, setContent] = useState('# Hello\n\nStart writing...');
 
-  return (
-    <NotraEditor
-      value={content}
-      onChange={setContent}
-      placeholder="Start writing..."
-    />
-  );
+	return (
+		<NotraEditor
+			value={content}
+			onChange={setContent}
+			placeholder="Start writing..."
+		/>
+	);
 }
 ```
 

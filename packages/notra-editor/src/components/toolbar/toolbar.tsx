@@ -6,9 +6,7 @@ export interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
 	({ children, className, variant = 'fixed', ...props }, ref) => {
-		const classNames = ['tiptap-toolbar', className]
-			.filter(Boolean)
-			.join(' ');
+		const classNames = ['tiptap-toolbar', className].filter(Boolean).join(' ');
 
 		return (
 			<div
@@ -43,8 +41,7 @@ export function ToolbarGroup({
 	);
 }
 
-export interface ToolbarSeparatorProps
-	extends React.HTMLAttributes<HTMLDivElement> {
+export interface ToolbarSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
 	orientation?: 'horizontal' | 'vertical';
 }
 
@@ -53,15 +50,11 @@ export function ToolbarSeparator({
 	className,
 	...props
 }: ToolbarSeparatorProps) {
-	const classNames = ['tiptap-separator', className]
-		.filter(Boolean)
-		.join(' ');
+	const classNames = ['tiptap-separator', className].filter(Boolean).join(' ');
 
 	return (
 		<div
-			aria-orientation={
-				orientation === 'vertical' ? orientation : undefined
-			}
+			aria-orientation={orientation === 'vertical' ? orientation : undefined}
 			className={classNames}
 			data-orientation={orientation}
 			role="separator"

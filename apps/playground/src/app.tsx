@@ -46,15 +46,11 @@ export function App() {
 	const [content, setContent] = useState(INITIAL_CONTENT);
 
 	return (
-		<div className="simple-editor-wrapper">
-			<div className="simple-editor-content">
-				<NotraEditor
-					className="simple-editor"
-					placeholder="Start writing..."
-					value={content}
-					onChange={setContent}
-				/>
-			</div>
-		</div>
+		<NotraEditor
+			className="w-screen h-screen"
+			placeholder="Start writing..."
+			value={content}
+			onChange={setContent}
+		/>
 	);
 }

@@ -24,15 +24,15 @@ import 'notra-editor/themes/default/editor.css';
 import { useState } from 'react';
 
 function App() {
-  const [content, setContent] = useState('# Hello\n\nStart writing...');
+	const [content, setContent] = useState('# Hello\n\nStart writing...');
 
-  return (
-    <NotraEditor
-      value={content}
-      onChange={setContent}
-      placeholder="Start writing..."
-    />
-  );
+	return (
+		<NotraEditor
+			value={content}
+			onChange={setContent}
+			placeholder="Start writing..."
+		/>
+	);
 }
 ```
 
@@ -44,7 +44,7 @@ import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/reader.css';
 
 function Article({ markdown }: { markdown: string }) {
-  return <NotraReader content={markdown} />;
+	return <NotraReader content={markdown} />;
 }
 ```
 
@@ -52,25 +52,25 @@ function Article({ markdown }: { markdown: string }) {
 
 ### `<NotraEditor />`
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `value` | `string` | - | Markdown content (controlled) |
-| `onChange` | `(value: string) => void` | - | Called when content changes |
-| `placeholder` | `string` | - | Placeholder text when empty |
-| `readOnly` | `boolean` | `false` | Disable editing |
-| `className` | `string` | - | Additional CSS class |
+| Prop          | Type                      | Default | Description                   |
+| ------------- | ------------------------- | ------- | ----------------------------- |
+| `value`       | `string`                  | -       | Markdown content (controlled) |
+| `onChange`    | `(value: string) => void` | -       | Called when content changes   |
+| `placeholder` | `string`                  | -       | Placeholder text when empty   |
+| `readOnly`    | `boolean`                 | `false` | Disable editing               |
+| `className`   | `string`                  | -       | Additional CSS class          |
 
 ### `<NotraReader />`
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `content` | `string` | - | Markdown content to render |
-| `className` | `string` | - | Additional CSS class |
+| Prop        | Type     | Default | Description                |
+| ----------- | -------- | ------- | -------------------------- |
+| `content`   | `string` | -       | Markdown content to render |
+| `className` | `string` | -       | Additional CSS class       |
 
 ## Supported Markdown
 
 - Headings, paragraphs, blockquotes, horizontal rules
-- **Bold**, *italic*, ~~strikethrough~~, `inline code`
+- **Bold**, _italic_, ~~strikethrough~~, `inline code`
 - Ordered lists, bullet lists, task lists
 - Code blocks
 - Links

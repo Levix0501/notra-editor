@@ -38,12 +38,14 @@ export function NotraEditor({
 	return (
 		<div className={classNames}>
 			<Toolbar variant="fixed">
+				<div style={{ flex: 1 }} />
 				<ToolbarGroup>
 					<UndoRedoButton action="undo" editor={editor} />
 					<UndoRedoButton action="redo" editor={editor} />
 				</ToolbarGroup>
+				<div style={{ flex: 1 }} />
 			</Toolbar>
-			<EditorContent editor={editor} />
+			<EditorContent className="notra-editor-content" editor={editor} />
 		</div>
 	);
 }
