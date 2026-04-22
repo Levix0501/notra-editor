@@ -19,3 +19,28 @@ export type { ButtonProps } from './components/button/button';
 
 export { UndoRedoButton } from './components/undo-redo-button/undo-redo-button';
 export type { UndoRedoButtonProps } from './components/undo-redo-button/undo-redo-button';
+
+export { Spacer } from './components/ui-primitive/spacer';
+export { DropdownMenu } from './components/ui-primitive/dropdown-menu';
+export type { DropdownMenuProps } from './components/ui-primitive/dropdown-menu';
+export { Popover } from './components/ui-primitive/popover';
+export type { PopoverProps } from './components/ui-primitive/popover';
+
+export { MarkButton } from './components/mark-button/mark-button';
+export type { MarkButtonProps } from './components/mark-button/mark-button';
+export type { MarkType } from './components/mark-button/use-mark';
+
+export { HeadingDropdownMenu } from './components/heading-dropdown-menu/heading-dropdown-menu';
+export type { HeadingDropdownMenuProps } from './components/heading-dropdown-menu/heading-dropdown-menu';
+
+export { ListDropdownMenu } from './components/list-dropdown-menu/list-dropdown-menu';
+export type { ListDropdownMenuProps } from './components/list-dropdown-menu/list-dropdown-menu';
+
+export { BlockquoteButton } from './components/blockquote-button/blockquote-button';
+export type { BlockquoteButtonProps } from './components/blockquote-button/blockquote-button';
+
+export { CodeBlockButton } from './components/code-block-button/code-block-button';
+export type { CodeBlockButtonProps } from './components/code-block-button/code-block-button';
+
+export { LinkPopover } from './components/link-popover/link-popover';
+export type { LinkPopoverProps } from './components/link-popover/link-popover';
