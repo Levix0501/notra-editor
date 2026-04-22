@@ -27,6 +27,15 @@ const headingLabels: Record<HeadingLevel, string> = {
 	4: 'Heading 4'
 };
 
+function canToggleHeading(editor: Editor | null, level: HeadingLevel): boolean {
+	if (!editor || !editor.isEditable) return false;
+
+	return (
+		editor.can().setNode('heading', { level }) ||
+		editor.can().clearNodes()
+	);
+}
+
 export function useHeading({
 	editor,
 	level
@@ -42,9 +51,7 @@ export function useHeading({
 
 		const handleUpdate = () => {
 			setIsActive(editor.isActive('heading', { level }));
-			setCanToggle(
-				editor.isEditable && editor.can().toggleHeading({ level })
-			);
+			setCanToggle(canToggleHeading(editor, level));
 		};
 
 		handleUpdate();
@@ -61,7 +68,18 @@ export function useHeading({
 	const handleToggle = useCallback(() => {
 		if (!editor || !editor.isEditable) return false;
 
-		return editor.chain().focus().toggleHeading({ level }).run();
+		if (editor.isActive('heading', { level })) {
+			return editor.chain().focus().setNode('paragraph').run();
+		}
+
+		// clearNodes first to convert any block type to paragraph,
+		// then set heading
+		return editor
+			.chain()
+			.focus()
+			.clearNodes()
+			.setNode('heading', { level })
+			.run();
 	}, [editor, level]);
 
 	return {
@@ -86,6 +104,7 @@ export function useActiveHeadingLevel(
 			const found = levels.find((level) =>
 				editor.isActive('heading', { level })
 			);
+
 			setActiveLevel(found ?? null);
 		};
 

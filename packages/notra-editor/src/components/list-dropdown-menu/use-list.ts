@@ -23,6 +23,21 @@ const listLabels: Record<ListType, string> = {
 	taskList: 'Task List'
 };
 
+const listItemTypes: Record<ListType, string> = {
+	bulletList: 'listItem',
+	orderedList: 'listItem',
+	taskList: 'taskItem'
+};
+
+function canToggleList(editor: Editor | null): boolean {
+	if (!editor || !editor.isEditable) return false;
+
+	return (
+		editor.can().toggleList('bulletList', 'listItem') ||
+		editor.can().clearNodes()
+	);
+}
+
 export function useList({
 	editor,
 	type
@@ -38,7 +53,7 @@ export function useList({
 
 		const handleUpdate = () => {
 			setIsActive(editor.isActive(type));
-			setCanToggle(editor.isEditable);
+			setCanToggle(canToggleList(editor));
 		};
 
 		handleUpdate();
@@ -55,11 +70,21 @@ export function useList({
 	const handleToggle = useCallback(() => {
 		if (!editor || !editor.isEditable) return false;
 
-		if (type === 'taskList') {
-			return editor.chain().focus().toggleList('taskList', 'taskItem').run();
+		const itemType = listItemTypes[type];
+
+		if (editor.isActive(type)) {
+			// Currently this list type → convert back to paragraph
+			return editor.chain().focus().clearNodes().run();
 		}
 
-		return editor.chain().focus().toggleList(type, 'listItem').run();
+		// clearNodes first to convert any block type to paragraph,
+		// then toggle list
+		return editor
+			.chain()
+			.focus()
+			.clearNodes()
+			.toggleList(type, itemType)
+			.run();
 	}, [editor, type]);
 
 	return {
@@ -100,9 +125,7 @@ export function useActiveListType(
 	return activeType;
 }
 
-export function getListTriggerIcon(
-	activeType: ListType | null
-): IconComponent {
+export function getListTriggerIcon(activeType: ListType | null): IconComponent {
 	if (activeType === null) return BulletListIcon;
 
 	return listIcons[activeType];

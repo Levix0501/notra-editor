@@ -1,68 +1,91 @@
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { Button } from '../button/button';
 import { CodeBlockIcon } from '../../icons/code-block-icon';
+import { Button } from '../button/button';
 
 import type { Editor } from '@tiptap/core';
 
-export interface CodeBlockButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
-  editor: Editor | null;
+export interface CodeBlockButtonProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
+	editor: Editor | null;
+}
+
+function canToggleCodeBlock(editor: Editor | null): boolean {
+	if (!editor || !editor.isEditable) return false;
+
+	return (
+		editor.can().toggleNode('codeBlock', 'paragraph') ||
+		editor.can().clearNodes()
+	);
 }
 
 export const CodeBlockButton = forwardRef<
-  HTMLButtonElement,
-  CodeBlockButtonProps
+	HTMLButtonElement,
+	CodeBlockButtonProps
 >(({ editor, onClick, ...buttonProps }, ref) => {
-  const [isActive, setIsActive] = useState(false);
-  const [canToggle, setCanToggle] = useState(false);
+	const [isActive, setIsActive] = useState(false);
+	const [canToggle, setCanToggle] = useState(false);
 
-  useEffect(() => {
-    if (!editor) return;
+	useEffect(() => {
+		if (!editor) return;
 
-    const update = () => {
-      setIsActive(editor.isActive('codeBlock'));
-      setCanToggle(editor.isEditable && editor.can().toggleCodeBlock());
-    };
+		const update = () => {
+			setIsActive(editor.isActive('codeBlock'));
+			setCanToggle(canToggleCodeBlock(editor));
+		};
 
-    update();
+		update();
 
-    editor.on('selectionUpdate', update);
-    editor.on('transaction', update);
+		editor.on('selectionUpdate', update);
+		editor.on('transaction', update);
 
-    return () => {
-      editor.off('selectionUpdate', update);
-      editor.off('transaction', update);
-    };
-  }, [editor]);
+		return () => {
+			editor.off('selectionUpdate', update);
+			editor.off('transaction', update);
+		};
+	}, [editor]);
 
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      onClick?.(event);
+	const handleClick = useCallback(
+		(event: React.MouseEvent<HTMLButtonElement>) => {
+			onClick?.(event);
 
-      if (event.defaultPrevented) return;
+			if (event.defaultPrevented) return;
+			if (!editor) return;
 
-      editor?.chain().focus().toggleCodeBlock().run();
-    },
-    [editor, onClick]
-  );
+			if (editor.isActive('codeBlock')) {
+				editor.chain().focus().setNode('paragraph').run();
+			} else {
+				// clearNodes first to convert any block type to paragraph,
+				// then toggle to codeBlock
+				editor
+					.chain()
+					.focus()
+					.clearNodes()
+					.toggleNode('codeBlock', 'paragraph')
+					.run();
+			}
+		},
+		[editor, onClick]
+	);
 
-  return (
-    <Button
-      ref={ref}
-      aria-label="Code Block"
-      aria-pressed={isActive}
-      data-active-state={isActive ? 'on' : 'off'}
-      disabled={!canToggle}
-      tabIndex={-1}
-      type="button"
-      variant="ghost"
-      onClick={handleClick}
-      {...buttonProps}
-    >
-      <CodeBlockIcon className="tiptap-button-icon" />
-    </Button>
-  );
+	return (
+		<Button
+			ref={ref}
+			aria-label="Code Block"
+			aria-pressed={isActive}
+			data-active-state={isActive ? 'on' : 'off'}
+			disabled={!canToggle}
+			tabIndex={-1}
+			type="button"
+			variant="ghost"
+			onClick={handleClick}
+			{...buttonProps}
+		>
+			<CodeBlockIcon className="tiptap-button-icon" />
+		</Button>
+	);
 });
 
 CodeBlockButton.displayName = 'CodeBlockButton';

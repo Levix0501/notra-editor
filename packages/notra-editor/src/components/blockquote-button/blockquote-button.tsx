@@ -1,68 +1,85 @@
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { Button } from '../button/button';
 import { BlockquoteIcon } from '../../icons/blockquote-icon';
+import { Button } from '../button/button';
 
 import type { Editor } from '@tiptap/core';
 
-export interface BlockquoteButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
-  editor: Editor | null;
+export interface BlockquoteButtonProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
+	editor: Editor | null;
+}
+
+function canToggleBlockquote(editor: Editor | null): boolean {
+	if (!editor || !editor.isEditable) return false;
+
+	return (
+		editor.can().toggleWrap('blockquote') || editor.can().clearNodes()
+	);
 }
 
 export const BlockquoteButton = forwardRef<
-  HTMLButtonElement,
-  BlockquoteButtonProps
+	HTMLButtonElement,
+	BlockquoteButtonProps
 >(({ editor, onClick, ...buttonProps }, ref) => {
-  const [isActive, setIsActive] = useState(false);
-  const [canToggle, setCanToggle] = useState(false);
+	const [isActive, setIsActive] = useState(false);
+	const [canToggle, setCanToggle] = useState(false);
 
-  useEffect(() => {
-    if (!editor) return;
+	useEffect(() => {
+		if (!editor) return;
 
-    const update = () => {
-      setIsActive(editor.isActive('blockquote'));
-      setCanToggle(editor.isEditable && editor.can().toggleBlockquote());
-    };
+		const update = () => {
+			setIsActive(editor.isActive('blockquote'));
+			setCanToggle(canToggleBlockquote(editor));
+		};
 
-    update();
+		update();
 
-    editor.on('selectionUpdate', update);
-    editor.on('transaction', update);
+		editor.on('selectionUpdate', update);
+		editor.on('transaction', update);
 
-    return () => {
-      editor.off('selectionUpdate', update);
-      editor.off('transaction', update);
-    };
-  }, [editor]);
+		return () => {
+			editor.off('selectionUpdate', update);
+			editor.off('transaction', update);
+		};
+	}, [editor]);
 
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      onClick?.(event);
+	const handleClick = useCallback(
+		(event: React.MouseEvent<HTMLButtonElement>) => {
+			onClick?.(event);
 
-      if (event.defaultPrevented) return;
+			if (event.defaultPrevented) return;
+			if (!editor) return;
 
-      editor?.chain().focus().toggleBlockquote().run();
-    },
-    [editor, onClick]
-  );
+			if (editor.isActive('blockquote')) {
+				editor.chain().focus().lift('blockquote').run();
+			} else {
+				// clearNodes first to convert any block type to paragraph,
+				// then wrap in blockquote
+				editor.chain().focus().clearNodes().wrapIn('blockquote').run();
+			}
+		},
+		[editor, onClick]
+	);
 
-  return (
-    <Button
-      ref={ref}
-      aria-label="Blockquote"
-      aria-pressed={isActive}
-      data-active-state={isActive ? 'on' : 'off'}
-      disabled={!canToggle}
-      tabIndex={-1}
-      type="button"
-      variant="ghost"
-      onClick={handleClick}
-      {...buttonProps}
-    >
-      <BlockquoteIcon className="tiptap-button-icon" />
-    </Button>
-  );
+	return (
+		<Button
+			ref={ref}
+			aria-label="Blockquote"
+			aria-pressed={isActive}
+			data-active-state={isActive ? 'on' : 'off'}
+			disabled={!canToggle}
+			tabIndex={-1}
+			type="button"
+			variant="ghost"
+			onClick={handleClick}
+			{...buttonProps}
+		>
+			<BlockquoteIcon className="tiptap-button-icon" />
+		</Button>
+	);
 });
 
 BlockquoteButton.displayName = 'BlockquoteButton';
