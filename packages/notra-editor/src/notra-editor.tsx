@@ -1,5 +1,7 @@
 import { EditorContent } from '@tiptap/react';
 
+import { Toolbar, ToolbarGroup } from './components/toolbar/toolbar';
+import { UndoRedoButton } from './components/undo-redo-button/undo-redo-button';
 import { useMarkdownEditor } from './hooks/use-markdown-editor';
 
 export interface NotraEditorProps {
@@ -35,6 +37,12 @@ export function NotraEditor({
 
 	return (
 		<div className={classNames}>
+			<Toolbar variant="fixed">
+				<ToolbarGroup>
+					<UndoRedoButton action="undo" editor={editor} />
+					<UndoRedoButton action="redo" editor={editor} />
+				</ToolbarGroup>
+			</Toolbar>
 			<EditorContent editor={editor} />
 		</div>
 	);
