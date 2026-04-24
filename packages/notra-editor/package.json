@@ -25,7 +25,8 @@
 		},
 		"./themes/default/shared.css": "./dist/themes/default/shared.css",
 		"./themes/default/editor.css": "./dist/themes/default/editor.css",
-		"./themes/default/reader.css": "./dist/themes/default/reader.css"
+		"./themes/default/reader.css": "./dist/themes/default/reader.css",
+		"./styles/globals.css": "./dist/styles/globals.css"
 	},
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.mjs",
@@ -34,7 +35,8 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsup",
+		"build": "tsup && pnpm build:css",
+		"build:css": "postcss src/styles/globals.css -o dist/styles/globals.css",
 		"dev": "tsup --watch",
 		"test": "vitest run --passWithNoTests",
 		"test:watch": "vitest",
@@ -66,6 +68,8 @@
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.2",
 		"jsdom": "^26.1.0",
+		"postcss": "^8.5.10",
+		"postcss-cli": "^11.0.1",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"tailwindcss": "^4.2.4",
