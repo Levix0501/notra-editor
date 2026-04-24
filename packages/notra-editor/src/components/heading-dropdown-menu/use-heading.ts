@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { Heading, Heading1, Heading2, Heading3, Heading4 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type { Editor } from '@tiptap/core';
 import type { LucideIcon } from 'lucide-react';

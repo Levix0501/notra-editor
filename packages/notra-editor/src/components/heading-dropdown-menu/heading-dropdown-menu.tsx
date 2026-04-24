@@ -1,16 +1,25 @@
+import { ChevronDown } from 'lucide-react';
 import { forwardRef } from 'react';
 
-import { HeadingButton } from './heading-button';
-import { getHeadingTriggerIcon, useActiveHeadingLevel } from './use-heading';
-import { ChevronDownIcon } from '../../icons/chevron-down-icon';
-import { Button } from '../button/button';
-import { DropdownMenu } from '../ui-primitive/dropdown-menu';
+import { HeadingMenuItem } from './heading-menu-item';
+import {
+	getHeadingTriggerIcon,
+	useActiveHeadingLevel,
+	type HeadingLevel
+} from './use-heading';
+import { Button } from '../ui/button';
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuGroup
+} from '../ui/dropdown-menu';
 
-import type { HeadingLevel } from './use-heading';
 import type { Editor } from '@tiptap/core';
+import type { ComponentProps } from 'react';
 
 export interface HeadingDropdownMenuProps extends Omit<
-	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	ComponentProps<typeof Button>,
 	'type'
 > {
 	editor: Editor | null;
@@ -25,25 +34,29 @@ export const HeadingDropdownMenu = forwardRef<
 	const TriggerIcon = getHeadingTriggerIcon(activeLevel);
 
 	return (
-		<DropdownMenu
-			trigger={
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
 				<Button
 					ref={ref}
 					aria-label="Heading"
 					data-active-state={activeLevel !== null ? 'on' : 'off'}
+					size="icon"
 					tabIndex={-1}
 					type="button"
 					variant="ghost"
 					{...buttonProps}
 				>
-					<TriggerIcon className="tiptap-button-icon" />
-					<ChevronDownIcon className="tiptap-button-dropdown-arrows" />
+					<TriggerIcon />
+					<ChevronDown className="nt:size-3" />
 				</Button>
-			}
-		>
-			{levels.map((level) => (
-				<HeadingButton key={level} editor={editor} level={level} />
-			))}
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="start">
+				<DropdownMenuGroup>
+					{levels.map((level) => (
+						<HeadingMenuItem key={level} editor={editor} level={level} />
+					))}
+				</DropdownMenuGroup>
+			</DropdownMenuContent>
 		</DropdownMenu>
 	);
 });
