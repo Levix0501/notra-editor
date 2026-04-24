@@ -78,9 +78,7 @@ export const BlockquoteButton = forwardRef<
 			{...buttonProps}
 		>
 			<Quote
-				className={
-					isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
-				}
+				className={isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined}
 			/>
 		</Button>
 	);
