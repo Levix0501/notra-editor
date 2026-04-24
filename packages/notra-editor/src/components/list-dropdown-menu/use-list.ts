@@ -1,20 +1,17 @@
+import { List, ListOrdered, ListTodo } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { BulletListIcon } from '../../icons/bullet-list-icon';
-import { OrderedListIcon } from '../../icons/ordered-list-icon';
-import { TaskListIcon } from '../../icons/task-list-icon';
-
 import type { Editor } from '@tiptap/core';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 export type ListType = 'bulletList' | 'orderedList' | 'taskList';
 
-type IconComponent = React.ComponentType<ComponentPropsWithoutRef<'svg'>>;
+type IconComponent = LucideIcon;
 
 const listIcons: Record<ListType, IconComponent> = {
-	bulletList: BulletListIcon,
-	orderedList: OrderedListIcon,
-	taskList: TaskListIcon
+	bulletList: List,
+	orderedList: ListOrdered,
+	taskList: ListTodo
 };
 
 const listLabels: Record<ListType, string> = {
@@ -121,7 +118,7 @@ export function useActiveListType(
 }
 
 export function getListTriggerIcon(activeType: ListType | null): IconComponent {
-	if (activeType === null) return BulletListIcon;
+	if (activeType === null) return List;
 
 	return listIcons[activeType];
 }
