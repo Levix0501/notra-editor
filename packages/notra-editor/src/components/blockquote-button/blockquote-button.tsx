@@ -1,4 +1,4 @@
-import { Quote } from 'lucide-react';
+import { TextQuote } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { Button } from '../ui/button';
@@ -77,7 +77,7 @@ export const BlockquoteButton = forwardRef<
 			onClick={handleClick}
 			{...buttonProps}
 		>
-			<Quote
+			<TextQuote
 				className={isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined}
 			/>
 		</Button>
