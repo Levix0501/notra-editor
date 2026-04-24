@@ -1,23 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { Heading1Icon } from '../../icons/heading-1-icon';
-import { Heading2Icon } from '../../icons/heading-2-icon';
-import { Heading3Icon } from '../../icons/heading-3-icon';
-import { Heading4Icon } from '../../icons/heading-4-icon';
-import { HeadingIcon } from '../../icons/heading-icon';
+import { Heading, Heading1, Heading2, Heading3, Heading4 } from 'lucide-react';
 
 import type { Editor } from '@tiptap/core';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 export type HeadingLevel = 1 | 2 | 3 | 4;
 
-type IconComponent = React.ComponentType<ComponentPropsWithoutRef<'svg'>>;
+type IconComponent = LucideIcon;
 
 const headingIcons: Record<HeadingLevel, IconComponent> = {
-	1: Heading1Icon,
-	2: Heading2Icon,
-	3: Heading3Icon,
-	4: Heading4Icon
+	1: Heading1,
+	2: Heading2,
+	3: Heading3,
+	4: Heading4
 };
 
 const headingLabels: Record<HeadingLevel, string> = {
@@ -124,7 +120,7 @@ export function useActiveHeadingLevel(
 export function getHeadingTriggerIcon(
 	activeLevel: HeadingLevel | null
 ): IconComponent {
-	if (activeLevel === null) return HeadingIcon;
+	if (activeLevel === null) return Heading;
 
 	return headingIcons[activeLevel];
 }
