@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { RedoIcon } from '../../icons/redo-icon';
-import { UndoIcon } from '../../icons/undo-icon';
+import { Undo2, Redo2 } from 'lucide-react';
 
 import type { Editor } from '@tiptap/core';
 
@@ -18,8 +17,8 @@ const actionLabels: Record<UndoRedoAction, string> = {
 };
 
 const actionIcons = {
-	undo: UndoIcon,
-	redo: RedoIcon
+	undo: Undo2,
+	redo: Redo2
 };
 
 function canExecuteAction(
