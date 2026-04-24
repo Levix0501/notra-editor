@@ -1,7 +1,7 @@
 import { forwardRef, useCallback } from 'react';
 
 import { useMark } from './use-mark';
-import { Button } from '../button/button';
+import { Button } from '../ui/button';
 
 import type { MarkType } from './use-mark';
 import type { Editor } from '@tiptap/core';
@@ -39,13 +39,18 @@ export const MarkButton = forwardRef<HTMLButtonElement, MarkButtonProps>(
 				aria-pressed={isActive}
 				data-active-state={isActive ? 'on' : 'off'}
 				disabled={!canToggle}
+				size="icon"
 				tabIndex={-1}
 				type="button"
 				variant="ghost"
 				onClick={handleClick}
 				{...buttonProps}
 			>
-				<Icon className="tiptap-button-icon" />
+				<Icon
+					className={
+						isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
+					}
+				/>
 			</Button>
 		);
 	}
