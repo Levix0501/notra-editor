@@ -7,7 +7,6 @@ export default defineConfig({
 	splitting: false,
 	sourcemap: true,
 	clean: true,
-	injectStyle: true,
 	external: ['react', 'react-dom'],
 	outExtension({ format }) {
 		return {
