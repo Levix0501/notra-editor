@@ -1,18 +1,25 @@
+import { ChevronDown } from 'lucide-react';
 import { forwardRef } from 'react';
 
-import { ListButton } from './list-button';
-import { getListTriggerIcon, useActiveListType } from './use-list';
-import { ChevronDownIcon } from '../../icons/chevron-down-icon';
-import { Button } from '../button/button';
-import { DropdownMenu } from '../ui-primitive/dropdown-menu';
+import { ListMenuItem } from './list-menu-item';
+import {
+	getListTriggerIcon,
+	useActiveListType,
+	type ListType
+} from './use-list';
+import { Button } from '../ui/button';
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuGroup
+} from '../ui/dropdown-menu';
 
-import type { ListType } from './use-list';
 import type { Editor } from '@tiptap/core';
+import type { ComponentProps } from 'react';
 
-export interface ListDropdownMenuProps extends Omit<
-	React.ButtonHTMLAttributes<HTMLButtonElement>,
-	'type'
-> {
+export interface ListDropdownMenuProps
+	extends Omit<ComponentProps<typeof Button>, 'type'> {
 	editor: Editor | null;
 	types?: ListType[];
 }
@@ -33,25 +40,36 @@ export const ListDropdownMenu = forwardRef<
 		const TriggerIcon = getListTriggerIcon(activeType);
 
 		return (
-			<DropdownMenu
-				trigger={
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
 					<Button
 						ref={ref}
 						aria-label="List"
+						className="nt:gap-1 nt:px-2"
 						data-active-state={activeType !== null ? 'on' : 'off'}
+						size="default"
 						tabIndex={-1}
 						type="button"
 						variant="ghost"
 						{...buttonProps}
 					>
-						<TriggerIcon className="tiptap-button-icon" />
-						<ChevronDownIcon className="tiptap-button-dropdown-arrows" />
+						<TriggerIcon
+							className={
+								activeType !== null
+									? 'nt:text-[var(--tt-brand-color-500)]'
+									: undefined
+							}
+						/>
+						<ChevronDown className="nt:size-3" />
 					</Button>
-				}
-			>
-				{types.map((type) => (
-					<ListButton key={type} editor={editor} listType={type} />
-				))}
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="start">
+					<DropdownMenuGroup>
+						{types.map((type) => (
+							<ListMenuItem key={type} editor={editor} listType={type} />
+						))}
+					</DropdownMenuGroup>
+				</DropdownMenuContent>
 			</DropdownMenu>
 		);
 	}
