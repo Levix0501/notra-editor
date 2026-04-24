@@ -40,13 +40,19 @@ export const HeadingDropdownMenu = forwardRef<
 					ref={ref}
 					aria-label="Heading"
 					data-active-state={activeLevel !== null ? 'on' : 'off'}
-					size="icon"
+					size="default"
 					tabIndex={-1}
 					type="button"
 					variant="ghost"
 					{...buttonProps}
 				>
-					<TriggerIcon />
+					<TriggerIcon
+						className={
+							activeLevel !== null
+								? 'nt:text-[var(--tt-brand-color-500)]'
+								: undefined
+						}
+					/>
 					<ChevronDown className="nt:size-3" />
 				</Button>
 			</DropdownMenuTrigger>
