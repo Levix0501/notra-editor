@@ -16,17 +16,12 @@ export type {
 	ToolbarSeparatorProps
 } from './components/toolbar/toolbar';
 
-export { Button } from './components/button/button';
-export type { ButtonProps } from './components/button/button';
-
 export { UndoRedoButton } from './components/undo-redo-button/undo-redo-button';
 export type { UndoRedoButtonProps } from './components/undo-redo-button/undo-redo-button';
 
 export { Spacer } from './components/ui-primitive/spacer';
 export { DropdownMenu } from './components/ui-primitive/dropdown-menu';
 export type { DropdownMenuProps } from './components/ui-primitive/dropdown-menu';
-export { Popover } from './components/ui-primitive/popover';
-export type { PopoverProps } from './components/ui-primitive/popover';
 
 export { MarkButton } from './components/mark-button/mark-button';
 export type { MarkButtonProps } from './components/mark-button/mark-button';
