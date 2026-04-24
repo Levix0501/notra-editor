@@ -39,6 +39,7 @@ export const HeadingDropdownMenu = forwardRef<
 				<Button
 					ref={ref}
 					aria-label="Heading"
+					className="nt:px-2"
 					data-active-state={activeLevel !== null ? 'on' : 'off'}
 					size="default"
 					tabIndex={-1}
