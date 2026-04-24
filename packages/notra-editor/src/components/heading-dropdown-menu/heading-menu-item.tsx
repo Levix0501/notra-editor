@@ -1,4 +1,3 @@
-import { Check } from 'lucide-react';
 import { forwardRef } from 'react';
 
 import { useHeading, type HeadingLevel } from './use-heading';
@@ -22,13 +21,13 @@ export const HeadingMenuItem = forwardRef<HTMLDivElement, HeadingMenuItemProps>(
 			<DropdownMenuItem
 				ref={ref}
 				aria-label={label}
+				className="nt:data-[active-state=on]:bg-accent nt:data-[active-state=on]:text-[var(--tt-brand-color-500)]"
 				data-active-state={isActive ? 'on' : 'off'}
 				disabled={!canToggle}
 				onSelect={handleToggle}
 			>
 				<Icon />
 				<span>{label}</span>
-				{isActive && <Check className="nt:ml-auto" />}
 			</DropdownMenuItem>
 		);
 	}
