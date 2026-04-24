@@ -1,7 +1,7 @@
+import { Quote } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { BlockquoteIcon } from '../../icons/blockquote-icon';
-import { Button } from '../button/button';
+import { Button } from '../ui/button';
 
 import type { Editor } from '@tiptap/core';
 
@@ -70,13 +70,18 @@ export const BlockquoteButton = forwardRef<
 			aria-pressed={isActive}
 			data-active-state={isActive ? 'on' : 'off'}
 			disabled={!canToggle}
+			size="icon"
 			tabIndex={-1}
 			type="button"
 			variant="ghost"
 			onClick={handleClick}
 			{...buttonProps}
 		>
-			<BlockquoteIcon className="tiptap-button-icon" />
+			<Quote
+				className={
+					isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
+				}
+			/>
 		</Button>
 	);
 });
