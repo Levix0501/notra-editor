@@ -1,11 +1,8 @@
+import { Bold, Code, Italic, Strikethrough } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { BoldIcon } from '../../icons/bold-icon';
-import { CodeIcon } from '../../icons/code-icon';
-import { ItalicIcon } from '../../icons/italic-icon';
-import { StrikethroughIcon } from '../../icons/strikethrough-icon';
-
 import type { Editor } from '@tiptap/core';
+import type { LucideIcon } from 'lucide-react';
 
 export type MarkType = 'bold' | 'italic' | 'strike' | 'code';
 
@@ -21,11 +18,11 @@ const markLabels: Record<MarkType, string> = {
 	code: 'Code'
 };
 
-const markIcons = {
-	bold: BoldIcon,
-	italic: ItalicIcon,
-	strike: StrikethroughIcon,
-	code: CodeIcon
+const markIcons: Record<MarkType, LucideIcon> = {
+	bold: Bold,
+	italic: Italic,
+	strike: Strikethrough,
+	code: Code
 };
 
 export function useMark({ editor, type }: UseMarkConfig) {
