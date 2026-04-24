@@ -1,7 +1,7 @@
 import { forwardRef, useCallback } from 'react';
 
 import { useUndoRedo } from './use-undo-redo';
-import { Button } from '../button/button';
+import { Button } from '../ui/button';
 
 import type { UndoRedoAction } from './use-undo-redo';
 import type { Editor } from '@tiptap/core';
@@ -42,10 +42,11 @@ export const UndoRedoButton = forwardRef<
 			tabIndex={-1}
 			type="button"
 			variant="ghost"
+			size="icon"
 			onClick={handleClick}
 			{...buttonProps}
 		>
-			<Icon className="tiptap-button-icon" />
+			<Icon />
 		</Button>
 	);
 });
