@@ -1,7 +1,6 @@
 import { NotraEditor } from 'notra-editor';
 import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/editor.css';
-import 'notra-editor/styles/globals.css';
 import { useState } from 'react';
 
 const INITIAL_CONTENT = `# Welcome to notra-editor

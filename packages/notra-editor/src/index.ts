@@ -1,3 +1,5 @@
+import './styles/_compiled.css';
+
 export { NotraEditor } from './notra-editor';
 export type { NotraEditorProps } from './notra-editor';
 

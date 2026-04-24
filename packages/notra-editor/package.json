@@ -25,8 +25,7 @@
 		},
 		"./themes/default/shared.css": "./dist/themes/default/shared.css",
 		"./themes/default/editor.css": "./dist/themes/default/editor.css",
-		"./themes/default/reader.css": "./dist/themes/default/reader.css",
-		"./styles/globals.css": "./dist/styles/globals.css"
+		"./themes/default/reader.css": "./dist/themes/default/reader.css"
 	},
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.mjs",
@@ -35,9 +34,9 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsup && pnpm build:css",
-		"build:css": "postcss src/styles/globals.css -o dist/styles/globals.css",
-		"dev": "tsup --watch",
+		"build": "pnpm build:css && tsup",
+		"build:css": "postcss src/styles/globals.css -o src/styles/_compiled.css",
+		"dev": "pnpm build:css && tsup --watch",
 		"test": "vitest run --passWithNoTests",
 		"test:watch": "vitest",
 		"pub:beta": "pnpm build && pnpm publish --tag beta --access public",
