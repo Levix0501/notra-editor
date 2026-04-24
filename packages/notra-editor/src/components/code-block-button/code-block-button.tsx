@@ -1,7 +1,7 @@
+import { SquareCode } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { CodeBlockIcon } from '../../icons/code-block-icon';
-import { Button } from '../button/button';
+import { Button } from '../ui/button';
 
 import type { Editor } from '@tiptap/core';
 
@@ -78,13 +78,18 @@ export const CodeBlockButton = forwardRef<
 			aria-pressed={isActive}
 			data-active-state={isActive ? 'on' : 'off'}
 			disabled={!canToggle}
+			size="icon"
 			tabIndex={-1}
 			type="button"
 			variant="ghost"
 			onClick={handleClick}
 			{...buttonProps}
 		>
-			<CodeBlockIcon className="tiptap-button-icon" />
+			<SquareCode
+				className={
+					isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
+				}
+			/>
 		</Button>
 	);
 });
