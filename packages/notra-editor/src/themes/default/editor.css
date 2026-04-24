@@ -228,13 +228,6 @@
 	outline: none;
 }
 
-.notra-editor .tiptap-button .tiptap-button-icon {
-	width: 1rem;
-	height: 1rem;
-	flex-shrink: 0;
-	color: inherit;
-}
-
 .notra-editor .tiptap-button:hover:not([disabled]) {
 	background-color: var(--tt-button-hover-bg-color);
 	color: var(--tt-button-hover-icon-color);
@@ -261,19 +254,6 @@
 	/* Dropdown menu */
 	--tt-dropdown-menu-bg-color: var(--white);
 	--tt-dropdown-menu-text-color: var(--tt-gray-light-a-600);
-
-	/* Popover */
-	--tt-popover-bg-color: var(--white);
-	--tt-popover-border-color: var(--tt-gray-light-a-100);
-
-	/* Card */
-	--tiptap-card-bg-color: var(--white);
-	--tiptap-card-border-color: var(--tt-gray-light-a-100);
-
-	/* Input */
-	--tt-input-placeholder: var(--tt-gray-light-a-400);
-	--tt-input-border: var(--tt-gray-light-a-200);
-	--tt-input-border-focus: var(--tt-gray-light-a-300);
 }
 
 /* =====================
@@ -331,100 +311,4 @@
 		opacity: 1;
 		transform: translateX(-50%) scale(1) translateY(0);
 	}
-}
-
-/* =====================
-   Popover
-   ===================== */
-.notra-editor .tiptap-popover-content {
-	z-index: 9999;
-	transform: translateX(-50%);
-	animation: popover-in 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes popover-in {
-	from {
-		opacity: 0;
-		transform: translateX(-50%) scale(0.95) translateY(-0.25rem);
-	}
-	to {
-		opacity: 1;
-		transform: translateX(-50%) scale(1) translateY(0);
-	}
-}
-
-/* =====================
-   Card
-   ===================== */
-.notra-editor .tiptap-card {
-	display: flex;
-	flex-direction: column;
-	border-radius: calc(0.375rem + var(--tt-radius-lg));
-	box-shadow: var(--tt-shadow-elevated-md);
-	background-color: var(--tiptap-card-bg-color);
-	border: 1px solid var(--tiptap-card-border-color);
-	outline: none;
-	min-width: 0;
-}
-
-.notra-editor .tiptap-card-body {
-	padding: 0.375rem;
-	flex: 1 1 auto;
-	overflow-y: auto;
-}
-
-.notra-editor .tiptap-card-item-group {
-	position: relative;
-	display: flex;
-	vertical-align: middle;
-	min-width: max-content;
-}
-
-.notra-editor .tiptap-card-item-group[data-orientation='vertical'] {
-	flex-direction: column;
-	justify-content: center;
-}
-
-.notra-editor .tiptap-card-item-group[data-orientation='horizontal'] {
-	flex-direction: row;
-	align-items: center;
-	gap: 0.25rem;
-}
-
-/* =====================
-   Input
-   ===================== */
-.notra-editor .tiptap-input {
-	width: 100%;
-	min-width: 0;
-	height: 2rem;
-	padding: 0.25rem 0.625rem;
-	border-radius: var(--tt-radius-md);
-	border: 1px solid var(--tt-input-border);
-	background: transparent;
-	font-size: 0.875rem;
-	outline: none;
-	transition: border-color 150ms;
-}
-
-.notra-editor .tiptap-input::placeholder {
-	color: var(--tt-input-placeholder);
-}
-
-.notra-editor .tiptap-input:focus-visible {
-	border-color: var(--tt-input-border-focus);
-}
-
-.notra-editor .tiptap-link-input {
-	font-size: 0.875rem;
-	border: none;
-	min-width: 12rem;
-	padding-right: 0;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.notra-editor .tiptap-link-input:focus {
-	text-overflow: clip;
-	overflow: visible;
 }
