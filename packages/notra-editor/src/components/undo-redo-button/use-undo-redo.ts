@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { Undo2, Redo2 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type { Editor } from '@tiptap/core';
 

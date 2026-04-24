@@ -39,10 +39,10 @@ export const UndoRedoButton = forwardRef<
 			ref={ref}
 			aria-label={label}
 			disabled={!canExecute}
+			size="icon"
 			tabIndex={-1}
 			type="button"
 			variant="ghost"
-			size="icon"
 			onClick={handleClick}
 			{...buttonProps}
 		>
