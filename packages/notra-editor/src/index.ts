@@ -1,3 +1,5 @@
+import './styles/globals.css';
+
 export { NotraEditor } from './notra-editor';
 export type { NotraEditorProps } from './notra-editor';
 
