@@ -1,15 +1,16 @@
+import {
+	CornerDownLeft,
+	ExternalLink,
+	Link as LinkIcon,
+	Trash2
+} from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { useLinkPopover } from './use-link-popover';
-import { CornerDownLeftIcon } from '../../icons/corner-down-left-icon';
-import { ExternalLinkIcon } from '../../icons/external-link-icon';
-import { LinkIcon } from '../../icons/link-icon';
-import { TrashIcon } from '../../icons/trash-icon';
-import { Button } from '../button/button';
-import { ToolbarSeparator } from '../toolbar/toolbar';
-import { Card, CardBody, CardItemGroup } from '../ui-primitive/card';
-import { Input } from '../ui-primitive/input';
-import { Popover } from '../ui-primitive/popover';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Separator } from '../ui/separator';
 
 import type { Editor } from '@tiptap/core';
 
@@ -55,70 +56,73 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
 		);
 
 		return (
-			<Popover
-				open={isOpen}
-				trigger={
+			<Popover open={isOpen} onOpenChange={setIsOpen}>
+				<PopoverTrigger asChild>
 					<Button
 						ref={ref}
 						aria-label="Link"
 						aria-pressed={isActive}
 						data-active-state={isActive ? 'on' : 'off'}
 						disabled={!canSet}
+						size="icon"
 						tabIndex={-1}
 						type="button"
 						variant="ghost"
-						onClick={() => setIsOpen((prev) => !prev)}
 						{...buttonProps}
 					>
-						<LinkIcon className="tiptap-button-icon" />
+						<LinkIcon
+							className={
+								isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
+							}
+						/>
 					</Button>
-				}
-				onOpenChange={setIsOpen}
-			>
-				<Card>
-					<CardBody>
-						<CardItemGroup orientation="horizontal">
-							<Input
-								autoFocus
-								className="tiptap-link-input"
-								placeholder="Paste a link..."
-								type="url"
-								value={url}
-								onChange={(e) => setUrl(e.target.value)}
-								onKeyDown={handleKeyDown}
-							/>
-							<Button
-								aria-label="Apply link"
-								disabled={!url && !isActive}
-								tabIndex={-1}
-								type="button"
-								variant="ghost"
-								onClick={handleSetLink}
-							>
-								<CornerDownLeftIcon className="tiptap-button-icon" />
-							</Button>
-							<ToolbarSeparator />
-							<Button
-								aria-label="Open link in new window"
-								tabIndex={-1}
-								type="button"
-								variant="ghost"
-								onClick={openLink}
-							>
-								<ExternalLinkIcon className="tiptap-button-icon" />
-							</Button>
-							<Button
-								aria-label="Remove link"
-								tabIndex={-1}
-								type="button"
-								variant="ghost"
-								onClick={handleRemoveLink}
-							>
-								<TrashIcon className="tiptap-button-icon" />
-							</Button>
-						</CardItemGroup>
-					</CardBody>
-				</Card>
+				</PopoverTrigger>
+				<PopoverContent
+					align="start"
+					className="nt:flex nt:w-auto nt:items-center nt:gap-1 nt:p-1"
+				>
+					<Input
+						autoFocus
+						className="nt:h-7 nt:min-w-48 nt:border-none nt:shadow-none nt:focus-visible:ring-0"
+						placeholder="Paste a link..."
+						type="url"
+						value={url}
+						onChange={(e) => setUrl(e.target.value)}
+						onKeyDown={handleKeyDown}
+					/>
+					<Button
+						aria-label="Apply link"
+						disabled={!url && !isActive}
+						size="icon-sm"
+						tabIndex={-1}
+						type="button"
+						variant="ghost"
+						onClick={handleSetLink}
+					>
+						<CornerDownLeft />
+					</Button>
+					<Separator className="nt:h-5" orientation="vertical" />
+					<Button
+						aria-label="Open link in new window"
+						size="icon-sm"
+						tabIndex={-1}
+						type="button"
+						variant="ghost"
+						onClick={openLink}
+					>
+						<ExternalLink />
+					</Button>
+					<Button
+						aria-label="Remove link"
+						size="icon-sm"
+						tabIndex={-1}
+						type="button"
+						variant="ghost"
+						onClick={handleRemoveLink}
+					>
+						<Trash2 />
+					</Button>
+				</PopoverContent>
 			</Popover>
 		);
 	}
