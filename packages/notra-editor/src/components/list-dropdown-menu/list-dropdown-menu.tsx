@@ -18,8 +18,10 @@ import {
 import type { Editor } from '@tiptap/core';
 import type { ComponentProps } from 'react';
 
-export interface ListDropdownMenuProps
-	extends Omit<ComponentProps<typeof Button>, 'type'> {
+export interface ListDropdownMenuProps extends Omit<
+	ComponentProps<typeof Button>,
+	'type'
+> {
 	editor: Editor | null;
 	types?: ListType[];
 }
