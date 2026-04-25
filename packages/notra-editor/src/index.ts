@@ -19,9 +19,7 @@ export type {
 export { UndoRedoButton } from './components/undo-redo-button/undo-redo-button';
 export type { UndoRedoButtonProps } from './components/undo-redo-button/undo-redo-button';
 
-export { Spacer } from './components/ui-primitive/spacer';
-export { DropdownMenu } from './components/ui-primitive/dropdown-menu';
-export type { DropdownMenuProps } from './components/ui-primitive/dropdown-menu';
+export { Spacer } from './components/ui/spacer';
 
 export { MarkButton } from './components/mark-button/mark-button';
 export type { MarkButtonProps } from './components/mark-button/mark-button';

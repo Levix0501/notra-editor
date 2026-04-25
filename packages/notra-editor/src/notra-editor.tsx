@@ -11,7 +11,7 @@ import {
 	ToolbarGroup,
 	ToolbarSeparator
 } from './components/toolbar/toolbar';
-import { Spacer } from './components/ui-primitive/spacer';
+import { Spacer } from './components/ui/spacer';
 import { UndoRedoButton } from './components/undo-redo-button/undo-redo-button';
 import { useMarkdownEditor } from './hooks/use-markdown-editor';
 
