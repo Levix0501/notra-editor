@@ -1,5 +1,11 @@
 # notra-editor
 
+## 0.5.0
+
+### Minor Changes
+
+- [`1545591fcb658b0026acd2072673fc6ce06745b5`](https://github.com/Levix0501/notra-editor/commit/1545591fcb658b0026acd2072673fc6ce06745b5) Thanks [@Levix0501](https://github.com/Levix0501)! - Add Markdown image syntax support. The standard `![alt](url "title")` syntax is now parsed and rendered as a block-level `<img>` in both `NotraEditor` and `NotraReader`. A new `ImagePopover` toolbar component lets users insert/edit/remove images via a small popover with URL and Alt inputs (mirrors `LinkPopover`). Images are styled with a max-width of 100%, rounded corners, and a brand-color outline when selected. Image upload is intentionally not included in this release.
+
 ## 0.4.0
 
 ### Minor Changes
