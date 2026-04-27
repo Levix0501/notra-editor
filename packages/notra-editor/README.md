@@ -19,7 +19,6 @@ npm install notra-editor
 
 ```tsx
 import { NotraEditor } from 'notra-editor';
-import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/editor.css';
 import { useState } from 'react';
 
@@ -40,7 +39,6 @@ function App() {
 
 ```tsx
 import { NotraReader } from 'notra-editor';
-import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/reader.css';
 
 function Article({ markdown }: { markdown: string }) {
@@ -77,16 +75,14 @@ function Article({ markdown }: { markdown: string }) {
 
 ## Themes
 
-Import theme CSS files to style the editor and reader:
+Import theme CSS files to style the editor and reader. Each entry already
+includes the shared base styles, so a single import is enough:
 
 ```ts
-// Shared styles (required for both editor and reader)
-import 'notra-editor/themes/default/shared.css';
-
-// Editor-specific styles
+// Editor styles (includes shared base)
 import 'notra-editor/themes/default/editor.css';
 
-// Reader-specific styles
+// Reader styles (includes shared base)
 import 'notra-editor/themes/default/reader.css';
 ```
 
