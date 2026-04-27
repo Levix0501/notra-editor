@@ -1,4 +1,5 @@
 import { ListKit } from '@tiptap/extension-list';
+import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 
@@ -12,6 +13,7 @@ export const editorExtensions = [
 	StarterKit.configure({ ...starterKitBaseConfig, codeBlock: false }),
 	ListKit,
 	CodeBlockExtension,
+	Image,
 	Markdown.configure({
 		html: false,
 		transformPastedText: true,
