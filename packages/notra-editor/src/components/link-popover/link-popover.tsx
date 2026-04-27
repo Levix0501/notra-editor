@@ -27,15 +27,15 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
 	({ editor, ...buttonProps }, ref) => {
 		const [isOpen, setIsOpen] = useState(false);
 
-		const { url, setUrl, isActive, canSet, setLink, removeLink, openLink } =
+		const { url, setUrl, isActive, canSet, setLink, removeLink, openLink, wasSelectionMove } =
 			useLinkPopover({ editor });
 
-		// Auto-open popover when a link becomes active
+		// Auto-open popover when cursor moves onto an existing link (selection-only transaction)
 		useEffect(() => {
-			if (isActive) {
+			if (isActive && wasSelectionMove) {
 				setIsOpen(true);
 			}
-		}, [isActive]);
+		}, [isActive, wasSelectionMove]);
 
 		const handleSetLink = useCallback(() => {
 			setLink();

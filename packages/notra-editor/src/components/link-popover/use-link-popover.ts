@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import type { Editor } from '@tiptap/core';
+import type { Transaction } from '@tiptap/pm/state';
 
 export interface UseLinkPopoverConfig {
 	editor: Editor | null;
@@ -10,15 +11,20 @@ export function useLinkPopover({ editor }: UseLinkPopoverConfig) {
 	const [url, setUrl] = useState('');
 	const [isActive, setIsActive] = useState(false);
 	const [canSet, setCanSet] = useState(false);
+	const [wasSelectionMove, setWasSelectionMove] = useState(false);
 
 	useEffect(() => {
 		if (!editor) return;
 
-		const handleUpdate = () => {
+		const handleUpdate = ({ transaction }: { transaction?: Transaction } = {}) => {
 			const active = editor.isActive('link');
 
 			setIsActive(active);
 			setCanSet(editor.isEditable);
+
+			if (transaction) {
+				setWasSelectionMove(!transaction.docChanged);
+			}
 
 			if (active) {
 				setUrl(editor.getAttributes('link').href ?? '');
@@ -63,5 +69,5 @@ export function useLinkPopover({ editor }: UseLinkPopoverConfig) {
 		window.open(sanitized, '_blank', 'noopener,noreferrer');
 	}, [url]);
 
-	return { url, setUrl, isActive, canSet, setLink, removeLink, openLink };
+	return { url, setUrl, isActive, canSet, setLink, removeLink, openLink, wasSelectionMove };
 }

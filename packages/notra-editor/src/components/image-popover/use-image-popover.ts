@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Editor } from '@tiptap/core';
 import type {} from '@tiptap/extension-image';
+import type { Transaction } from '@tiptap/pm/state';
 
 export interface UseImagePopoverConfig {
 	editor: Editor | null;
@@ -12,15 +13,20 @@ export function useImagePopover({ editor }: UseImagePopoverConfig) {
 	const [alt, setAlt] = useState('');
 	const [isActive, setIsActive] = useState(false);
 	const [canSet, setCanSet] = useState(false);
+	const [wasSelectionMove, setWasSelectionMove] = useState(false);
 
 	useEffect(() => {
 		if (!editor) return;
 
-		const handleUpdate = () => {
+		const handleUpdate = ({ transaction }: { transaction?: Transaction } = {}) => {
 			const active = editor.isActive('image');
 
 			setIsActive(active);
 			setCanSet(editor.isEditable);
+
+			if (transaction) {
+				setWasSelectionMove(!transaction.docChanged);
+			}
 
 			if (active) {
 				const attrs = editor.getAttributes('image');
@@ -67,5 +73,5 @@ export function useImagePopover({ editor }: UseImagePopoverConfig) {
 			.run();
 	}, [editor, url, alt, isActive, removeImage]);
 
-	return { url, setUrl, alt, setAlt, isActive, canSet, setImage, removeImage };
+	return { url, setUrl, alt, setAlt, isActive, canSet, setImage, removeImage, wasSelectionMove };
 }

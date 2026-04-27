@@ -1,10 +1,6 @@
 'use client';
 
-import {
-	CornerDownLeft,
-	ImageIcon,
-	Trash2
-} from 'lucide-react';
+import { CornerDownLeft, ImageIcon, Trash2 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { useImagePopover } from './use-image-popover';
@@ -15,8 +11,10 @@ import { Separator } from '../ui/separator';
 
 import type { Editor } from '@tiptap/core';
 
-export interface ImagePopoverProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
+export interface ImagePopoverProps extends Omit<
+	React.ButtonHTMLAttributes<HTMLButtonElement>,
+	'type'
+> {
 	editor: Editor | null;
 }
 
@@ -32,15 +30,16 @@ export const ImagePopover = forwardRef<HTMLButtonElement, ImagePopoverProps>(
 			isActive,
 			canSet,
 			setImage,
-			removeImage
+			removeImage,
+			wasSelectionMove
 		} = useImagePopover({ editor });
 
-		// Auto-open popover when an image becomes active (mirrors LinkPopover)
+		// Auto-open popover when cursor moves onto an existing image (selection-only transaction)
 		useEffect(() => {
-			if (isActive) {
+			if (isActive && wasSelectionMove) {
 				setIsOpen(true);
 			}
-		}, [isActive]);
+		}, [isActive, wasSelectionMove]);
 
 		const handleSetImage = useCallback(() => {
 			setImage();
