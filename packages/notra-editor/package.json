@@ -50,6 +50,7 @@
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.4",
 		"@tiptap/core": "^3.22.4",
+		"@tiptap/extension-code-block": "^3.22.4",
 		"@tiptap/extension-link": "^3.22.4",
 		"@tiptap/extension-list": "^3.22.4",
 		"@tiptap/pm": "^3.22.4",
