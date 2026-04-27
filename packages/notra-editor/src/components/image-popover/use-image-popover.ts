@@ -18,7 +18,9 @@ export function useImagePopover({ editor }: UseImagePopoverConfig) {
 	useEffect(() => {
 		if (!editor) return;
 
-		const handleUpdate = ({ transaction }: { transaction?: Transaction } = {}) => {
+		const handleUpdate = ({
+			transaction
+		}: { transaction?: Transaction } = {}) => {
 			const active = editor.isActive('image');
 
 			setIsActive(active);
@@ -73,5 +75,15 @@ export function useImagePopover({ editor }: UseImagePopoverConfig) {
 			.run();
 	}, [editor, url, alt, isActive, removeImage]);
 
-	return { url, setUrl, alt, setAlt, isActive, canSet, setImage, removeImage, wasSelectionMove };
+	return {
+		url,
+		setUrl,
+		alt,
+		setAlt,
+		isActive,
+		canSet,
+		setImage,
+		removeImage,
+		wasSelectionMove
+	};
 }

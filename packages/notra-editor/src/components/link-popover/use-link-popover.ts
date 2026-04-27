@@ -16,7 +16,9 @@ export function useLinkPopover({ editor }: UseLinkPopoverConfig) {
 	useEffect(() => {
 		if (!editor) return;
 
-		const handleUpdate = ({ transaction }: { transaction?: Transaction } = {}) => {
+		const handleUpdate = ({
+			transaction
+		}: { transaction?: Transaction } = {}) => {
 			const active = editor.isActive('link');
 
 			setIsActive(active);
@@ -69,5 +71,14 @@ export function useLinkPopover({ editor }: UseLinkPopoverConfig) {
 		window.open(sanitized, '_blank', 'noopener,noreferrer');
 	}, [url]);
 
-	return { url, setUrl, isActive, canSet, setLink, removeLink, openLink, wasSelectionMove };
+	return {
+		url,
+		setUrl,
+		isActive,
+		canSet,
+		setLink,
+		removeLink,
+		openLink,
+		wasSelectionMove
+	};
 }

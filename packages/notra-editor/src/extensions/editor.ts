@@ -1,5 +1,5 @@
-import { ListKit } from '@tiptap/extension-list';
 import Image from '@tiptap/extension-image';
+import { ListKit } from '@tiptap/extension-list';
 import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 
