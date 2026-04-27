@@ -1,5 +1,26 @@
 # notra-editor
 
+## 0.4.0
+
+### Minor Changes
+
+- [`8c68319085e2e0f31d7c15f92c68b50d379da0ea`](https://github.com/Levix0501/notra-editor/commit/8c68319085e2e0f31d7c15f92c68b50d379da0ea) Thanks [@Levix0501](https://github.com/Levix0501)! - Add a copy button to code blocks in both `NotraEditor` (interactive editor) and `NotraReader` (static renderer).
+
+  The button is rendered as a 32×32 ghost icon button overlaid on the top-right of every `<pre>` and switches to a check icon for two seconds after a successful copy. Visual is identical between editor and reader because both consume the same internal `CodeBlockShell`.
+
+  **Internal**
+  - New direct dependency: `@tiptap/extension-code-block`. Already a transitive dep of `@tiptap/starter-kit`; promoted to direct so the package can extend it with a custom React `NodeView`.
+  - `NotraReader` remains server-renderable: the new client-only files (`copy-button`, `code-block-view`, `use-copy-to-clipboard`) carry `'use client'` at leaf level only.
+  - Restored `cursor: pointer` on non-disabled `<button>` / `[role="button"]` (Tailwind v4 default change). Scoped to `.notra` so consumers' app-level buttons are unaffected.
+
+- [`01fb369556ce4979d31a1154bb9eddd2f71612a7`](https://github.com/Levix0501/notra-editor/commit/01fb369556ce4979d31a1154bb9eddd2f71612a7) Thanks [@Levix0501](https://github.com/Levix0501)! - Remove the legacy `ui-primitive/` directory; toolbar internals now exclusively use the shadcn-style `ui/` primitives.
+
+  **Breaking**
+  - The `DropdownMenu` and `DropdownMenuProps` public exports (the hand-rolled portal-based dropdown from the early toolbar) have been removed. Consumers building custom toolbar items should compose `radix-ui` directly or copy the `ui/dropdown-menu` primitive into their app.
+
+  **Internal**
+  - `Spacer` moved from `components/ui-primitive/spacer` to `components/ui/spacer`; the `Spacer` public export from `notra-editor` is unchanged.
+
 ## 0.3.0
 
 ### Minor Changes
