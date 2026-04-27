@@ -5,6 +5,7 @@ import { EditorContent } from '@tiptap/react';
 import { BlockquoteButton } from './components/blockquote-button/blockquote-button';
 import { CodeBlockButton } from './components/code-block-button/code-block-button';
 import { HeadingDropdownMenu } from './components/heading-dropdown-menu/heading-dropdown-menu';
+import { ImagePopover } from './components/image-popover/image-popover';
 import { LinkPopover } from './components/link-popover/link-popover';
 import { ListDropdownMenu } from './components/list-dropdown-menu/list-dropdown-menu';
 import { MarkButton } from './components/mark-button/mark-button';
@@ -73,6 +74,7 @@ export function NotraEditor({
 					<MarkButton editor={editor} type="strike" />
 					<MarkButton editor={editor} type="code" />
 					<LinkPopover editor={editor} />
+					<ImagePopover editor={editor} />
 				</ToolbarGroup>
 				<Spacer />
 			</Toolbar>
