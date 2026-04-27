@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { NotraEditor } from '../src/notra-editor';
@@ -35,6 +35,25 @@ describe('NotraEditor', () => {
 
 		expect(prosemirror).toHaveAttribute('contenteditable', 'false');
 	});
+
+	it('renders a copy button inside code blocks', async () => {
+		const { container } = render(
+			<NotraEditor value={'```\nconsole.log("hi")\n```'} onChange={vi.fn()} />
+		);
+
+		// Wait for editor to initialize
+		const pre = await waitFor(() => {
+			const element = container.querySelector('pre');
+			if (!element) throw new Error('pre not found');
+			return element;
+		});
+
+		expect(pre).toBeInTheDocument();
+		expect(pre.querySelector('button')).not.toBeNull();
+		expect(
+			pre.querySelector('button')?.querySelector('.lucide-copy')
+		).toBeInTheDocument();
+	});
 });
 
 describe('NotraEditor — markdown features', () => {
@@ -54,12 +73,18 @@ describe('NotraEditor — markdown features', () => {
 		expect(items.length).toBe(2);
 	});
 
-	it('renders code blocks from markdown', () => {
+	it('renders code blocks from markdown', async () => {
 		const { container } = render(
 			<NotraEditor value={'```\ncode here\n```'} onChange={vi.fn()} />
 		);
 
-		expect(container.querySelector('pre')).toBeInTheDocument();
+		const pre = await waitFor(() => {
+			const element = container.querySelector('pre');
+			if (!element) throw new Error('pre not found');
+			return element;
+		});
+
+		expect(pre).toBeInTheDocument();
 	});
 
 	it('renders blockquotes from markdown', () => {
