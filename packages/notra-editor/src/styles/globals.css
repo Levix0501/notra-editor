@@ -51,3 +51,12 @@
 	--input: oklch(0.922 0 0);
 	--ring: oklch(0.708 0 0);
 }
+
+/* Tailwind v4 dropped the implicit `cursor: pointer` on buttons.
+   Restore the shadcn-default behavior. */
+@layer base {
+	button:not(:disabled),
+	[role='button']:not(:disabled) {
+		cursor: pointer;
+	}
+}
