@@ -43,11 +43,13 @@ describe('NotraReader', () => {
 			<NotraReader content={'```\nconsole.log("hi")\n```'} />
 		);
 		const pre = container.querySelector('pre');
+		// The header div lives as a sibling of <pre> inside the relative wrapper.
+		const wrapper = pre?.parentElement;
 
 		expect(pre).toBeInTheDocument();
-		expect(pre?.querySelector('button')).not.toBeNull();
+		expect(wrapper?.querySelector('button')).not.toBeNull();
 		expect(
-			pre?.querySelector('button')?.querySelector('.lucide-copy')
+			wrapper?.querySelector('button')?.querySelector('.lucide-copy')
 		).toBeInTheDocument();
 		expect(pre).toHaveTextContent('console.log("hi")');
 	});

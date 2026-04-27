@@ -19,12 +19,12 @@ interface CodeBlockShellProps {
 // Children is the <code> element (or <NodeViewContent as="code"/>); the
 // shell does not wrap it because each consumer mounts <code> differently.
 export const CodeBlockShell = ({ value, children }: CodeBlockShellProps) => (
-	<pre>
-		<div className="nt:flex nt:h-9 nt:items-center nt:justify-end nt:px-2">
+	<div className="nt:relative">
+		<div className="nt:absolute nt:inset-x-0 nt:top-0 nt:flex nt:h-9 nt:items-center nt:justify-end nt:px-2">
 			<CopyButton value={value} />
 		</div>
-		{children}
-	</pre>
+		<pre className="nt:!pt-9">{children}</pre>
+	</div>
 );
 
 // Editor-side React NodeView. Tiptap mounts content-editable DOM directly

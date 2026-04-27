@@ -36,7 +36,7 @@ describe('NotraEditor', () => {
 		expect(prosemirror).toHaveAttribute('contenteditable', 'false');
 	});
 
-	it('renders a copy button inside code blocks', async () => {
+	it('renders a copy button next to code blocks', async () => {
 		const { container } = render(
 			<NotraEditor value={'```\nconsole.log("hi")\n```'} onChange={vi.fn()} />
 		);
@@ -50,10 +50,13 @@ describe('NotraEditor', () => {
 			return element;
 		});
 
+		// The header div lives as a sibling of <pre> inside the relative wrapper.
+		const wrapper = pre.parentElement;
+
 		expect(pre).toBeInTheDocument();
-		expect(pre.querySelector('button')).not.toBeNull();
+		expect(wrapper?.querySelector('button')).not.toBeNull();
 		expect(
-			pre.querySelector('button')?.querySelector('.lucide-copy')
+			wrapper?.querySelector('button')?.querySelector('.lucide-copy')
 		).toBeInTheDocument();
 	});
 });
