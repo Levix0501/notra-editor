@@ -39,3 +39,6 @@ export type { CodeBlockButtonProps } from './components/code-block-button/code-b
 
 export { LinkPopover } from './components/link-popover/link-popover';
 export type { LinkPopoverProps } from './components/link-popover/link-popover';
+
+export { ImagePopover } from './components/image-popover/image-popover';
+export type { ImagePopoverProps } from './components/image-popover/image-popover';
