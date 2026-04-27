@@ -5,9 +5,10 @@ import {
 	NodeViewWrapper,
 	type NodeViewProps
 } from '@tiptap/react';
-import type { ReactNode } from 'react';
 
 import { CopyButton } from './copy-button';
+
+import type { ReactNode } from 'react';
 
 interface CodeBlockShellProps {
 	value: string;
@@ -31,10 +32,7 @@ export const CodeBlockShell = ({ value, children }: CodeBlockShellProps) => (
 export const CodeBlockView = ({ node }: NodeViewProps) => (
 	<NodeViewWrapper>
 		<CodeBlockShell value={node.textContent}>
-			<NodeViewContent<'code'>
-				as="code"
-				className="nt:block nt:px-4 nt:pb-4"
-			/>
+			<NodeViewContent<'code'> as="code" className="nt:block nt:px-4 nt:pb-4" />
 		</CodeBlockShell>
 	</NodeViewWrapper>
 );

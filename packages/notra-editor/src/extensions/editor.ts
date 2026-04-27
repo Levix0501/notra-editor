@@ -2,8 +2,8 @@ import { ListKit } from '@tiptap/extension-list';
 import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from 'tiptap-markdown';
 
-import { starterKitBaseConfig } from './shared';
 import { CodeBlockExtension } from './code-block';
+import { starterKitBaseConfig } from './shared';
 
 // Editor extensions = shared content model + interactive features + Markdown
 // codeBlock is disabled in StarterKit and replaced with the custom

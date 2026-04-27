@@ -44,7 +44,9 @@ describe('NotraEditor', () => {
 		// Wait for editor to initialize
 		const pre = await waitFor(() => {
 			const element = container.querySelector('pre');
+
 			if (!element) throw new Error('pre not found');
+
 			return element;
 		});
 
@@ -80,7 +82,9 @@ describe('NotraEditor — markdown features', () => {
 
 		const pre = await waitFor(() => {
 			const element = container.querySelector('pre');
+
 			if (!element) throw new Error('pre not found');
+
 			return element;
 		});
 
