@@ -53,10 +53,11 @@
 }
 
 /* Tailwind v4 dropped the implicit `cursor: pointer` on buttons.
-   Restore the shadcn-default behavior. */
+   Restore the shadcn-default behavior, scoped to .notra so consumers'
+   buttons outside the editor/reader are not affected. */
 @layer base {
-	button:not(:disabled),
-	[role='button']:not(:disabled) {
+	.notra button:not(:disabled),
+	.notra [role='button']:not(:disabled) {
 		cursor: pointer;
 	}
 }
