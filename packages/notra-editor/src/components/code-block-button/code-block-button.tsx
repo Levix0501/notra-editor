@@ -1,3 +1,5 @@
+'use client';
+
 import { SquareCode } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
