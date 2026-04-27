@@ -38,12 +38,17 @@ describe('NotraReader', () => {
 		expect(link).toHaveAttribute('href', 'https://example.com');
 	});
 
-	it('renders code blocks from markdown', () => {
+	it('renders code blocks with a copy button', () => {
 		const { container } = render(
 			<NotraReader content={'```\nconsole.log("hi")\n```'} />
 		);
 		const pre = container.querySelector('pre');
 
 		expect(pre).toBeInTheDocument();
+		expect(pre?.querySelector('button')).not.toBeNull();
+		expect(
+			pre?.querySelector('button')?.querySelector('.lucide-copy')
+		).toBeInTheDocument();
+		expect(pre).toHaveTextContent('console.log("hi")');
 	});
 });

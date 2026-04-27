@@ -1,5 +1,6 @@
 import { renderToReactElement } from '@tiptap/static-renderer/pm/react';
 
+import { CodeBlockShell } from './components/code-block-view';
 import { sharedExtensions } from './extensions';
 import { markdownToJSON } from './utils/markdown-to-json';
 
@@ -15,7 +16,16 @@ export function NotraReader({ content, className }: NotraReaderProps) {
 
 	const rendered = renderToReactElement({
 		extensions: sharedExtensions,
-		content: json
+		content: json,
+		options: {
+			nodeMapping: {
+				codeBlock: ({ node, children }) => (
+					<CodeBlockShell value={node.textContent}>
+						<code className="nt:block nt:px-4 nt:pb-4">{children}</code>
+					</CodeBlockShell>
+				)
+			}
+		}
 	});
 
 	const classNames = ['notra', 'notra-reader', className]
