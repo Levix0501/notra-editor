@@ -35,6 +35,10 @@ function hello() {
 }
 \`\`\`
 
+### Image
+
+![A red circle](https://placehold.co/300x200/e63946/ffffff?text=Hello "Test image")
+
 > This is a blockquote. It can contain **formatted text** and other elements.
 
 ---
