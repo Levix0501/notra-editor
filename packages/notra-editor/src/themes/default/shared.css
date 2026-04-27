@@ -418,6 +418,24 @@
 }
 
 /* =====================
+   Images
+   ===================== */
+.notra .tiptap img,
+.notra-reader img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin: 1.5em 0;
+	border-radius: var(--notra-radius);
+}
+
+/* Selected image (NodeSelection) — only relevant in the editor */
+.notra .tiptap img.ProseMirror-selectednode {
+	outline: 2px solid var(--tt-brand-color-500);
+	outline-offset: 2px;
+}
+
+/* =====================
    Inline Text Decoration
    ===================== */
 .notra .tiptap a span,
