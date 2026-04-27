@@ -1,3 +1,4 @@
+import Image from '@tiptap/extension-image';
 import { ListKit } from '@tiptap/extension-list';
 import StarterKit, { type StarterKitOptions } from '@tiptap/starter-kit';
 
@@ -25,5 +26,6 @@ export const sharedExtensions = [
 		undoRedo: false,
 		trailingNode: false
 	}),
-	ListKit
+	ListKit,
+	Image
 ];
