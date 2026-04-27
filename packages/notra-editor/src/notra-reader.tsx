@@ -21,7 +21,7 @@ export function NotraReader({ content, className }: NotraReaderProps) {
 			nodeMapping: {
 				codeBlock: ({ node, children }) => (
 					<CodeBlockShell value={node.textContent}>
-						<code className="nt:block nt:px-4 nt:pb-4">{children}</code>
+						<code>{children}</code>
 					</CodeBlockShell>
 				)
 			}
