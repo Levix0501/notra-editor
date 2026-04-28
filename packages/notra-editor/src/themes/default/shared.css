@@ -341,14 +341,13 @@
    ===================== */
 .notra .tiptap pre,
 .notra-reader pre {
-	background-color: var(--notra-codeblock-bg);
-	color: var(--notra-codeblock-text);
 	border: 1px solid var(--notra-codeblock-border);
 	margin-top: 1.5em;
 	margin-bottom: 1.5em;
-	padding: 1em;
 	font-size: 1rem;
 	border-radius: var(--notra-radius);
+	overflow: hidden;
+	font-family: var(--notra-font-mono);
 }
 
 .notra .tiptap pre code,
@@ -356,8 +355,136 @@
 	background-color: transparent;
 	border: none;
 	border-radius: 0;
-	color: inherit;
-	padding: 0;
+	padding: 1em;
+	display: block;
+	overflow-x: auto;
+	font-size: 0.875em;
+	line-height: 1.5;
+}
+
+/* =====================
+   Code — Highlight (Atom One Light, default)
+   ===================== */
+.notra .hljs {
+	color: #383a42;
+	background: #fafafa;
+}
+.notra .hljs-comment,
+.notra .hljs-quote {
+	color: #a0a1a7;
+	font-style: italic;
+}
+.notra .hljs-doctag,
+.notra .hljs-formula,
+.notra .hljs-keyword {
+	color: #a626a4;
+}
+.notra .hljs-deletion,
+.notra .hljs-name,
+.notra .hljs-section,
+.notra .hljs-selector-tag,
+.notra .hljs-subst {
+	color: #e45649;
+}
+.notra .hljs-literal {
+	color: #0184bb;
+}
+.notra .hljs-addition,
+.notra .hljs-attribute,
+.notra .hljs-meta .hljs-string,
+.notra .hljs-regexp,
+.notra .hljs-string {
+	color: #50a14f;
+}
+.notra .hljs-built_in,
+.notra .hljs-class .hljs-title,
+.notra .hljs-title.class_ {
+	color: #c18401;
+}
+.notra .hljs-attr,
+.notra .hljs-number,
+.notra .hljs-selector-attr,
+.notra .hljs-selector-class,
+.notra .hljs-selector-pseudo,
+.notra .hljs-template-variable,
+.notra .hljs-type,
+.notra .hljs-variable {
+	color: #986801;
+}
+.notra .hljs-bullet,
+.notra .hljs-link,
+.notra .hljs-meta,
+.notra .hljs-selector-id,
+.notra .hljs-symbol,
+.notra .hljs-title {
+	color: #4078f2;
+}
+.notra .hljs-emphasis {
+	font-style: italic;
+}
+.notra .hljs-strong {
+	font-weight: bold;
+}
+.notra .hljs-link {
+	text-decoration: underline;
+}
+
+/* =====================
+   Code — Highlight (Atom One Dark, .dark override)
+   ===================== */
+.dark .notra .hljs {
+	color: #abb2bf;
+	background: #282c34;
+}
+.dark .notra .hljs-comment,
+.dark .notra .hljs-quote {
+	color: #5c6370;
+	font-style: italic;
+}
+.dark .notra .hljs-doctag,
+.dark .notra .hljs-formula,
+.dark .notra .hljs-keyword {
+	color: #c678dd;
+}
+.dark .notra .hljs-deletion,
+.dark .notra .hljs-name,
+.dark .notra .hljs-section,
+.dark .notra .hljs-selector-tag,
+.dark .notra .hljs-subst {
+	color: #e06c75;
+}
+.dark .notra .hljs-literal {
+	color: #56b6c2;
+}
+.dark .notra .hljs-addition,
+.dark .notra .hljs-attribute,
+.dark .notra .hljs-meta .hljs-string,
+.dark .notra .hljs-regexp,
+.dark .notra .hljs-string {
+	color: #98c379;
+}
+.dark .notra .hljs-built_in,
+.dark .notra .hljs-class .hljs-title,
+.dark .notra .hljs-title.class_ {
+	color: #e6c07b;
+}
+.dark .notra .hljs-attr,
+.dark .notra .hljs-number,
+.dark .notra .hljs-selector-attr,
+.dark .notra .hljs-selector-class,
+.dark .notra .hljs-selector-pseudo,
+.dark .notra .hljs-template-variable,
+.dark .notra .hljs-type,
+.dark .notra .hljs-variable {
+	color: #d19a66;
+}
+.dark .notra .hljs-bullet,
+.dark .notra .hljs-link,
+.dark .notra .hljs-meta,
+.dark .notra .hljs-selector-id,
+.dark .notra .hljs-symbol,
+.dark .notra .hljs-title {
+	color: #61aeee;
 }
 
 /* =====================
