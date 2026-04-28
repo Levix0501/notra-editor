@@ -1,13 +1,18 @@
-import { Editor } from '@tiptap/core';
+import { Editor, type Extensions } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
+import { Markdown } from 'tiptap-markdown';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { CodeBlockExtension } from '../src/extensions/code-block';
 
-function createEditor(): Editor {
+function createEditor(extraExtensions: Extensions = []): Editor {
 	return new Editor({
 		element: document.createElement('div'),
-		extensions: [StarterKit.configure({ codeBlock: false }), CodeBlockExtension]
+		extensions: [
+			StarterKit.configure({ codeBlock: false }),
+			CodeBlockExtension,
+			...extraExtensions
+		]
 	});
 }
 
@@ -89,5 +94,19 @@ describe('CodeBlockExtension Tab indentation', () => {
 		// browser behavior wins. We only assert the doc text is unchanged.
 		expect(editor.state.doc.textContent).toBe('plain text');
 		expect(handled).toBe(false);
+	});
+
+	it('still inserts spaces when the Markdown extension is loaded', () => {
+		// `tiptap-markdown` overrides `editor.commands.insertContentAt` to
+		// route inserts through markdown-it, which collapses whitespace-only
+		// input to nothing. The Tab handler must use a raw transaction so the
+		// indent survives that override.
+		editor = createEditor([Markdown.configure({ html: false })]);
+		loadCodeBlock(editor, 'hello');
+
+		const handled = pressKey(editor, 'Tab');
+
+		expect(handled).toBe(true);
+		expect(editor.state.doc.textContent).toBe('hello  ');
 	});
 });

@@ -30,6 +30,54 @@ export function createCodeBlockExtension(lowlight: Lowlight) {
 		addNodeView() {
 			return ReactNodeViewRenderer(CodeBlockView);
 		},
+		addKeyboardShortcuts() {
+			const parent = this.parent?.() ?? {};
+
+			// Upstream's empty-selection Tab branch goes through
+			// `editor.commands.insertContent(' '.repeat(tabSize))`, which
+			// `tiptap-markdown` reroutes via its overridden `insertContentAt`
+			// → `markdown.parser.parse(...)`. Whitespace-only input parses to
+			// an empty document, so the spaces vanish while the keymap still
+			// reports the event as handled. Use a raw transaction instead.
+			return {
+				...parent,
+				Tab: ({ editor }) => {
+					if (!this.options.enableTabIndentation) {
+						return false;
+					}
+
+					const tabSize = this.options.tabSize ?? 2;
+					const { selection } = editor.state;
+					const { $from, empty } = selection;
+
+					if ($from.parent.type !== this.type) {
+						return false;
+					}
+
+					const indent = ' '.repeat(tabSize);
+
+					if (empty) {
+						return editor.commands.command(({ tr }) => {
+							tr.insertText(indent);
+
+							return true;
+						});
+					}
+
+					return editor.commands.command(({ tr, state }) => {
+						const { from, to } = selection;
+						const text = state.doc.textBetween(from, to, '\n', '\n');
+						const indented = text
+							.split('\n')
+							.map((line) => indent + line)
+							.join('\n');
+						tr.replaceWith(from, to, state.schema.text(indented));
+
+						return true;
+					});
+				}
+			};
+		},
 		addInputRules() {
 			return [
 				textblockTypeInputRule({
