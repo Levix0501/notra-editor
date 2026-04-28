@@ -22,7 +22,7 @@ describe('highlightCodeToHtml', () => {
 		expect(html).toMatch(/<span class="hljs-/);
 	});
 
-	it('falls back to highlightAuto when language is "plaintext"', () => {
+	it('skips highlighting and returns escaped text for "plaintext"', () => {
 		const html = highlightCodeToHtml('hello world', 'plaintext', lowlight);
 
 		expect(html).toBe('hello world');

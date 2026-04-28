@@ -38,6 +38,16 @@ describe('NotraReader', () => {
 		expect(link).toHaveAttribute('href', 'https://example.com');
 	});
 
+	it('renders highlighted code with hljs classes for a known language', () => {
+		const { container } = render(
+			<NotraReader content={'```typescript\nconst x = 1;\n```'} />
+		);
+
+		const code = container.querySelector('code.hljs');
+		expect(code).toBeInTheDocument();
+		expect(code?.innerHTML).toMatch(/hljs-keyword/);
+	});
+
 	it('renders code blocks with a copy button', () => {
 		const { container } = render(
 			<NotraReader content={'```\nconsole.log("hi")\n```'} />

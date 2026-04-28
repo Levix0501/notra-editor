@@ -33,9 +33,15 @@ describe('LANGUAGES', () => {
 		}
 	});
 
-	it('has unique label values for the picker', () => {
+	it('has unique labels for display', () => {
 		const labels = LANGUAGES.map((l) => l.label);
 
 		expect(new Set(labels).size).toBe(labels.length);
+	});
+
+	it('has unique values for cmdk keying', () => {
+		const values = LANGUAGES.map((l) => l.value);
+
+		expect(new Set(values).size).toBe(values.length);
 	});
 });
