@@ -42,3 +42,17 @@ export type { LinkPopoverProps } from './components/link-popover/link-popover';
 
 export { ImagePopover } from './components/image-popover/image-popover';
 export type { ImagePopoverProps } from './components/image-popover/image-popover';
+
+export {
+	CodeBlockExtension,
+	createCodeBlockExtension,
+	defaultLowlight
+} from './extensions/code-block';
+
+export { LanguageSelect } from './components/code-block-view/language-select';
+export type { LanguageSelectProps } from './components/code-block-view/language-select';
+
+export { LANGUAGES, getLanguageLabel } from './lib/languages';
+export type { Language } from './lib/languages';
+
+export { highlightCodeToHtml } from './lib/highlight-code-to-html';
