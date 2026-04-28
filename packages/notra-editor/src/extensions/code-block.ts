@@ -71,6 +71,7 @@ export function createCodeBlockExtension(lowlight: Lowlight) {
 							.split('\n')
 							.map((line) => indent + line)
 							.join('\n');
+
 						tr.replaceWith(from, to, state.schema.text(indented));
 
 						return true;
