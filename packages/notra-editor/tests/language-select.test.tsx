@@ -7,7 +7,9 @@ describe('LanguageSelect', () => {
 	it('renders the current language label on the trigger', () => {
 		render(<LanguageSelect language="typescript" onLanguageChange={vi.fn()} />);
 
-		expect(screen.getByRole('button', { name: /typescript/i })).toBeInTheDocument();
+		expect(
+			screen.getByRole('button', { name: /typescript/i })
+		).toBeInTheDocument();
 	});
 
 	it('renders "Auto" when language is the empty string', () => {

@@ -2,8 +2,8 @@ import { renderToReactElement } from '@tiptap/static-renderer/pm/react';
 import { type createLowlight } from 'lowlight';
 
 import { CodeBlockShell } from './components/code-block-view/code-block-shell';
-import { defaultLowlight } from './extensions/code-block';
 import { sharedExtensions } from './extensions';
+import { defaultLowlight } from './extensions/code-block';
 import { highlightCodeToHtml } from './lib/highlight-code-to-html';
 import { getLanguageLabel } from './lib/languages';
 import { markdownToJSON } from './utils/markdown-to-json';
@@ -46,7 +46,6 @@ export function NotraReader({
 							value={node.textContent}
 						>
 							<code
-								className="hljs"
 								dangerouslySetInnerHTML={{
 									__html: highlightCodeToHtml(
 										node.textContent,
@@ -54,6 +53,7 @@ export function NotraReader({
 										lowlight
 									)
 								}}
+								className="hljs"
 							/>
 						</CodeBlockShell>
 					);

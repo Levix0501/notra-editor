@@ -44,6 +44,7 @@ describe('NotraReader', () => {
 		);
 
 		const code = container.querySelector('code.hljs');
+
 		expect(code).toBeInTheDocument();
 		expect(code?.innerHTML).toMatch(/hljs-keyword/);
 	});

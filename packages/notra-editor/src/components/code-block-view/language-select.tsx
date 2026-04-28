@@ -65,9 +65,7 @@ export const LanguageSelect = ({
 									<CheckIcon
 										className={cn(
 											'nt:ml-auto nt:size-4',
-											current === item.value
-												? 'nt:opacity-100'
-												: 'nt:opacity-0'
+											current === item.value ? 'nt:opacity-100' : 'nt:opacity-0'
 										)}
 									/>
 								</CommandItem>
