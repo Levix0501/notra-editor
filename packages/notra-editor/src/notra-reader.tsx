@@ -1,6 +1,6 @@
 import { renderToReactElement } from '@tiptap/static-renderer/pm/react';
 
-import { CodeBlockShell } from './components/code-block-view';
+import { CodeBlockShell } from './components/code-block-view/code-block-shell';
 import { sharedExtensions } from './extensions';
 import { markdownToJSON } from './utils/markdown-to-json';
 
@@ -20,7 +20,10 @@ export function NotraReader({ content, className }: NotraReaderProps) {
 		options: {
 			nodeMapping: {
 				codeBlock: ({ node, children }) => (
-					<CodeBlockShell value={node.textContent}>
+					<CodeBlockShell
+						languageSlot={null}
+						value={node.textContent}
+					>
 						<code>{children}</code>
 					</CodeBlockShell>
 				)

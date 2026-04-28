@@ -55,9 +55,9 @@ describe('NotraEditor', () => {
 
 		expect(pre).toBeInTheDocument();
 		expect(wrapper?.querySelector('button')).not.toBeNull();
-		expect(
-			wrapper?.querySelector('button')?.querySelector('.lucide-copy')
-		).toBeInTheDocument();
+		// The shell now contains both a LanguageSelect button and a CopyButton;
+		// search the whole wrapper for the copy icon rather than assuming first button.
+		expect(wrapper?.querySelector('.lucide-copy')).toBeInTheDocument();
 	});
 });
 
