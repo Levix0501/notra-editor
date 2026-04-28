@@ -28,6 +28,7 @@ function findCodeBlock(editor: Editor): ProseMirrorNode | null {
 	editor.state.doc.descendants((node) => {
 		if (node.type.name === 'codeBlock') {
 			found = node;
+
 			return false;
 		}
 

@@ -57,9 +57,15 @@ describe('LANGUAGES', () => {
 		expect(byValue.get('python')?.aliases).toEqual(
 			expect.arrayContaining(['py'])
 		);
-		expect(byValue.get('ruby')?.aliases).toEqual(expect.arrayContaining(['rb']));
-		expect(byValue.get('rust')?.aliases).toEqual(expect.arrayContaining(['rs']));
-		expect(byValue.get('bash')?.aliases).toEqual(expect.arrayContaining(['sh']));
+		expect(byValue.get('ruby')?.aliases).toEqual(
+			expect.arrayContaining(['rb'])
+		);
+		expect(byValue.get('rust')?.aliases).toEqual(
+			expect.arrayContaining(['rs'])
+		);
+		expect(byValue.get('bash')?.aliases).toEqual(
+			expect.arrayContaining(['sh'])
+		);
 	});
 
 	it('does not list "html" as an alias of xml (collision with the html canonical value)', () => {
@@ -79,12 +85,13 @@ describe('LANGUAGES', () => {
 		}
 	});
 
-	it('does not let an alias collide with another language\'s canonical value', () => {
+	it("does not let an alias collide with another language's canonical value", () => {
 		const values = new Set(LANGUAGES.map((l) => l.value));
 
 		for (const lang of LANGUAGES) {
 			for (const alias of lang.aliases ?? []) {
 				if (alias === lang.value) continue;
+
 				expect(
 					values.has(alias),
 					`alias "${alias}" of ${lang.value} collides with a canonical value`

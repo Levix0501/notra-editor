@@ -134,7 +134,17 @@ export const LANGUAGES: Language[] = [
 		value: 'xml',
 		// Note: highlight.js also lists "html" here, but `html` is its own
 		// canonical entry above; including it would rewrite html → xml.
-		aliases: ['xhtml', 'rss', 'atom', 'xjb', 'xsd', 'xsl', 'plist', 'wsf', 'svg']
+		aliases: [
+			'xhtml',
+			'rss',
+			'atom',
+			'xjb',
+			'xsd',
+			'xsl',
+			'plist',
+			'wsf',
+			'svg'
+		]
 	},
 	{ label: 'YAML', value: 'yaml', aliases: ['yml'] }
 ];

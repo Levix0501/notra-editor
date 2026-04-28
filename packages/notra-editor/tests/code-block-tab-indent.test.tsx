@@ -31,6 +31,7 @@ function loadCodeBlock(editor: Editor, text: string): void {
 	editor.state.doc.descendants((node, p) => {
 		if (node.type.name === 'codeBlock') {
 			pos = p + 1 + node.content.size;
+
 			return false;
 		}
 
