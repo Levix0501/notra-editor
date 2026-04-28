@@ -8,7 +8,7 @@
 		"node": ">=18.0.0"
 	},
 	"scripts": {
-		"dev": "pnpm --filter playground dev",
+		"dev": "pnpm --filter notra-editor build && pnpm --filter playground dev",
 		"build": "pnpm -r build",
 		"test": "pnpm -r test",
 		"lint": "eslint . && prettier --check . && pnpm check-types",
