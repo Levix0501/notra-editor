@@ -27,12 +27,25 @@ This is a **markdown-first** editor. Try editing this content!
 - [ ] Unchecked task
 - [x] Completed task
 
-### Code Block
+### Code Blocks
 
-\`\`\`
-function hello() {
-  console.log("Hello from notra-editor!");
+\`\`\`typescript
+function greet(name: string): string {
+  return \`Hello, \${name}!\`;
 }
+
+const users = ['Alice', 'Bob'].map(greet);
+\`\`\`
+
+\`\`\`python
+def fib(n: int) -> int:
+    if n < 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+\`\`\`
+
+\`\`\`bash
+echo "deploy" && ./scripts/release.sh --tag v1
 \`\`\`
 
 ### Image
