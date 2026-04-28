@@ -3,6 +3,8 @@ import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/editor.css';
 import { useState } from 'react';
 
+import { ModeToggle } from './components/mode-toggle';
+
 const INITIAL_CONTENT = `# Welcome to notra-editor
 
 This is a **markdown-first** editor. Try editing this content!
@@ -63,11 +65,16 @@ export function App() {
 	const [content, setContent] = useState(INITIAL_CONTENT);
 
 	return (
-		<NotraEditor
-			className="w-screen h-screen"
-			placeholder="Start writing..."
-			value={content}
-			onChange={setContent}
-		/>
+		<>
+			<NotraEditor
+				className="w-screen h-screen"
+				placeholder="Start writing..."
+				value={content}
+				onChange={setContent}
+			/>
+			<div className="fixed right-4 bottom-4 z-50">
+				<ModeToggle />
+			</div>
+		</>
 	);
 }
