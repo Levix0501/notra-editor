@@ -23,34 +23,16 @@ export interface NotraEditorProps {
 	value: string;
 	/** Called when content changes, receives updated Markdown */
 	onChange: (value: string) => void;
-	/** Placeholder text shown when editor is empty */
-	placeholder?: string;
-	/** Disable editing */
-	readOnly?: boolean;
-	/** Additional CSS class on the wrapper element */
-	className?: string;
 }
 
-export function NotraEditor({
-	value,
-	onChange,
-	placeholder,
-	readOnly = false,
-	className
-}: NotraEditorProps) {
+export function NotraEditor({ value, onChange }: NotraEditorProps) {
 	const { editor } = useMarkdownEditor({
 		value,
-		onChange,
-		placeholder,
-		editable: !readOnly
+		onChange
 	});
 
-	const classNames = ['notra', 'notra-editor', className]
-		.filter(Boolean)
-		.join(' ');
-
 	return (
-		<div className={classNames}>
+		<div className="notra-editor-wrapper">
 			<Toolbar variant="fixed">
 				<Spacer />
 				<ToolbarGroup>

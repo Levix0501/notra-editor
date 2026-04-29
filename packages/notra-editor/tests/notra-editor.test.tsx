@@ -9,15 +9,9 @@ describe('NotraEditor', () => {
 			<NotraEditor value="# Hello" onChange={vi.fn()} />
 		);
 
-		expect(container.querySelector('.notra-editor')).toBeInTheDocument();
-	});
-
-	it('applies custom className', () => {
-		const { container } = render(
-			<NotraEditor className="custom" value="" onChange={vi.fn()} />
-		);
-
-		expect(container.querySelector('.notra-editor.custom')).toBeInTheDocument();
+		expect(
+			container.querySelector('.notra-editor-wrapper')
+		).toBeInTheDocument();
 	});
 
 	it('renders content from value prop', () => {
@@ -25,15 +19,6 @@ describe('NotraEditor', () => {
 		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
 			'Hello'
 		);
-	});
-
-	it('sets contenteditable to false when readOnly is true', () => {
-		const { container } = render(
-			<NotraEditor readOnly value="# Hello" onChange={vi.fn()} />
-		);
-		const prosemirror = container.querySelector('.ProseMirror');
-
-		expect(prosemirror).toHaveAttribute('contenteditable', 'false');
 	});
 
 	it('renders a copy button next to code blocks', async () => {

@@ -13,8 +13,6 @@ type Lowlight = ReturnType<typeof createLowlight>;
 export interface NotraReaderProps {
 	/** Markdown content to render */
 	content: string;
-	/** Additional CSS class on the wrapper element */
-	className?: string;
 	/**
 	 * Optional lowlight instance for syntax highlighting. Defaults to the same
 	 * `defaultLowlight` (createLowlight(common)) used by `CodeBlockExtension`.
@@ -27,7 +25,6 @@ export interface NotraReaderProps {
 
 export function NotraReader({
 	content,
-	className,
 	lowlight = defaultLowlight
 }: NotraReaderProps) {
 	const json = markdownToJSON(content);
@@ -62,9 +59,5 @@ export function NotraReader({
 		}
 	});
 
-	const classNames = ['notra', 'notra-reader', className]
-		.filter(Boolean)
-		.join(' ');
-
-	return <div className={classNames}>{rendered}</div>;
+	return <article className="notra-reader notra-prose">{rendered}</article>;
 }

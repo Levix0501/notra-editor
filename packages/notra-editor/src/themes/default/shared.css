@@ -100,14 +100,10 @@
 .notra .tiptap h2,
 .notra .tiptap h3,
 .notra .tiptap h4,
-.notra .tiptap h5,
-.notra .tiptap h6,
 .notra-reader h1,
 .notra-reader h2,
 .notra-reader h3,
-.notra-reader h4,
-.notra-reader h5,
-.notra-reader h6 {
+.notra-reader h4 {
 	position: relative;
 	color: inherit;
 	font-style: inherit;
@@ -117,6 +113,10 @@
 .notra .tiptap > h2:first-child,
 .notra .tiptap > h3:first-child,
 .notra .tiptap > h4:first-child,
+.notra .tiptap > .ProseMirror-widget + h1,
+.notra .tiptap > .ProseMirror-widget + h2,
+.notra .tiptap > .ProseMirror-widget + h3,
+.notra .tiptap > .ProseMirror-widget + h4,
 .notra-reader > h1:first-child,
 .notra-reader > h2:first-child,
 .notra-reader > h3:first-child,
@@ -150,20 +150,6 @@
 	font-size: 1em;
 	font-weight: 600;
 	margin-top: 2em;
-}
-
-.notra .tiptap h5,
-.notra-reader h5 {
-	font-size: 0.875em;
-	font-weight: 600;
-	margin-top: 1.5em;
-}
-
-.notra .tiptap h6,
-.notra-reader h6 {
-	font-size: 0.75em;
-	font-weight: 600;
-	margin-top: 1.5em;
 }
 
 /* =====================

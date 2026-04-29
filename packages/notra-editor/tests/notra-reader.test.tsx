@@ -7,15 +7,8 @@ describe('NotraReader', () => {
 	it('renders the reader container', () => {
 		const { container } = render(<NotraReader content="# Hello" />);
 
-		expect(container.querySelector('.notra-reader')).toBeInTheDocument();
-	});
-
-	it('applies custom className', () => {
-		const { container } = render(
-			<NotraReader className="custom" content="# Hello" />
-		);
-
-		expect(container.querySelector('.notra-reader.custom')).toBeInTheDocument();
+		expect(container.querySelector('article.notra-reader')).toBeInTheDocument();
+		expect(container.querySelector('article.notra-prose')).toBeInTheDocument();
 	});
 
 	it('renders heading from markdown', () => {

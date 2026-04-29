@@ -66,12 +66,7 @@ export function App() {
 
 	return (
 		<>
-			<NotraEditor
-				className="w-screen h-screen"
-				placeholder="Start writing..."
-				value={content}
-				onChange={setContent}
-			/>
+			<NotraEditor value={content} onChange={setContent} />
 			<div className="fixed right-4 bottom-4 z-50">
 				<ModeToggle />
 			</div>

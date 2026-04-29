@@ -31,6 +31,15 @@ export function useMarkdownEditor({
 		extensions: editorExtensions,
 		editable,
 		content: value,
+		editorProps: {
+			attributes: {
+				autocomplete: 'off',
+				autocorrect: 'off',
+				autocapitalize: 'off',
+				'aria-label': 'Main content area, start typing to enter text.',
+				class: 'notra-prose'
+			}
+		},
 		onUpdate({ editor }) {
 			const md = getMarkdown(
 				editor.storage as unknown as Record<string, unknown>
