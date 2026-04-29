@@ -1,0 +1,132 @@
+import {
+	Heading1,
+	Heading2,
+	Heading3,
+	Heading4,
+	Image as ImageIcon,
+	List,
+	ListOrdered,
+	ListTodo,
+	Quote,
+	SquareCode,
+	Type
+} from 'lucide-react';
+import { useCallback } from 'react';
+
+import type {
+	IconComponent,
+	SuggestionItem
+} from '../suggestion-menu/suggestion-menu-types';
+import type { Editor } from '@tiptap/core';
+
+export interface UseSlashItemsOptions {
+	/** Called when the Image slash item is chosen. */
+	onImageRequest: () => void;
+}
+
+export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
+	return useCallback(
+		(editor: Editor): SuggestionItem[] => [
+			{
+				title: 'Text',
+				keywords: ['p', 'paragraph', 'text'],
+				badge: Type as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().setParagraph().run();
+				}
+			},
+			{
+				title: 'Heading 1',
+				keywords: ['h1', 'heading'],
+				badge: Heading1 as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleHeading({ level: 1 }).run();
+				}
+			},
+			{
+				title: 'Heading 2',
+				keywords: ['h2', 'heading'],
+				badge: Heading2 as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleHeading({ level: 2 }).run();
+				}
+			},
+			{
+				title: 'Heading 3',
+				keywords: ['h3', 'heading'],
+				badge: Heading3 as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleHeading({ level: 3 }).run();
+				}
+			},
+			{
+				title: 'Heading 4',
+				keywords: ['h4', 'heading'],
+				badge: Heading4 as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleHeading({ level: 4 }).run();
+				}
+			},
+			{
+				title: 'Bullet List',
+				keywords: ['ul', 'list', 'bullet'],
+				badge: List as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleBulletList().run();
+				}
+			},
+			{
+				title: 'Numbered List',
+				keywords: ['ol', 'list', 'ordered', 'numbered'],
+				badge: ListOrdered as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleOrderedList().run();
+				}
+			},
+			{
+				title: 'To-do List',
+				keywords: ['task', 'todo', 'checklist'],
+				badge: ListTodo as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleTaskList().run();
+				}
+			},
+			{
+				title: 'Blockquote',
+				keywords: ['quote'],
+				badge: Quote as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleBlockquote().run();
+				}
+			},
+			{
+				title: 'Code Block',
+				keywords: ['code', 'pre'],
+				badge: SquareCode as IconComponent,
+				group: 'Style',
+				onSelect: () => {
+					editor.chain().focus().toggleCodeBlock().run();
+				}
+			},
+			{
+				title: 'Image',
+				keywords: ['image', 'img', 'picture', 'media', 'url'],
+				badge: ImageIcon as IconComponent,
+				group: 'Insert',
+				onSelect: () => {
+					onImageRequest();
+				}
+			}
+		],
+		[onImageRequest]
+	);
+}
