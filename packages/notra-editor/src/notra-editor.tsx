@@ -32,7 +32,7 @@ export function NotraEditor({ value, onChange }: NotraEditorProps) {
 	});
 
 	return (
-		<div className="notra-editor-wrapper">
+		<div className="notra notra-editor-wrapper">
 			<Toolbar variant="fixed">
 				<Spacer />
 				<ToolbarGroup>

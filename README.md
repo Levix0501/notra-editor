@@ -26,9 +26,7 @@ import { useState } from 'react';
 function App() {
 	const [content, setContent] = useState('# Hello\n\nStart writing...');
 
-	return (
-		<NotraEditor value={content} onChange={setContent} />
-	);
+	return <NotraEditor value={content} onChange={setContent} />;
 }
 ```
 
