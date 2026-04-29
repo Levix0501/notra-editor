@@ -1,7 +1,6 @@
 import type { Editor, Range } from '@tiptap/react';
 
-type IconProps = React.SVGProps<SVGSVGElement>;
-export type IconComponent = (props: IconProps) => React.ReactElement;
+export type IconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 export interface SuggestionItem {
 	/** Main label shown in the menu. */

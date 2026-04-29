@@ -14,7 +14,6 @@ import {
 import { useCallback } from 'react';
 
 import type {
-	IconComponent,
 	SuggestionItem
 } from '../suggestion-menu/suggestion-menu-types';
 import type { Editor } from '@tiptap/core';
@@ -30,7 +29,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Text',
 				keywords: ['p', 'paragraph', 'text'],
-				badge: Type as IconComponent,
+				badge: Type,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().setParagraph().run();
@@ -39,7 +38,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Heading 1',
 				keywords: ['h1', 'heading'],
-				badge: Heading1 as IconComponent,
+				badge: Heading1,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleHeading({ level: 1 }).run();
@@ -48,7 +47,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Heading 2',
 				keywords: ['h2', 'heading'],
-				badge: Heading2 as IconComponent,
+				badge: Heading2,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleHeading({ level: 2 }).run();
@@ -57,7 +56,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Heading 3',
 				keywords: ['h3', 'heading'],
-				badge: Heading3 as IconComponent,
+				badge: Heading3,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleHeading({ level: 3 }).run();
@@ -66,7 +65,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Heading 4',
 				keywords: ['h4', 'heading'],
-				badge: Heading4 as IconComponent,
+				badge: Heading4,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleHeading({ level: 4 }).run();
@@ -75,7 +74,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Bullet List',
 				keywords: ['ul', 'list', 'bullet'],
-				badge: List as IconComponent,
+				badge: List,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleBulletList().run();
@@ -84,7 +83,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Numbered List',
 				keywords: ['ol', 'list', 'ordered', 'numbered'],
-				badge: ListOrdered as IconComponent,
+				badge: ListOrdered,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleOrderedList().run();
@@ -93,7 +92,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'To-do List',
 				keywords: ['task', 'todo', 'checklist'],
-				badge: ListTodo as IconComponent,
+				badge: ListTodo,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleTaskList().run();
@@ -102,7 +101,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Blockquote',
 				keywords: ['quote'],
-				badge: Quote as IconComponent,
+				badge: Quote,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleBlockquote().run();
@@ -111,7 +110,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Code Block',
 				keywords: ['code', 'pre'],
-				badge: SquareCode as IconComponent,
+				badge: SquareCode,
 				group: 'Style',
 				onSelect: () => {
 					editor.chain().focus().toggleCodeBlock().run();
@@ -120,7 +119,7 @@ export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 			{
 				title: 'Image',
 				keywords: ['image', 'img', 'picture', 'media', 'url'],
-				badge: ImageIcon as IconComponent,
+				badge: ImageIcon,
 				group: 'Insert',
 				onSelect: () => {
 					onImageRequest();
