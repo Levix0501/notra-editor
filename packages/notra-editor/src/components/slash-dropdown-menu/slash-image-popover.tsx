@@ -45,7 +45,6 @@ export function SlashImagePopover({
 		>
 			<PopoverAnchor asChild>
 				<span
-					aria-hidden
 					ref={(node) => {
 						if (!node) return;
 
@@ -59,13 +58,11 @@ export function SlashImagePopover({
 						node.style.height = `${height || 1}px`;
 						node.style.pointerEvents = 'none';
 					}}
+					aria-hidden
 				/>
 			</PopoverAnchor>
 			<PopoverContent align="start" className="nt:w-auto nt:p-0">
-				<ImageInputForm
-					onCancel={onClose}
-					onSubmit={handleSubmit}
-				/>
+				<ImageInputForm onCancel={onClose} onSubmit={handleSubmit} />
 			</PopoverContent>
 		</Popover>
 	);
