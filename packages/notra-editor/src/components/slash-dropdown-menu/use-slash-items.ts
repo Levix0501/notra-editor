@@ -17,6 +17,9 @@ import type {
 	SuggestionItem
 } from '../suggestion-menu/suggestion-menu-types';
 import type { Editor } from '@tiptap/core';
+// Module augmentations: pull in ChainedCommands extensions from these packages.
+import type {} from '@tiptap/starter-kit';
+import type {} from '@tiptap/extension-list';
 
 export interface UseSlashItemsOptions {
 	/** Called when the Image slash item is chosen. */
