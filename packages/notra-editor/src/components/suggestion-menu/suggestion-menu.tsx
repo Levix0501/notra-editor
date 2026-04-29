@@ -3,13 +3,7 @@
 import { flip, offset, shift, size } from '@floating-ui/react';
 import { PluginKey } from '@tiptap/pm/state';
 import { Suggestion } from '@tiptap/suggestion';
-import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useFloatingElement } from '../../hooks/use-floating-element';
 
@@ -138,8 +132,7 @@ export function SuggestionMenu({
 			decorationClass: decorationClassRef.current,
 			decorationContent: decorationContentRef.current,
 
-			items: ({ query, editor }) =>
-				itemsFnRef.current({ query, editor }),
+			items: ({ query, editor }) => itemsFnRef.current({ query, editor }),
 
 			allow: ({ state, range }) => {
 				const $from = state.doc.resolve(range.from);
@@ -160,18 +153,14 @@ export function SuggestionMenu({
 
 			render: () => ({
 				onStart: (props: SuggestionProps<SuggestionItem>) => {
-					setDecorationNode(
-						(props.decorationNode as HTMLElement) ?? null
-					);
+					setDecorationNode((props.decorationNode as HTMLElement) ?? null);
 					setItems(props.items);
 					setQuery(props.query);
 					commandRef.current = (item) => props.command(item);
 					setOpen(true);
 				},
 				onUpdate: (props: SuggestionProps<SuggestionItem>) => {
-					setDecorationNode(
-						(props.decorationNode as HTMLElement) ?? null
-					);
+					setDecorationNode((props.decorationNode as HTMLElement) ?? null);
 					setItems(props.items);
 					setQuery(props.query);
 					commandRef.current = (item) => props.command(item);
@@ -181,9 +170,7 @@ export function SuggestionMenu({
 
 					if (event.key === 'ArrowDown') {
 						if (list.length > 0) {
-							setSelectedIndex(
-								(selectedIndexRef.current + 1) % list.length
-							);
+							setSelectedIndex((selectedIndexRef.current + 1) % list.length);
 						}
 
 						return true;
@@ -192,8 +179,7 @@ export function SuggestionMenu({
 					if (event.key === 'ArrowUp') {
 						if (list.length > 0) {
 							setSelectedIndex(
-								(selectedIndexRef.current - 1 + list.length) %
-									list.length
+								(selectedIndexRef.current - 1 + list.length) % list.length
 							);
 						}
 
@@ -237,14 +223,11 @@ export function SuggestionMenu({
 		};
 	}, [editor, char, pluginKey, close]);
 
-	const handleSelect = useCallback(
-		(item: SuggestionItem) => {
-			if (commandRef.current) {
-				commandRef.current(item);
-			}
-		},
-		[]
-	);
+	const handleSelect = useCallback((item: SuggestionItem) => {
+		if (commandRef.current) {
+			commandRef.current(item);
+		}
+	}, []);
 
 	if (!isMounted || !open) return null;
 
