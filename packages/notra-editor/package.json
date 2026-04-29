@@ -47,6 +47,7 @@
 		"react-dom": "^19.0.0"
 	},
 	"dependencies": {
+		"@floating-ui/react": "^0.27.0",
 		"@radix-ui/react-slot": "^1.2.4",
 		"@tiptap/core": "^3.22.4",
 		"@tiptap/extension-code-block": "^3.22.4",
@@ -58,6 +59,7 @@
 		"@tiptap/react": "^3.22.4",
 		"@tiptap/starter-kit": "^3.22.4",
 		"@tiptap/static-renderer": "^3.22.4",
+		"@tiptap/suggestion": "^3.22.4",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
