@@ -15,9 +15,7 @@ export function filterSuggestionItems(
 
 		if (item.subtext?.toLowerCase().includes(normalized)) return true;
 
-		if (
-			item.keywords?.some((kw) => kw.toLowerCase().includes(normalized))
-		) {
+		if (item.keywords?.some((kw) => kw.toLowerCase().includes(normalized))) {
 			return true;
 		}
 

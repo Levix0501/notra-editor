@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { filterSuggestionItems } from '../src/components/suggestion-menu/filter-suggestion-items';
+
 import type { SuggestionItem } from '../src/components/suggestion-menu/suggestion-menu-types';
 
 const noop = () => {};
@@ -52,10 +53,7 @@ describe('filterSuggestionItems', () => {
 		];
 		const result = filterSuggestionItems(richItems, 'head');
 
-		expect(result.map((i) => i.title)).toEqual([
-			'Heading 1',
-			'Toggle Heading'
-		]);
+		expect(result.map((i) => i.title)).toEqual(['Heading 1', 'Toggle Heading']);
 	});
 
 	it('returns an empty array when nothing matches', () => {
