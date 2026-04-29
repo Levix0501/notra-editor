@@ -1,5 +1,4 @@
 import { NotraEditor } from 'notra-editor';
-import 'notra-editor/themes/default/shared.css';
 import 'notra-editor/themes/default/editor.css';
 import { useState } from 'react';
 

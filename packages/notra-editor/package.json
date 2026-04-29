@@ -23,7 +23,6 @@
 				"default": "./dist/index.cjs"
 			}
 		},
-		"./themes/default/shared.css": "./dist/themes/default/shared.css",
 		"./themes/default/editor.css": "./dist/themes/default/editor.css",
 		"./themes/default/reader.css": "./dist/themes/default/reader.css",
 		"./styles/globals.css": "./dist/styles/globals.css"
@@ -36,7 +35,7 @@
 	],
 	"scripts": {
 		"build": "tsup && pnpm build:css",
-		"build:css": "postcss src/styles/globals.css -o dist/styles/globals.css",
+		"build:css": "sass --no-source-map --style=expanded src/themes/default/editor.scss:dist/themes/default/editor.css src/themes/default/reader.scss:dist/themes/default/reader.css && postcss src/styles/globals.css -o dist/styles/globals.css",
 		"dev": "tsup --watch",
 		"test": "vitest run --passWithNoTests",
 		"test:watch": "vitest",
@@ -80,6 +79,7 @@
 		"postcss-cli": "^11.0.1",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
+		"sass": "^1.99.0",
 		"shadcn": "^4.6.0",
 		"tailwindcss": "^4.2.4",
 		"tsup": "^8.4.0",

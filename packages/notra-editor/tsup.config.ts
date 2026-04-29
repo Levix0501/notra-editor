@@ -12,6 +12,5 @@ export default defineConfig({
 		return {
 			js: format === 'esm' ? '.mjs' : '.cjs'
 		};
-	},
-	onSuccess: 'cp -r src/themes dist/ 2>/dev/null || true'
+	}
 });
