@@ -27,8 +27,24 @@
 	--tt-gray-light-a-800: rgba(30, 32, 36, 0.95);
 	--tt-gray-light-a-900: rgba(29, 30, 32, 0.98);
 
+	/* Gray alpha scale (dark mode) */
+	--tt-gray-dark-a-50: rgba(232, 232, 253, 0.05);
+	--tt-gray-dark-a-100: rgba(231, 231, 243, 0.07);
+	--tt-gray-dark-a-200: rgba(238, 238, 246, 0.11);
+	--tt-gray-dark-a-300: rgba(239, 239, 245, 0.22);
+	--tt-gray-dark-a-400: rgba(244, 244, 255, 0.37);
+	--tt-gray-dark-a-500: rgba(236, 238, 253, 0.5);
+	--tt-gray-dark-a-600: rgba(247, 247, 253, 0.64);
+	--tt-gray-dark-a-700: rgba(251, 251, 254, 0.75);
+	--tt-gray-dark-a-800: rgba(253, 253, 253, 0.88);
+	--tt-gray-dark-a-900: rgba(255, 255, 255, 0.96);
+
 	/* Gray solid scale (light mode) */
 	--tt-gray-light-200: rgba(234, 234, 235, 1);
+
+	/* Gray solid scale (dark mode) */
+	--tt-gray-dark-50: rgba(25, 25, 26, 1);
+	--tt-gray-dark-200: rgba(45, 45, 47, 1);
 
 	/* Radius & transitions */
 	--tt-radius-lg: 0.75rem;
@@ -245,6 +261,7 @@
    Additional Variables
    ===================== */
 .notra-editor {
+	--tt-brand-color-400: rgba(122, 82, 255, 1);
 	--tt-brand-color-500: rgba(98, 41, 255, 1);
 	--tt-shadow-elevated-md:
 		0px 16px 48px 0px rgba(17, 24, 39, 0.04),
@@ -313,4 +330,56 @@
 		opacity: 1;
 		transform: translateX(-50%) scale(1) translateY(0);
 	}
+}
+
+/* =====================
+   Dark Mode Overrides
+   ===================== */
+.dark .notra-editor {
+	--notra-cursor-color: var(--tt-brand-color-400);
+	--notra-selection-color: rgba(122, 82, 255, 0.2);
+	--notra-placeholder-color: var(--tt-gray-dark-a-400);
+
+	/* Toolbar */
+	--tt-toolbar-bg-color: var(--black);
+	--tt-toolbar-border-color: var(--tt-gray-dark-a-50);
+
+	/* Ghost button colors */
+	--tt-button-hover-bg-color: var(--tt-gray-dark-200);
+	--tt-button-default-icon-color: var(--tt-gray-dark-a-600);
+	--tt-button-hover-icon-color: var(--tt-gray-dark-a-900);
+	--tt-button-disabled-icon-color: var(--tt-gray-dark-a-400);
+
+	/* Separator */
+	--tt-separator-color: var(--tt-gray-dark-a-200);
+
+	/* Shadow */
+	--tt-shadow-elevated-md:
+		0px 16px 48px 0px rgba(0, 0, 0, 0.5), 0px 12px 24px 0px rgba(0, 0, 0, 0.24),
+		0px 6px 8px 0px rgba(0, 0, 0, 0.22), 0px 2px 3px 0px rgba(0, 0, 0, 0.12);
+
+	/* Dropdown menu */
+	--tt-dropdown-menu-bg-color: var(--tt-gray-dark-50);
+	--tt-dropdown-menu-text-color: var(--tt-gray-dark-a-600);
+}
+
+/* =====================
+   Button Active State (dark)
+   ===================== */
+.dark .notra-editor .tiptap-button[data-active-state='on'] {
+	background-color: var(--tt-gray-dark-a-100);
+	color: var(--tt-brand-color-400);
+}
+
+.dark
+	.notra-editor
+	.tiptap-button[data-active-state='on']:hover:not([disabled]) {
+	background-color: var(--tt-gray-dark-200);
+}
+
+/* =====================
+   Button Extras (dark)
+   ===================== */
+.dark .notra-editor .tiptap-button-dropdown-arrows {
+	color: var(--tt-gray-dark-a-600);
 }

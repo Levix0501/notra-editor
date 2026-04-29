@@ -39,6 +39,39 @@
 }
 
 /* =====================
+   Dark Mode Overrides
+   ===================== */
+.dark .notra {
+	/* Dark mode colors */
+	--notra-color-text: rgba(255, 255, 255, 0.96);
+	--notra-color-bg: rgba(14, 14, 17, 1);
+	--notra-color-border: rgba(238, 238, 246, 0.11);
+	--notra-color-link: rgba(122, 82, 255, 1);
+
+	/* Code */
+	--notra-code-bg: rgba(231, 231, 243, 0.07);
+	--notra-code-text: rgba(251, 251, 254, 0.75);
+	--notra-code-border: rgba(238, 238, 246, 0.11);
+	--notra-codeblock-bg: rgba(232, 232, 253, 0.05);
+	--notra-codeblock-text: rgba(253, 253, 253, 0.88);
+	--notra-codeblock-border: rgba(238, 238, 246, 0.11);
+
+	/* Blockquote */
+	--notra-blockquote-bar: rgba(245, 245, 245, 1);
+
+	/* Horizontal rule */
+	--notra-hr-color: rgba(238, 238, 246, 0.11);
+
+	/* Task list */
+	--notra-checklist-bg: rgba(231, 231, 243, 0.07);
+	--notra-checklist-bg-active: rgba(255, 255, 255, 0.96);
+	--notra-checklist-border: rgba(238, 238, 246, 0.11);
+	--notra-checklist-border-active: rgba(255, 255, 255, 0.96);
+	--notra-checklist-check-color: rgba(14, 14, 17, 1);
+	--notra-checklist-text-active: rgba(236, 238, 253, 0.5);
+}
+
+/* =====================
    Base Typography
    ===================== */
 .notra .tiptap,
