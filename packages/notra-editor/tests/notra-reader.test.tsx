@@ -7,7 +7,6 @@ describe('NotraReader', () => {
 	it('renders the reader container', () => {
 		const { container } = render(<NotraReader content="# Hello" />);
 
-		expect(container.querySelector('article.notra-reader')).toBeInTheDocument();
 		expect(container.querySelector('article.notra-prose')).toBeInTheDocument();
 	});
 

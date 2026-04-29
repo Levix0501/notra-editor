@@ -6,7 +6,3 @@
 @use 'nodes/code-block-node';
 @use 'nodes/horizontal-rule-node';
 @use 'nodes/image-node';
-
-.notra-reader *::selection {
-	background-color: highlight;
-}

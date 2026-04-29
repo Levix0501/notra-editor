@@ -59,5 +59,5 @@ export function NotraReader({
 		}
 	});
 
-	return <article className="notra-reader notra-prose">{rendered}</article>;
+	return <article className="notra-prose">{rendered}</article>;
 }
