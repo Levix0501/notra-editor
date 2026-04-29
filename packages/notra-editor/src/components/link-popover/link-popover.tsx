@@ -89,7 +89,7 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
 				</PopoverTrigger>
 				<PopoverContent
 					align="start"
-					className="nt:flex nt:w-auto nt:items-center nt:gap-1 nt:p-1"
+					className="nt:flex nt:w-auto nt:flex-row nt:items-center nt:gap-1 nt:p-1"
 				>
 					<Input
 						autoFocus
