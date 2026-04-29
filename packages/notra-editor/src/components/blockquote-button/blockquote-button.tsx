@@ -1,5 +1,3 @@
-'use client';
-
 import { TextQuote } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 

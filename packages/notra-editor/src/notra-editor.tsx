@@ -1,5 +1,3 @@
-'use client';
-
 import { EditorContent } from '@tiptap/react';
 
 import { BlockquoteButton } from './components/blockquote-button/blockquote-button';

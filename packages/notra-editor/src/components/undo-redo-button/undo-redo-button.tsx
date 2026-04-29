@@ -1,5 +1,3 @@
-'use client';
-
 import { forwardRef, useCallback } from 'react';
 
 import { useUndoRedo } from './use-undo-redo';
