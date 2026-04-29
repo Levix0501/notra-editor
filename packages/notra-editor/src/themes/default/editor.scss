@@ -6,6 +6,7 @@
 @use 'nodes/list-node';
 @use 'nodes/blockquote-node';
 @use 'nodes/code-block-node';
+@use 'code-highlight';
 @use 'nodes/horizontal-rule-node';
 @use 'nodes/image-node';
 @use 'nodes/image-upload-node';

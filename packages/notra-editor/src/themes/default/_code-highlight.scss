@@ -1,0 +1,124 @@
+/* =====================
+   Atom One Light (default)
+   ===================== */
+.notra-prose .hljs {
+	color: #383a42;
+	background: #fafafa;
+}
+.notra-prose .hljs-comment,
+.notra-prose .hljs-quote {
+	color: #a0a1a7;
+	font-style: italic;
+}
+.notra-prose .hljs-doctag,
+.notra-prose .hljs-formula,
+.notra-prose .hljs-keyword {
+	color: #a626a4;
+}
+.notra-prose .hljs-deletion,
+.notra-prose .hljs-name,
+.notra-prose .hljs-section,
+.notra-prose .hljs-selector-tag,
+.notra-prose .hljs-subst {
+	color: #e45649;
+}
+.notra-prose .hljs-literal {
+	color: #0184bb;
+}
+.notra-prose .hljs-addition,
+.notra-prose .hljs-attribute,
+.notra-prose .hljs-meta .hljs-string,
+.notra-prose .hljs-regexp,
+.notra-prose .hljs-string {
+	color: #50a14f;
+}
+.notra-prose .hljs-built_in,
+.notra-prose .hljs-class .hljs-title,
+.notra-prose .hljs-title.class_ {
+	color: #c18401;
+}
+.notra-prose .hljs-attr,
+.notra-prose .hljs-number,
+.notra-prose .hljs-selector-attr,
+.notra-prose .hljs-selector-class,
+.notra-prose .hljs-selector-pseudo,
+.notra-prose .hljs-template-variable,
+.notra-prose .hljs-type,
+.notra-prose .hljs-variable {
+	color: #986801;
+}
+.notra-prose .hljs-bullet,
+.notra-prose .hljs-link,
+.notra-prose .hljs-meta,
+.notra-prose .hljs-selector-id,
+.notra-prose .hljs-symbol,
+.notra-prose .hljs-title {
+	color: #4078f2;
+}
+.notra-prose .hljs-emphasis {
+	font-style: italic;
+}
+.notra-prose .hljs-strong {
+	font-weight: bold;
+}
+.notra-prose .hljs-link {
+	text-decoration: underline;
+}
+
+/* =====================
+   Atom One Dark (.dark override)
+   ===================== */
+.dark .notra-prose .hljs {
+	color: #abb2bf;
+	background: #282c34;
+}
+.dark .notra-prose .hljs-comment,
+.dark .notra-prose .hljs-quote {
+	color: #5c6370;
+	font-style: italic;
+}
+.dark .notra-prose .hljs-doctag,
+.dark .notra-prose .hljs-formula,
+.dark .notra-prose .hljs-keyword {
+	color: #c678dd;
+}
+.dark .notra-prose .hljs-deletion,
+.dark .notra-prose .hljs-name,
+.dark .notra-prose .hljs-section,
+.dark .notra-prose .hljs-selector-tag,
+.dark .notra-prose .hljs-subst {
+	color: #e06c75;
+}
+.dark .notra-prose .hljs-literal {
+	color: #56b6c2;
+}
+.dark .notra-prose .hljs-addition,
+.dark .notra-prose .hljs-attribute,
+.dark .notra-prose .hljs-meta .hljs-string,
+.dark .notra-prose .hljs-regexp,
+.dark .notra-prose .hljs-string {
+	color: #98c379;
+}
+.dark .notra-prose .hljs-built_in,
+.dark .notra-prose .hljs-class .hljs-title,
+.dark .notra-prose .hljs-title.class_ {
+	color: #e6c07b;
+}
+.dark .notra-prose .hljs-attr,
+.dark .notra-prose .hljs-number,
+.dark .notra-prose .hljs-selector-attr,
+.dark .notra-prose .hljs-selector-class,
+.dark .notra-prose .hljs-selector-pseudo,
+.dark .notra-prose .hljs-template-variable,
+.dark .notra-prose .hljs-type,
+.dark .notra-prose .hljs-variable {
+	color: #d19a66;
+}
+.dark .notra-prose .hljs-bullet,
+.dark .notra-prose .hljs-link,
+.dark .notra-prose .hljs-meta,
+.dark .notra-prose .hljs-selector-id,
+.dark .notra-prose .hljs-symbol,
+.dark .notra-prose .hljs-title {
+	color: #61aeee;
+}
