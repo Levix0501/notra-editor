@@ -6,6 +6,7 @@ import { ImageInputForm } from '../image-popover/image-input-form';
 import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover';
 
 import type { Editor } from '@tiptap/core';
+import type {} from '@tiptap/extension-image';
 
 export interface SlashImagePopoverProps {
 	editor: Editor;
