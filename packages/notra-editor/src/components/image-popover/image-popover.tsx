@@ -39,6 +39,7 @@ export const ImagePopover = forwardRef<HTMLButtonElement, ImagePopoverProps>(
 
 				if (!values.url) {
 					if (isActive) removeImage();
+
 					setIsOpen(false);
 
 					return;
@@ -79,17 +80,12 @@ export const ImagePopover = forwardRef<HTMLButtonElement, ImagePopoverProps>(
 					>
 						<ImageIcon
 							className={
-								isActive
-									? 'nt:text-[var(--tt-brand-color-500)]'
-									: undefined
+								isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
 							}
 						/>
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent
-					align="start"
-					className="nt:w-auto nt:p-0"
-				>
+				<PopoverContent align="start" className="nt:w-auto nt:p-0">
 					<ImageInputForm
 						initialAlt={alt}
 						initialUrl={url}

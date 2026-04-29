@@ -1,7 +1,7 @@
-import { Editor } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { Editor } from '@tiptap/core';
+import Image from '@tiptap/extension-image';
+import StarterKit from '@tiptap/starter-kit';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { ImagePopover } from '../src/components/image-popover/image-popover';
