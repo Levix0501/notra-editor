@@ -1,5 +1,11 @@
 # notra-editor
 
+## 0.8.1
+
+### Patch Changes
+
+- [`012736c296dc48391a197c918051c470be9a3da8`](https://github.com/Levix0501/notra-editor/commit/012736c296dc48391a197c918051c470be9a3da8) Thanks [@Levix0501](https://github.com/Levix0501)! - Fix toolbar link popover layout that stacked input and buttons vertically instead of horizontally.
+
 ## 0.8.0
 
 ### Minor Changes
