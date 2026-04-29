@@ -1,5 +1,5 @@
-import { EditorContent } from '@tiptap/react';
 import { act, render, screen, waitFor } from '@testing-library/react';
+import { EditorContent } from '@tiptap/react';
 import { useEffect } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -57,9 +57,7 @@ describe('SlashDropdownMenu', () => {
 
 		await waitFor(() => {
 			expect(
-				document.querySelector(
-					'[data-selector="notra-slash-dropdown-menu"]'
-				)
+				document.querySelector('[data-selector="notra-slash-dropdown-menu"]')
 			).toBeInTheDocument();
 		});
 	});
@@ -107,9 +105,7 @@ describe('SlashDropdownMenu', () => {
 		await new Promise((resolve) => setTimeout(resolve, 20));
 
 		expect(
-			document.querySelector(
-				'[data-selector="notra-slash-dropdown-menu"]'
-			)
+			document.querySelector('[data-selector="notra-slash-dropdown-menu"]')
 		).not.toBeInTheDocument();
 	});
 });
