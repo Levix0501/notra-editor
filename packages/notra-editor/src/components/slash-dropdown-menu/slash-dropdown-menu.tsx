@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useSlashItems } from './use-slash-items';
 import { SlashImagePopover } from './slash-image-popover';
+import { useSlashItems } from './use-slash-items';
 import { filterSuggestionItems } from '../suggestion-menu/filter-suggestion-items';
 import { SuggestionMenu } from '../suggestion-menu/suggestion-menu';
 import { Button } from '../ui/button';
@@ -84,7 +84,11 @@ function GroupedItemList({
 	onSelect
 }: GroupedItemListProps) {
 	const groups = useMemo(() => {
-		const result: { label: string; items: SuggestionItem[]; offsets: number[] }[] = [];
+		const result: {
+			label: string;
+			items: SuggestionItem[];
+			offsets: number[];
+		}[] = [];
 
 		items.forEach((item, index) => {
 			const label = item.group ?? '';
@@ -108,15 +112,10 @@ function GroupedItemList({
 			{groups.map((group, groupIndex) => (
 				<div key={`${group.label}-${groupIndex}`}>
 					{groupIndex > 0 && (
-						<Separator
-							className="nt:my-1"
-							orientation="horizontal"
-						/>
+						<Separator className="nt:my-1" orientation="horizontal" />
 					)}
 					{group.label && (
-						<div className="notra-slash-group-label">
-							{group.label}
-						</div>
+						<div className="notra-slash-group-label">{group.label}</div>
 					)}
 					{group.items.map((item, itemIndex) => {
 						const absoluteIndex = group.offsets[itemIndex];
@@ -142,11 +141,7 @@ interface SlashItemButtonProps {
 	onSelect: () => void;
 }
 
-function SlashItemButton({
-	item,
-	isSelected,
-	onSelect
-}: SlashItemButtonProps) {
+function SlashItemButton({ item, isSelected, onSelect }: SlashItemButtonProps) {
 	const ref = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
