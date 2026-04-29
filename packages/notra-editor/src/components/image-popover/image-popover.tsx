@@ -1,13 +1,12 @@
 'use client';
 
-import { CornerDownLeft, ImageIcon, Trash2 } from 'lucide-react';
+import { ImageIcon } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
+import { ImageInputForm } from './image-input-form';
 import { useImagePopover } from './use-image-popover';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Separator } from '../ui/separator';
 
 import type { Editor } from '@tiptap/core';
 
@@ -22,44 +21,46 @@ export const ImagePopover = forwardRef<HTMLButtonElement, ImagePopoverProps>(
 	({ editor, ...buttonProps }, ref) => {
 		const [isOpen, setIsOpen] = useState(false);
 
-		const {
-			url,
-			setUrl,
-			alt,
-			setAlt,
-			isActive,
-			canSet,
-			setImage,
-			removeImage,
-			wasSelectionMove
-		} = useImagePopover({ editor });
+		const { url, alt, isActive, canSet, removeImage, wasSelectionMove } =
+			useImagePopover({ editor });
 
-		// Auto-open popover when cursor moves onto an existing image (selection-only transaction)
 		useEffect(() => {
 			if (isActive && wasSelectionMove) {
 				setIsOpen(true);
 			}
 		}, [isActive, wasSelectionMove]);
 
-		const handleSetImage = useCallback(() => {
-			setImage();
-			setIsOpen(false);
-		}, [setImage]);
+		// Bypass useImagePopover.setImage — it reads url/alt from hook state,
+		// which lags behind the form values when called synchronously after the
+		// hook's setUrl/setAlt setters. Submit values directly to the editor.
+		const handleSubmit = useCallback(
+			(values: { url: string; alt: string }) => {
+				if (!editor) return;
 
-		const handleRemoveImage = useCallback(() => {
+				if (!values.url) {
+					if (isActive) removeImage();
+					setIsOpen(false);
+
+					return;
+				}
+
+				editor
+					.chain()
+					.focus()
+					.setImage({
+						src: values.url,
+						alt: values.alt || undefined
+					})
+					.run();
+				setIsOpen(false);
+			},
+			[editor, isActive, removeImage]
+		);
+
+		const handleRemove = useCallback(() => {
 			removeImage();
 			setIsOpen(false);
 		}, [removeImage]);
-
-		const handleKeyDown = useCallback(
-			(event: React.KeyboardEvent<HTMLInputElement>) => {
-				if (event.key === 'Enter') {
-					event.preventDefault();
-					handleSetImage();
-				}
-			},
-			[handleSetImage]
-		);
 
 		return (
 			<Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -78,60 +79,25 @@ export const ImagePopover = forwardRef<HTMLButtonElement, ImagePopoverProps>(
 					>
 						<ImageIcon
 							className={
-								isActive ? 'nt:text-[var(--tt-brand-color-500)]' : undefined
+								isActive
+									? 'nt:text-[var(--tt-brand-color-500)]'
+									: undefined
 							}
 						/>
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent
 					align="start"
-					className="nt:flex nt:w-72 nt:flex-col nt:gap-1 nt:p-1"
+					className="nt:w-auto nt:p-0"
 				>
-					<Input
-						autoFocus
-						className="nt:h-7 nt:border-none nt:shadow-none nt:focus-visible:ring-0"
-						placeholder="Paste image URL..."
-						type="url"
-						value={url}
-						onChange={(e) => setUrl(e.target.value)}
-						onKeyDown={handleKeyDown}
+					<ImageInputForm
+						initialAlt={alt}
+						initialUrl={url}
+						showRemove={isActive}
+						onCancel={() => setIsOpen(false)}
+						onRemove={handleRemove}
+						onSubmit={handleSubmit}
 					/>
-					<Input
-						className="nt:h-7 nt:border-none nt:shadow-none nt:focus-visible:ring-0"
-						placeholder="Alt text (optional)"
-						type="text"
-						value={alt}
-						onChange={(e) => setAlt(e.target.value)}
-						onKeyDown={handleKeyDown}
-					/>
-					<div className="nt:flex nt:items-center nt:justify-end nt:gap-1">
-						<Button
-							aria-label="Apply image"
-							disabled={!url && !isActive}
-							size="icon-sm"
-							tabIndex={-1}
-							type="button"
-							variant="ghost"
-							onClick={handleSetImage}
-						>
-							<CornerDownLeft />
-						</Button>
-						{isActive && (
-							<>
-								<Separator className="nt:h-5" orientation="vertical" />
-								<Button
-									aria-label="Remove image"
-									size="icon-sm"
-									tabIndex={-1}
-									type="button"
-									variant="ghost"
-									onClick={handleRemoveImage}
-								>
-									<Trash2 />
-								</Button>
-							</>
-						)}
-					</div>
 				</PopoverContent>
 			</Popover>
 		);
