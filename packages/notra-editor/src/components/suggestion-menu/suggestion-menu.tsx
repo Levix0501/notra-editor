@@ -54,6 +54,7 @@ export function SuggestionMenu({
 	const [query, setQuery] = useState('');
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const commandRef = useRef<((item: SuggestionItem) => void) | null>(null);
+	const dismissedRef = useRef(false);
 
 	// Reset selection when the visible item list changes.
 	useEffect(() => {
@@ -120,11 +121,6 @@ export function SuggestionMenu({
 
 		const key = new PluginKey(pluginKey);
 
-		// Remove a previous registration with the same key (e.g. HMR).
-		if (editor.state.plugins.find((p) => p.spec.key === key)) {
-			editor.unregisterPlugin(key);
-		}
-
 		const plugin = Suggestion<SuggestionItem>({
 			editor,
 			char,
@@ -153,6 +149,7 @@ export function SuggestionMenu({
 
 			render: () => ({
 				onStart: (props: SuggestionProps<SuggestionItem>) => {
+					dismissedRef.current = false;
 					setDecorationNode((props.decorationNode as HTMLElement) ?? null);
 					setItems(props.items);
 					setQuery(props.query);
@@ -197,6 +194,7 @@ export function SuggestionMenu({
 					}
 
 					if (event.key === 'Escape') {
+						dismissedRef.current = true;
 						close();
 
 						return true;
@@ -205,6 +203,7 @@ export function SuggestionMenu({
 					return false;
 				},
 				onExit: () => {
+					dismissedRef.current = false;
 					setDecorationNode(null);
 					setItems([]);
 					setQuery('');
