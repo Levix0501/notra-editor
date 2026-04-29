@@ -9,6 +9,7 @@ import { ImagePopover } from './components/image-popover/image-popover';
 import { LinkPopover } from './components/link-popover/link-popover';
 import { ListDropdownMenu } from './components/list-dropdown-menu/list-dropdown-menu';
 import { MarkButton } from './components/mark-button/mark-button';
+import { SlashDropdownMenu } from './components/slash-dropdown-menu/slash-dropdown-menu';
 import {
 	Toolbar,
 	ToolbarGroup,
@@ -61,6 +62,7 @@ export function NotraEditor({ value, onChange }: NotraEditorProps) {
 				<Spacer />
 			</Toolbar>
 			<EditorContent className="notra-editor-content" editor={editor} />
+			<SlashDropdownMenu editor={editor} />
 		</div>
 	);
 }
