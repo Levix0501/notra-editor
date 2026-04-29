@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+	act,
+	fireEvent,
+	render,
+	screen,
+	waitFor
+} from '@testing-library/react';
 import { EditorContent } from '@tiptap/react';
 import { useEffect } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -164,6 +170,7 @@ describe('SlashDropdownMenu', () => {
 		// Document content (modulo the typed `/`) should not include any of the
 		// slash items being inserted as nodes.
 		const html = editor.getHTML();
+
 		expect(html).not.toContain('<h1');
 		expect(html).not.toContain('<blockquote');
 		expect(html).not.toContain('<ul');
