@@ -1,10 +1,10 @@
 'use client';
 
-import * as React from 'react';
+import { CheckIcon, ChevronRightIcon } from 'lucide-react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
+import * as React from 'react';
 
 import { cn } from '../../lib/utils';
-import { CheckIcon, ChevronRightIcon } from 'lucide-react';
 
 function DropdownMenu({
 	...props
@@ -40,13 +40,13 @@ function DropdownMenuContent({
 	return (
 		<DropdownMenuPrimitive.Portal>
 			<DropdownMenuPrimitive.Content
-				data-slot="dropdown-menu-content"
-				sideOffset={sideOffset}
 				align={align}
 				className={cn(
 					'nt: nt: nt:z-50 nt:max-h-(--radix-dropdown-menu-content-available-height) nt:w-(--radix-dropdown-menu-trigger-width) nt:min-w-32 nt:origin-(--radix-dropdown-menu-content-transform-origin) nt:overflow-x-hidden nt:overflow-y-auto nt:rounded-lg nt:bg-popover nt:p-1 nt:text-popover-foreground nt:shadow-md nt:ring-1 nt:ring-foreground/10 nt:duration-100 nt:data-[side=bottom]:slide-in-from-top-2 nt:data-[side=left]:slide-in-from-right-2 nt:data-[side=right]:slide-in-from-left-2 nt:data-[side=top]:slide-in-from-bottom-2 nt:data-[state=closed]:overflow-hidden nt:data-open:animate-in nt:data-open:fade-in-0 nt:data-open:zoom-in-95 nt:data-closed:animate-out nt:data-closed:fade-out-0 nt:data-closed:zoom-out-95',
 					className
 				)}
+				data-slot="dropdown-menu-content"
+				sideOffset={sideOffset}
 				{...props}
 			/>
 		</DropdownMenuPrimitive.Portal>
@@ -72,13 +72,13 @@ function DropdownMenuItem({
 }) {
 	return (
 		<DropdownMenuPrimitive.Item
-			data-slot="dropdown-menu-item"
-			data-inset={inset}
-			data-variant={variant}
 			className={cn(
 				'nt:group/dropdown-menu-item nt:relative nt:flex nt:cursor-default nt:items-center nt:gap-1.5 nt:rounded-md nt:px-1.5 nt:py-1 nt:text-sm nt:outline-hidden nt:select-none nt:focus:bg-accent nt:focus:text-accent-foreground nt:not-data-[variant=destructive]:focus:**:text-accent-foreground nt:data-inset:pl-7 nt:data-[variant=destructive]:text-destructive nt:data-[variant=destructive]:focus:bg-destructive/10 nt:data-[variant=destructive]:focus:text-destructive nt:dark:data-[variant=destructive]:focus:bg-destructive/20 nt:data-disabled:pointer-events-none nt:data-disabled:opacity-50 nt:[&_svg]:pointer-events-none nt:[&_svg]:shrink-0 nt:[&_svg:not([class*=size-])]:size-4 nt:data-[variant=destructive]:*:[svg]:text-destructive',
 				className
 			)}
+			data-inset={inset}
+			data-slot="dropdown-menu-item"
+			data-variant={variant}
 			{...props}
 		/>
 	);
@@ -95,13 +95,13 @@ function DropdownMenuCheckboxItem({
 }) {
 	return (
 		<DropdownMenuPrimitive.CheckboxItem
-			data-slot="dropdown-menu-checkbox-item"
-			data-inset={inset}
+			checked={checked}
 			className={cn(
 				'nt:relative nt:flex nt:cursor-default nt:items-center nt:gap-1.5 nt:rounded-md nt:py-1 nt:pr-8 nt:pl-1.5 nt:text-sm nt:outline-hidden nt:select-none nt:focus:bg-accent nt:focus:text-accent-foreground nt:focus:**:text-accent-foreground nt:data-inset:pl-7 nt:data-disabled:pointer-events-none nt:data-disabled:opacity-50 nt:[&_svg]:pointer-events-none nt:[&_svg]:shrink-0 nt:[&_svg:not([class*=size-])]:size-4',
 				className
 			)}
-			checked={checked}
+			data-inset={inset}
+			data-slot="dropdown-menu-checkbox-item"
 			{...props}
 		>
 			<span
@@ -138,12 +138,12 @@ function DropdownMenuRadioItem({
 }) {
 	return (
 		<DropdownMenuPrimitive.RadioItem
-			data-slot="dropdown-menu-radio-item"
-			data-inset={inset}
 			className={cn(
 				'nt:relative nt:flex nt:cursor-default nt:items-center nt:gap-1.5 nt:rounded-md nt:py-1 nt:pr-8 nt:pl-1.5 nt:text-sm nt:outline-hidden nt:select-none nt:focus:bg-accent nt:focus:text-accent-foreground nt:focus:**:text-accent-foreground nt:data-inset:pl-7 nt:data-disabled:pointer-events-none nt:data-disabled:opacity-50 nt:[&_svg]:pointer-events-none nt:[&_svg]:shrink-0 nt:[&_svg:not([class*=size-])]:size-4',
 				className
 			)}
+			data-inset={inset}
+			data-slot="dropdown-menu-radio-item"
 			{...props}
 		>
 			<span
@@ -168,12 +168,12 @@ function DropdownMenuLabel({
 }) {
 	return (
 		<DropdownMenuPrimitive.Label
-			data-slot="dropdown-menu-label"
-			data-inset={inset}
 			className={cn(
 				'nt:px-1.5 nt:py-1 nt:text-xs nt:font-medium nt:text-muted-foreground nt:data-inset:pl-7',
 				className
 			)}
+			data-inset={inset}
+			data-slot="dropdown-menu-label"
 			{...props}
 		/>
 	);
@@ -185,8 +185,8 @@ function DropdownMenuSeparator({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
 	return (
 		<DropdownMenuPrimitive.Separator
-			data-slot="dropdown-menu-separator"
 			className={cn('nt:-mx-1 nt:my-1 nt:h-px nt:bg-border', className)}
+			data-slot="dropdown-menu-separator"
 			{...props}
 		/>
 	);
@@ -198,11 +198,11 @@ function DropdownMenuShortcut({
 }: React.ComponentProps<'span'>) {
 	return (
 		<span
-			data-slot="dropdown-menu-shortcut"
 			className={cn(
 				'nt:ml-auto nt:text-xs nt:tracking-widest nt:text-muted-foreground nt:group-focus/dropdown-menu-item:text-accent-foreground',
 				className
 			)}
+			data-slot="dropdown-menu-shortcut"
 			{...props}
 		/>
 	);
@@ -224,12 +224,12 @@ function DropdownMenuSubTrigger({
 }) {
 	return (
 		<DropdownMenuPrimitive.SubTrigger
-			data-slot="dropdown-menu-sub-trigger"
-			data-inset={inset}
 			className={cn(
 				'nt:flex nt:cursor-default nt:items-center nt:gap-1.5 nt:rounded-md nt:px-1.5 nt:py-1 nt:text-sm nt:outline-hidden nt:select-none nt:focus:bg-accent nt:focus:text-accent-foreground nt:not-data-[variant=destructive]:focus:**:text-accent-foreground nt:data-inset:pl-7 nt:data-open:bg-accent nt:data-open:text-accent-foreground nt:[&_svg]:pointer-events-none nt:[&_svg]:shrink-0 nt:[&_svg:not([class*=size-])]:size-4',
 				className
 			)}
+			data-inset={inset}
+			data-slot="dropdown-menu-sub-trigger"
 			{...props}
 		>
 			{children}
@@ -244,11 +244,11 @@ function DropdownMenuSubContent({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
 	return (
 		<DropdownMenuPrimitive.SubContent
-			data-slot="dropdown-menu-sub-content"
 			className={cn(
 				'nt: nt: nt:z-50 nt:min-w-[96px] nt:origin-(--radix-dropdown-menu-content-transform-origin) nt:overflow-hidden nt:rounded-lg nt:bg-popover nt:p-1 nt:text-popover-foreground nt:shadow-lg nt:ring-1 nt:ring-foreground/10 nt:duration-100 nt:data-[side=bottom]:slide-in-from-top-2 nt:data-[side=left]:slide-in-from-right-2 nt:data-[side=right]:slide-in-from-left-2 nt:data-[side=top]:slide-in-from-bottom-2 nt:data-open:animate-in nt:data-open:fade-in-0 nt:data-open:zoom-in-95 nt:data-closed:animate-out nt:data-closed:fade-out-0 nt:data-closed:zoom-out-95',
 				className
 			)}
+			data-slot="dropdown-menu-sub-content"
 			{...props}
 		/>
 	);
