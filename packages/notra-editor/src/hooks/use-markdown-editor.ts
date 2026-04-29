@@ -9,7 +9,6 @@ import type { MarkdownStorage } from 'tiptap-markdown';
 export interface UseMarkdownEditorOptions {
 	value: string;
 	onChange: (value: string) => void;
-	placeholder?: string;
 	editable?: boolean;
 }
 

@@ -27,11 +27,7 @@ function App() {
 	const [content, setContent] = useState('# Hello\n\nStart writing...');
 
 	return (
-		<NotraEditor
-			value={content}
-			onChange={setContent}
-			placeholder="Start writing..."
-		/>
+		<NotraEditor value={content} onChange={setContent} />
 	);
 }
 ```
