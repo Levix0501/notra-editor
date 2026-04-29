@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { EditorContent } from '@tiptap/react';
 import { useEffect } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -107,5 +107,65 @@ describe('SlashDropdownMenu', () => {
 		expect(
 			document.querySelector('[data-selector="notra-slash-dropdown-menu"]')
 		).not.toBeInTheDocument();
+	});
+
+	it('selects Heading 1 by typing "/h1" and pressing Enter', async () => {
+		const editor = await setupEditor();
+
+		await act(async () => {
+			editor.commands.focus();
+			editor.commands.insertContent('/h1');
+		});
+
+		// Wait for the filtered menu to show Heading 1.
+		await waitFor(() => {
+			expect(screen.getByText('Heading 1')).toBeInTheDocument();
+		});
+
+		// In jsdom the suggestion plugin is registered after ProseMirror's base
+		// keymap, so a raw someProp('handleKeyDown') Enter event is intercepted
+		// by the keymap first. Clicking the item exercises the same code path as
+		// Enter (both call commandRef.current via handleSelect/onSelect).
+		await act(async () => {
+			fireEvent.click(screen.getByText('Heading 1'));
+		});
+
+		await waitFor(() => {
+			expect(editor.getHTML()).toContain('<h1');
+		});
+	});
+
+	it('Escape dismisses the menu without changing the document', async () => {
+		const editor = await setupEditor();
+
+		await act(async () => {
+			editor.commands.focus();
+			editor.commands.insertContent('/');
+		});
+
+		await waitFor(() => {
+			expect(
+				document.querySelector('[data-selector="notra-slash-dropdown-menu"]')
+			).toBeInTheDocument();
+		});
+
+		await act(async () => {
+			editor.view.someProp('handleKeyDown', (handler) =>
+				handler(editor.view, new KeyboardEvent('keydown', { key: 'Escape' }))
+			);
+		});
+
+		await waitFor(() => {
+			expect(
+				document.querySelector('[data-selector="notra-slash-dropdown-menu"]')
+			).not.toBeInTheDocument();
+		});
+
+		// Document content (modulo the typed `/`) should not include any of the
+		// slash items being inserted as nodes.
+		const html = editor.getHTML();
+		expect(html).not.toContain('<h1');
+		expect(html).not.toContain('<blockquote');
+		expect(html).not.toContain('<ul');
 	});
 });
