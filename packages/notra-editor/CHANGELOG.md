@@ -1,5 +1,15 @@
 # notra-editor
 
+## 0.8.2
+
+### Patch Changes
+
+- [`e8b02c47f8e3a17776e0f2a96779c4430e740f93`](https://github.com/Levix0501/notra-editor/commit/e8b02c47f8e3a17776e0f2a96779c4430e740f93) Thanks [@Levix0501](https://github.com/Levix0501)! - - Fix `Module not found` error when importing the package from Next.js App
+  Router or other strict-ESM consumers. Relative imports in the published `dist`
+  now carry explicit `.mjs`/`.cjs` extensions.
+  - Fix Tiptap SSR hydration error so `NotraEditor` renders cleanly in Next.js
+    without consumers needing extra setup.
+
 ## 0.8.1
 
 ### Patch Changes
