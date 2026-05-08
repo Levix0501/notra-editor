@@ -1,5 +1,15 @@
 # notra-editor
 
+## 0.8.3
+
+### Patch Changes
+
+- [`12bc0008dd643f43f93ee613184cd5bc63f9be21`](https://github.com/Levix0501/notra-editor/commit/12bc0008dd643f43f93ee613184cd5bc63f9be21) Thanks [@Levix0501](https://github.com/Levix0501)! - - Fix Enter not selecting the highlighted item in the slash menu.
+  - Slash menu now matches the shadcn Popover visual treatment with a hidden
+    scrollbar.
+  - Editor's thin scrollbar styling is now scoped to the editor itself; it no
+    longer leaks onto floating menus or popovers in the host app.
+
 ## 0.8.2
 
 ### Patch Changes
