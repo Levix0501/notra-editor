@@ -2,10 +2,10 @@
 
 import { forwardRef, useCallback } from 'react';
 
-import { useUndoRedo } from './use-undo-redo';
-import { Button } from '../ui/button';
+import { useUndoRedo } from './use-undo-redo.js';
+import { Button } from '../ui/button.js';
 
-import type { UndoRedoAction } from './use-undo-redo';
+import type { UndoRedoAction } from './use-undo-redo.js';
 import type { Editor } from '@tiptap/core';
 
 export interface UndoRedoButtonProps extends Omit<

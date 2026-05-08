@@ -1,4 +1,4 @@
-import { CopyButton } from '../copy-button';
+import { CopyButton } from '../copy-button.js';
 
 import type { ReactNode } from 'react';
 

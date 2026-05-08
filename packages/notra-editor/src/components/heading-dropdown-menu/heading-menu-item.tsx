@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 
-import { useHeading, type HeadingLevel } from './use-heading';
-import { DropdownMenuItem } from '../ui/dropdown-menu';
+import { useHeading, type HeadingLevel } from './use-heading.js';
+import { DropdownMenuItem } from '../ui/dropdown-menu.js';
 
 import type { Editor } from '@tiptap/core';
 

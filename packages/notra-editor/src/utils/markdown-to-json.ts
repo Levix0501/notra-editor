@@ -1,7 +1,7 @@
 import { Editor } from '@tiptap/core';
 import { Markdown } from 'tiptap-markdown';
 
-import { sharedExtensions } from '../extensions';
+import { sharedExtensions } from '../extensions/index.js';
 
 // Parser needs shared content model + Markdown for markdown→JSON conversion
 // No clipboard features needed (transformPastedText/transformCopiedText are editor-only)

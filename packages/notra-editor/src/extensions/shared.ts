@@ -2,7 +2,7 @@ import Image from '@tiptap/extension-image';
 import { ListKit } from '@tiptap/extension-list';
 import StarterKit, { type StarterKitOptions } from '@tiptap/starter-kit';
 
-import { CodeBlockExtension } from './code-block';
+import { CodeBlockExtension } from './code-block.js';
 
 // Shared StarterKit config: content nodes/marks, no lists (use ListKit instead),
 // no codeBlock (use the lowlight-extended CodeBlockExtension instead).

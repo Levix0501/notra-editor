@@ -1,12 +1,12 @@
 import { renderToReactElement } from '@tiptap/static-renderer/pm/react';
 import { type createLowlight } from 'lowlight';
 
-import { CodeBlockShell } from './components/code-block-view/code-block-shell';
-import { sharedExtensions } from './extensions';
-import { defaultLowlight } from './extensions/code-block';
-import { highlightCodeToHtml } from './lib/highlight-code-to-html';
-import { getLanguageLabel } from './lib/languages';
-import { markdownToJSON } from './utils/markdown-to-json';
+import { CodeBlockShell } from './components/code-block-view/code-block-shell.js';
+import { defaultLowlight } from './extensions/code-block.js';
+import { sharedExtensions } from './extensions/index.js';
+import { highlightCodeToHtml } from './lib/highlight-code-to-html.js';
+import { getLanguageLabel } from './lib/languages.js';
+import { markdownToJSON } from './utils/markdown-to-json.js';
 
 type Lowlight = ReturnType<typeof createLowlight>;
 

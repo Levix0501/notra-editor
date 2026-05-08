@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Slot } from 'radix-ui';
 import * as React from 'react';
 
-import { cn } from '../../lib/utils';
+import { cn } from '../../lib/utils.js';
 
 const buttonVariants = cva(
 	'nt:group/button nt:inline-flex nt:shrink-0 nt:items-center nt:justify-center nt:rounded-lg nt:border nt:border-transparent nt:bg-clip-padding nt:text-sm nt:font-medium nt:whitespace-nowrap nt:transition-all nt:outline-none nt:select-none nt:focus-visible:border-ring nt:focus-visible:ring-3 nt:focus-visible:ring-ring/50 nt:active:not-aria-[haspopup]:translate-y-px nt:disabled:pointer-events-none nt:disabled:opacity-50 nt:aria-invalid:border-destructive nt:aria-invalid:ring-3 nt:aria-invalid:ring-destructive/20 nt:dark:aria-invalid:border-destructive/50 nt:dark:aria-invalid:ring-destructive/40 nt:[&_svg]:pointer-events-none nt:[&_svg]:shrink-0 nt:[&_svg:not([class*=size-])]:size-4',

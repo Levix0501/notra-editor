@@ -2,10 +2,10 @@
 
 import { forwardRef, useCallback } from 'react';
 
-import { useMark } from './use-mark';
-import { Button } from '../ui/button';
+import { useMark } from './use-mark.js';
+import { Button } from '../ui/button.js';
 
-import type { MarkType } from './use-mark';
+import type { MarkType } from './use-mark.js';
 import type { Editor } from '@tiptap/core';
 
 export interface MarkButtonProps extends Omit<

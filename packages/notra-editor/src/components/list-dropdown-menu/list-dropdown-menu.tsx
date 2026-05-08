@@ -3,19 +3,19 @@
 import { ChevronDown } from 'lucide-react';
 import { forwardRef } from 'react';
 
-import { ListMenuItem } from './list-menu-item';
+import { ListMenuItem } from './list-menu-item.js';
 import {
 	getListTriggerIcon,
 	useActiveListType,
 	type ListType
-} from './use-list';
-import { Button } from '../ui/button';
+} from './use-list.js';
+import { Button } from '../ui/button.js';
 import {
 	DropdownMenu,
 	DropdownMenuTrigger,
 	DropdownMenuContent,
 	DropdownMenuGroup
-} from '../ui/dropdown-menu';
+} from '../ui/dropdown-menu.js';
 
 import type { Editor } from '@tiptap/core';
 import type { ComponentProps } from 'react';

@@ -8,11 +8,11 @@ import {
 } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { useLinkPopover } from './use-link-popover';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Separator } from '../ui/separator';
+import { useLinkPopover } from './use-link-popover.js';
+import { Button } from '../ui/button.js';
+import { Input } from '../ui/input.js';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover.js';
+import { Separator } from '../ui/separator.js';
 
 import type { Editor } from '@tiptap/core';
 

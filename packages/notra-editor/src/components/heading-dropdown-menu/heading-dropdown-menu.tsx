@@ -3,19 +3,19 @@
 import { ChevronDown } from 'lucide-react';
 import { forwardRef } from 'react';
 
-import { HeadingMenuItem } from './heading-menu-item';
+import { HeadingMenuItem } from './heading-menu-item.js';
 import {
 	getHeadingTriggerIcon,
 	useActiveHeadingLevel,
 	type HeadingLevel
-} from './use-heading';
-import { Button } from '../ui/button';
+} from './use-heading.js';
+import { Button } from '../ui/button.js';
 import {
 	DropdownMenu,
 	DropdownMenuTrigger,
 	DropdownMenuContent,
 	DropdownMenuGroup
-} from '../ui/dropdown-menu';
+} from '../ui/dropdown-menu.js';
 
 import type { Editor } from '@tiptap/core';
 import type { ComponentProps } from 'react';

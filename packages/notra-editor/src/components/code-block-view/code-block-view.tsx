@@ -6,8 +6,8 @@ import {
 	type NodeViewProps
 } from '@tiptap/react';
 
-import { CodeBlockShell } from './code-block-shell';
-import { LanguageSelect } from './language-select';
+import { CodeBlockShell } from './code-block-shell.js';
+import { LanguageSelect } from './language-select.js';
 
 // Editor-side React NodeView. Tiptap mounts content-editable DOM directly
 // onto the <code> rendered by NodeViewContent. lowlight decorates that

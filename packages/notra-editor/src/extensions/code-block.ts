@@ -3,8 +3,8 @@ import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import { common, createLowlight } from 'lowlight';
 
-import { CodeBlockView } from '../components/code-block-view/code-block-view';
-import { normalizeLanguage } from '../lib/languages';
+import { CodeBlockView } from '../components/code-block-view/code-block-view.js';
+import { normalizeLanguage } from '../lib/languages.js';
 
 type Lowlight = ReturnType<typeof createLowlight>;
 

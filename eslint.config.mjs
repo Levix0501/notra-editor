@@ -156,6 +156,16 @@ const eslintConfig = defineConfig([
 						caseInsensitive: true
 					}
 				}
+			],
+			// Relative imports must carry a `.js` extension so ESM resolution works
+			// for published packages. Bare-package imports are exempt.
+			'import/extensions': [
+				'error',
+				'ignorePackages',
+				{
+					ts: 'never',
+					tsx: 'never'
+				}
 			]
 		},
 		settings: {

@@ -3,9 +3,9 @@
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { LANGUAGES, getLanguageLabel } from '../../lib/languages';
-import { cn } from '../../lib/utils';
-import { Button } from '../ui/button';
+import { LANGUAGES, getLanguageLabel } from '../../lib/languages.js';
+import { cn } from '../../lib/utils.js';
+import { Button } from '../ui/button.js';
 import {
 	Command,
 	CommandEmpty,
@@ -13,8 +13,8 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList
-} from '../ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+} from '../ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover.js';
 
 export interface LanguageSelectProps {
 	/** Current language value (e.g. "typescript"); empty / "auto" → "Auto" label */

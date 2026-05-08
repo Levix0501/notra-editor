@@ -3,9 +3,9 @@
 import { CornerDownLeft, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Separator } from '../ui/separator';
+import { Button } from '../ui/button.js';
+import { Input } from '../ui/input.js';
+import { Separator } from '../ui/separator.js';
 
 export interface ImageInputFormProps {
 	initialUrl?: string;

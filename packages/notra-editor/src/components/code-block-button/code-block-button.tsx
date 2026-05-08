@@ -3,7 +3,7 @@
 import { SquareCode } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { Button } from '../ui/button';
+import { Button } from '../ui/button.js';
 
 import type { Editor } from '@tiptap/core';
 

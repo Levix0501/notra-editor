@@ -8,9 +8,9 @@ import {
 	DialogDescription,
 	DialogHeader,
 	DialogTitle
-} from './dialog';
-import { InputGroup, InputGroupAddon } from './input-group';
-import { cn } from '../../lib/utils';
+} from './dialog.js';
+import { InputGroup, InputGroupAddon } from './input-group.js';
+import { cn } from '../../lib/utils.js';
 
 function Command({
 	className,

@@ -1,4 +1,4 @@
-import type { SuggestionItem } from './suggestion-menu-types';
+import type { SuggestionItem } from './suggestion-menu-types.js';
 
 export function filterSuggestionItems(
 	items: SuggestionItem[],

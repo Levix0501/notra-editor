@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 
-import { useList, type ListType } from './use-list';
-import { DropdownMenuItem } from '../ui/dropdown-menu';
+import { useList, type ListType } from './use-list.js';
+import { DropdownMenuItem } from '../ui/dropdown-menu.js';
 
 import type { Editor } from '@tiptap/core';
 

@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { SlashImagePopover } from './slash-image-popover';
-import { useSlashItems } from './use-slash-items';
-import { filterSuggestionItems } from '../suggestion-menu/filter-suggestion-items';
-import { SuggestionMenu } from '../suggestion-menu/suggestion-menu';
-import { Button } from '../ui/button';
-import { Separator } from '../ui/separator';
+import { SlashImagePopover } from './slash-image-popover.js';
+import { useSlashItems } from './use-slash-items.js';
+import { filterSuggestionItems } from '../suggestion-menu/filter-suggestion-items.js';
+import { SuggestionMenu } from '../suggestion-menu/suggestion-menu.js';
+import { Button } from '../ui/button.js';
+import { Separator } from '../ui/separator.js';
 
-import type { SuggestionItem } from '../suggestion-menu/suggestion-menu-types';
+import type { SuggestionItem } from '../suggestion-menu/suggestion-menu-types.js';
 import type { Editor } from '@tiptap/core';
 
 export interface SlashDropdownMenuProps {

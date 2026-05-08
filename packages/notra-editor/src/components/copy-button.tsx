@@ -2,8 +2,8 @@
 
 import { Check, Copy } from 'lucide-react';
 
-import { useCopyToClipboard } from '../hooks/use-copy-to-clipboard';
-import { Button } from './ui/button';
+import { useCopyToClipboard } from '../hooks/use-copy-to-clipboard.js';
+import { Button } from './ui/button.js';
 
 interface CopyButtonProps {
 	value: string;

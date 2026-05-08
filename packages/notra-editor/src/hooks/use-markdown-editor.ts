@@ -2,7 +2,7 @@ import { EditorState } from '@tiptap/pm/state';
 import { useEditor } from '@tiptap/react';
 import { useEffect, useRef } from 'react';
 
-import { editorExtensions } from '../extensions';
+import { editorExtensions } from '../extensions/index.js';
 
 import type { MarkdownStorage } from 'tiptap-markdown';
 
@@ -30,6 +30,9 @@ export function useMarkdownEditor({
 		extensions: editorExtensions,
 		editable,
 		content: value,
+		// Defer initial render until after hydration so the editor is safe to use
+		// in Next.js App Router and other SSR environments.
+		immediatelyRender: false,
 		editorProps: {
 			attributes: {
 				autocomplete: 'off',

@@ -3,10 +3,10 @@
 import { ImageIcon } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
-import { ImageInputForm } from './image-input-form';
-import { useImagePopover } from './use-image-popover';
-import { Button } from '../ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { ImageInputForm } from './image-input-form.js';
+import { useImagePopover } from './use-image-popover.js';
+import { Button } from '../ui/button.js';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover.js';
 
 import type { Editor } from '@tiptap/core';
 

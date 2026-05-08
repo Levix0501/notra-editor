@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useCallback } from 'react';
 
-import type { SuggestionItem } from '../suggestion-menu/suggestion-menu-types';
+import type { SuggestionItem } from '../suggestion-menu/suggestion-menu-types.js';
 import type { Editor } from '@tiptap/core';
 // Module augmentations: pull in ChainedCommands extensions from these packages.
 import type {} from '@tiptap/starter-kit';

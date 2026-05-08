@@ -5,9 +5,9 @@ import { PluginKey } from '@tiptap/pm/state';
 import { Suggestion } from '@tiptap/suggestion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useFloatingElement } from '../../hooks/use-floating-element';
+import { useFloatingElement } from '../../hooks/use-floating-element.js';
 
-import type { SuggestionItem } from './suggestion-menu-types';
+import type { SuggestionItem } from './suggestion-menu-types.js';
 import type { Editor } from '@tiptap/react';
 import type {
 	SuggestionKeyDownProps,

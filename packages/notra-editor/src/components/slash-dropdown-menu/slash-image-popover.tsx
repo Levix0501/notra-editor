@@ -2,8 +2,8 @@
 
 import { useCallback } from 'react';
 
-import { ImageInputForm } from '../image-popover/image-input-form';
-import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover';
+import { ImageInputForm } from '../image-popover/image-input-form.js';
+import { Popover, PopoverAnchor, PopoverContent } from '../ui/popover.js';
 
 import type { Editor } from '@tiptap/core';
 import type {} from '@tiptap/extension-image';

@@ -2,22 +2,22 @@
 
 import { EditorContent } from '@tiptap/react';
 
-import { BlockquoteButton } from './components/blockquote-button/blockquote-button';
-import { CodeBlockButton } from './components/code-block-button/code-block-button';
-import { HeadingDropdownMenu } from './components/heading-dropdown-menu/heading-dropdown-menu';
-import { ImagePopover } from './components/image-popover/image-popover';
-import { LinkPopover } from './components/link-popover/link-popover';
-import { ListDropdownMenu } from './components/list-dropdown-menu/list-dropdown-menu';
-import { MarkButton } from './components/mark-button/mark-button';
-import { SlashDropdownMenu } from './components/slash-dropdown-menu/slash-dropdown-menu';
+import { BlockquoteButton } from './components/blockquote-button/blockquote-button.js';
+import { CodeBlockButton } from './components/code-block-button/code-block-button.js';
+import { HeadingDropdownMenu } from './components/heading-dropdown-menu/heading-dropdown-menu.js';
+import { ImagePopover } from './components/image-popover/image-popover.js';
+import { LinkPopover } from './components/link-popover/link-popover.js';
+import { ListDropdownMenu } from './components/list-dropdown-menu/list-dropdown-menu.js';
+import { MarkButton } from './components/mark-button/mark-button.js';
+import { SlashDropdownMenu } from './components/slash-dropdown-menu/slash-dropdown-menu.js';
 import {
 	Toolbar,
 	ToolbarGroup,
 	ToolbarSeparator
-} from './components/toolbar/toolbar';
-import { Spacer } from './components/ui/spacer';
-import { UndoRedoButton } from './components/undo-redo-button/undo-redo-button';
-import { useMarkdownEditor } from './hooks/use-markdown-editor';
+} from './components/toolbar/toolbar.js';
+import { Spacer } from './components/ui/spacer.js';
+import { UndoRedoButton } from './components/undo-redo-button/undo-redo-button.js';
+import { useMarkdownEditor } from './hooks/use-markdown-editor.js';
 
 export interface NotraEditorProps {
 	/** Markdown content (source of truth) */
