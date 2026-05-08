@@ -26,22 +26,47 @@
 	background-color: var(--tt-bg-color);
 }
 
-::-webkit-scrollbar {
-	width: 0.25rem;
-}
-
-* {
+// Scoped to the editor wrapper / content so utility-driven scrollbar styling
+// on floating menus / popovers (e.g. `nt:scrollbar-hide`) is not clobbered.
+// Note: applied to the wrapper directly (no descendant `*`) and to descendants
+// of `.notra-editor-content`, so slash-menu siblings of the content stay free
+// of the override.
+.notra-editor-wrapper {
 	scrollbar-width: thin;
 	scrollbar-color: var(--tt-scrollbar-color) transparent;
+
+	&::-webkit-scrollbar {
+		width: 0.25rem;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--tt-scrollbar-color);
+		border-radius: 9999px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
 }
 
-::-webkit-scrollbar-thumb {
-	background-color: var(--tt-scrollbar-color);
-	border-radius: 9999px;
-}
+.notra-editor-content {
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: var(--tt-scrollbar-color) transparent;
+	}
 
-::-webkit-scrollbar-track {
-	background: transparent;
+	::-webkit-scrollbar {
+		width: 0.25rem;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: var(--tt-scrollbar-color);
+		border-radius: 9999px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
 }
 
 .notra-prose {
