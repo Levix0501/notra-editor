@@ -175,8 +175,7 @@ export function SlashDropdownMenu({ editor }: SlashDropdownMenuProps) {
 			decorationClass: 'notra-slash-decoration',
 			decorationContent: 'Filter...',
 
-			items: ({ query, editor }) =>
-				itemsCallbackRef.current({ query, editor }),
+			items: ({ query, editor }) => itemsCallbackRef.current({ query, editor }),
 
 			allow: ({ state, range }) => {
 				const $from = state.doc.resolve(range.from);
@@ -233,8 +232,7 @@ export function SlashDropdownMenu({ editor }: SlashDropdownMenuProps) {
 						const currentIndex = list.findIndex(
 							(i) => i.title === selectedValueRef.current
 						);
-						const prevIndex =
-							(currentIndex - 1 + list.length) % list.length;
+						const prevIndex = (currentIndex - 1 + list.length) % list.length;
 
 						setSelectedValue(list[prevIndex].title);
 
@@ -242,9 +240,7 @@ export function SlashDropdownMenu({ editor }: SlashDropdownMenuProps) {
 					}
 
 					if (event.key === 'Enter') {
-						const item = list.find(
-							(i) => i.title === selectedValueRef.current
-						);
+						const item = list.find((i) => i.title === selectedValueRef.current);
 
 						if (item && commandRef.current) {
 							commandRef.current(item);
