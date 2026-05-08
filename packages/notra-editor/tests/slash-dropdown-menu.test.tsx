@@ -115,6 +115,27 @@ describe('SlashDropdownMenu', () => {
 		).not.toBeInTheDocument();
 	});
 
+	it('selects Heading 1 by typing "/h1" and clicking the item', async () => {
+		const editor = await setupEditor();
+
+		await act(async () => {
+			editor.commands.focus();
+			editor.commands.insertContent('/h1');
+		});
+
+		await waitFor(() => {
+			expect(screen.getByText('Heading 1')).toBeInTheDocument();
+		});
+
+		await act(async () => {
+			fireEvent.click(screen.getByText('Heading 1'));
+		});
+
+		await waitFor(() => {
+			expect(editor.getHTML()).toContain('<h1');
+		});
+	});
+
 	it('selects Heading 1 by typing "/h1" and pressing Enter', async () => {
 		const editor = await setupEditor();
 
@@ -123,22 +144,28 @@ describe('SlashDropdownMenu', () => {
 			editor.commands.insertContent('/h1');
 		});
 
-		// Wait for the filtered menu to show Heading 1.
 		await waitFor(() => {
 			expect(screen.getByText('Heading 1')).toBeInTheDocument();
 		});
 
-		// In jsdom the suggestion plugin is registered after ProseMirror's base
-		// keymap, so a raw someProp('handleKeyDown') Enter event is intercepted
-		// by the keymap first. Clicking the item exercises the same code path as
-		// Enter (both call commandRef.current via handleSelect/onSelect).
+		// The suggestion plugin is registered with prepend ordering so its
+		// handleKeyDown runs before the paragraph-split keymap. Dispatching
+		// Enter via someProp must therefore convert the current line into H1.
 		await act(async () => {
-			fireEvent.click(screen.getByText('Heading 1'));
+			editor.view.someProp('handleKeyDown', (handler) =>
+				handler(editor.view, new KeyboardEvent('keydown', { key: 'Enter' }))
+			);
 		});
 
 		await waitFor(() => {
 			expect(editor.getHTML()).toContain('<h1');
 		});
+
+		// The "/h1" text the user typed must be deleted by the suggestion
+		// command's deleteRange — the resulting document should contain
+		// no slash or "h1" characters.
+		expect(editor.getText()).not.toContain('/');
+		expect(editor.getText()).not.toContain('h1');
 	});
 
 	it('Escape dismisses the menu without changing the document', async () => {

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useCallback } from 'react';
 
-import type { SuggestionItem } from '../suggestion-menu/suggestion-menu-types.js';
+import type { SlashItem } from './types.js';
 import type { Editor } from '@tiptap/core';
 // Module augmentations: pull in ChainedCommands extensions from these packages.
 import type {} from '@tiptap/starter-kit';
@@ -26,7 +26,7 @@ export interface UseSlashItemsOptions {
 
 export function useSlashItems({ onImageRequest }: UseSlashItemsOptions) {
 	return useCallback(
-		(editor: Editor): SuggestionItem[] => [
+		(editor: Editor): SlashItem[] => [
 			{
 				title: 'Text',
 				keywords: ['p', 'paragraph', 'text'],
