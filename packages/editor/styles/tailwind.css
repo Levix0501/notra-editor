@@ -1,0 +1,120 @@
+@source "./**/*.js";
+
+@theme {
+  --notra-radius: 0.5rem;
+  --notra-fg: oklch(0.15 0 0);
+  --notra-muted: oklch(0.45 0 0);
+  --notra-border: oklch(0.9 0 0);
+  --notra-surface: oklch(1 0 0);
+  --notra-accent: oklch(0.205 0 0);
+  --notra-accent-fg: oklch(0.985 0 0);
+}
+
+@layer components {
+  .notra-editor {
+    color: var(--notra-fg);
+  }
+
+  .notra-editor .ProseMirror {
+    @apply min-h-32 outline-none;
+  }
+
+  .notra-editor .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--notra-muted);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .notra-editor .ProseMirror h1 {
+    @apply mt-6 mb-2 text-3xl font-bold;
+  }
+  .notra-editor .ProseMirror h2 {
+    @apply mt-5 mb-2 text-2xl font-bold;
+  }
+  .notra-editor .ProseMirror h3 {
+    @apply mt-4 mb-2 text-xl font-semibold;
+  }
+  .notra-editor .ProseMirror p {
+    @apply my-2 leading-7;
+  }
+  .notra-editor .ProseMirror ul {
+    @apply my-2 list-disc pl-6;
+  }
+  .notra-editor .ProseMirror ol {
+    @apply my-2 list-decimal pl-6;
+  }
+  .notra-editor .ProseMirror blockquote {
+    @apply my-3 border-l-4 pl-4 italic;
+    border-color: var(--notra-border);
+  }
+  .notra-editor .ProseMirror code:not(pre code) {
+    @apply rounded px-1.5 py-0.5 font-mono text-sm;
+    background-color: color-mix(in oklch, var(--notra-border) 60%, transparent);
+  }
+  .notra-editor .ProseMirror pre {
+    @apply my-3 overflow-x-auto p-4;
+    background-color: var(--notra-accent);
+    color: var(--notra-accent-fg);
+    border-radius: var(--notra-radius);
+  }
+  .notra-editor .ProseMirror pre code {
+    @apply bg-transparent p-0 font-mono text-sm;
+  }
+  .notra-editor .ProseMirror a {
+    @apply underline;
+    color: var(--notra-accent);
+  }
+
+  .notra-bm-shell {
+    @apply flex items-center gap-0.5 border px-1 py-1 shadow-md;
+    background-color: var(--notra-surface);
+    border-color: var(--notra-border);
+    border-radius: var(--notra-radius);
+  }
+
+  .notra-bm-toolbar {
+    @apply flex items-center gap-0.5;
+  }
+
+  .notra-bm-button {
+    @apply inline-flex h-7 w-7 items-center justify-center rounded;
+    color: var(--notra-fg);
+  }
+  .notra-bm-button:hover {
+    background-color: color-mix(in oklch, var(--notra-border) 40%, transparent);
+  }
+  .notra-bm-button[data-active="true"] {
+    background-color: color-mix(in oklch, var(--notra-border) 60%, transparent);
+  }
+
+  .notra-bm-icon {
+    @apply h-4 w-4;
+  }
+
+  .notra-bm-popover {
+    @apply z-50 p-2 shadow-md;
+    background-color: var(--notra-surface);
+    border: 1px solid var(--notra-border);
+    border-radius: var(--notra-radius);
+  }
+
+  .notra-bm-link-form {
+    @apply flex items-center gap-1;
+  }
+
+  .notra-bm-link-input {
+    @apply h-7 rounded border px-2 text-sm outline-none;
+    border-color: var(--notra-border);
+  }
+  .notra-bm-link-input:focus {
+    border-color: var(--notra-accent);
+  }
+
+  .notra-bm-link-apply {
+    @apply h-7 rounded px-2 text-sm;
+    background-color: var(--notra-accent);
+    color: var(--notra-accent-fg);
+  }
+}
