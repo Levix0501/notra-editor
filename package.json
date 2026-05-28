@@ -1,0 +1,18 @@
+{
+  "name": "notra-editor-workspace",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "bun --filter @notra/editor build && bun --filter '*' dev",
+    "build": "bun --filter @notra/editor build && bun --filter playground build",
+    "test": "bun --filter @notra/editor test",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "bun --filter '*' typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "typescript": "^5.8.0"
+  }
+}
