@@ -1,5 +1,6 @@
 import { EditorContent } from "@tiptap/react";
 
+import { NotraBubbleMenu } from "./bubble-menu";
 import type { NotraEditorInstance } from "./types";
 
 type Props = {
@@ -13,6 +14,7 @@ export function NotraEditorContent({ editor, className }: Props) {
   return (
     <div className={classes}>
       <EditorContent editor={editor} />
+      <NotraBubbleMenu editor={editor} />
     </div>
   );
 }
