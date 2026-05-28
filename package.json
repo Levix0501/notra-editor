@@ -2,7 +2,10 @@
   "name": "notra-editor-workspace",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "dev": "bun --filter @notra/editor build && bun --filter '*' dev",
     "build": "bun --filter @notra/editor build && bun --filter playground build",
