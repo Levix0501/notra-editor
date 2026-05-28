@@ -29,9 +29,7 @@ describe("NotraEditor", () => {
     const onUpdate = vi.fn();
     const user = userEvent.setup();
     const { container } = render(<NotraEditor onUpdate={onUpdate} autofocus />);
-    const editable = container.querySelector<HTMLElement>(
-      '[contenteditable="true"]',
-    );
+    const editable = container.querySelector<HTMLElement>('[contenteditable="true"]');
     expect(editable).not.toBeNull();
     editable?.focus();
     await user.type(editable as HTMLElement, "hi");

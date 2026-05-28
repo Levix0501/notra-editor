@@ -1,3 +1,4 @@
+export type { JSONContent } from "@tiptap/core";
 export { NotraBubbleMenu } from "./bubble-menu";
 export { NotraEditor } from "./editor";
 export { NotraEditorContent } from "./editor-content";
@@ -7,4 +8,3 @@ export type {
   NotraEditorProps,
 } from "./types";
 export { useNotraEditor } from "./use-notra-editor";
-export type { JSONContent } from "@tiptap/core";

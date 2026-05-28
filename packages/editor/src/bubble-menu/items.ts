@@ -9,8 +9,8 @@ import {
   Italic,
   List,
   ListOrdered,
-  Strikethrough,
   type LucideIcon,
+  Strikethrough,
 } from "lucide-react";
 
 export type BubbleMenuItem = {

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  type JSONContent,
-  NotraEditorContent,
-  useNotraEditor,
-} from "@notra/editor";
+import { type JSONContent, NotraEditorContent, useNotraEditor } from "@notra/editor";
 
 const initial: JSONContent = {
   type: "doc",
@@ -37,10 +33,7 @@ export default function Page() {
       <p className="text-sm" style={{ color: "var(--notra-muted)" }}>
         Renders <code>useNotraEditor</code> + <code>NotraEditorContent</code>.
       </p>
-      <section
-        className="rounded-lg border p-6"
-        style={{ borderColor: "var(--notra-border)" }}
-      >
+      <section className="rounded-lg border p-6" style={{ borderColor: "var(--notra-border)" }}>
         <NotraEditorContent editor={editor} />
       </section>
     </main>

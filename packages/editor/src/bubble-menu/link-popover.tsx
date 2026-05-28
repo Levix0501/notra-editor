@@ -9,12 +9,7 @@ export function LinkPopover({ editor }: { editor: Editor }) {
 
   const apply = () => {
     if (url.trim().length > 0) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: url.trim() })
-        .run();
+      editor.chain().focus().extendMarkRange("link").setLink({ href: url.trim() }).run();
     } else {
       editor.chain().focus().unsetLink().run();
     }
@@ -48,6 +43,7 @@ export function LinkPopover({ editor }: { editor: Editor }) {
             }}
           >
             <input
+              // biome-ignore lint/a11y/noAutofocus: focus is intentional for link-edit UX
               autoFocus
               type="url"
               placeholder="https://"

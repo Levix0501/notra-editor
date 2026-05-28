@@ -19,13 +19,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
   );
 }
 
-function ToolbarButton({
-  editor,
-  item,
-}: {
-  editor: Editor;
-  item: BubbleMenuItem;
-}) {
+function ToolbarButton({ editor, item }: { editor: Editor; item: BubbleMenuItem }) {
   const Icon = item.icon;
   return (
     <button

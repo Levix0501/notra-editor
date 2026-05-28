@@ -4,7 +4,9 @@
   "description": "Notion-like Tiptap-based React rich text editor.",
   "license": "MIT",
   "type": "module",
-  "sideEffects": ["./dist/tailwind.css"],
+  "sideEffects": [
+    "./dist/tailwind.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -13,7 +15,9 @@
     "./tailwind.css": "./dist/tailwind.css",
     "./package.json": "./package.json"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

@@ -8,9 +8,7 @@ export type BuildDefaultExtensionsOptions = {
   userExtensions?: Extensions;
 };
 
-export function buildDefaultExtensions(
-  options: BuildDefaultExtensionsOptions = {},
-): Extensions {
+export function buildDefaultExtensions(options: BuildDefaultExtensionsOptions = {}): Extensions {
   return [
     buildStarterKit(),
     buildLink(),

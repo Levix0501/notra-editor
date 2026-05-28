@@ -13,9 +13,7 @@ const initial: JSONContent = {
     },
     {
       type: "paragraph",
-      content: [
-        { type: "text", text: "Try selecting text to see the bubble menu." },
-      ],
+      content: [{ type: "text", text: "Try selecting text to see the bubble menu." }],
     },
   ],
 };
@@ -32,9 +30,7 @@ export default function Page() {
         style={{ borderColor: "var(--notra-border)" }}
       >
         <h2 className="mb-2 text-sm font-semibold">Current JSON</h2>
-        <pre className="overflow-x-auto leading-snug">
-          {JSON.stringify(json, null, 2)}
-        </pre>
+        <pre className="overflow-x-auto leading-snug">{JSON.stringify(json, null, 2)}</pre>
       </aside>
     </main>
   );
