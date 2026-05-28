@@ -7,6 +7,16 @@ export function LinkPopover({ editor }: { editor: Editor }) {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      const current = editor.getAttributes("link").href;
+      setUrl(typeof current === "string" ? current : "");
+    } else {
+      setUrl("");
+    }
+    setOpen(nextOpen);
+  };
+
   const apply = () => {
     if (url.trim().length > 0) {
       editor.chain().focus().extendMarkRange("link").setLink({ href: url.trim() }).run();
@@ -18,7 +28,7 @@ export function LinkPopover({ editor }: { editor: Editor }) {
   };
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
         <button
           type="button"

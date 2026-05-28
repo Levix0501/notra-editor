@@ -34,5 +34,7 @@ describe("NotraEditor", () => {
     editable?.focus();
     await user.type(editable as HTMLElement, "hi");
     expect(onUpdate).toHaveBeenCalled();
+    const lastCall = onUpdate.mock.calls.at(-1);
+    expect(lastCall?.[0]).toMatchObject({ type: "doc" });
   });
 });
