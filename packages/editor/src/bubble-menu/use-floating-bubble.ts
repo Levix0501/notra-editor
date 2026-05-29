@@ -6,9 +6,11 @@ import {
   useDismiss,
   useFloating,
   useInteractions,
+  useTransitionStyles,
 } from "@floating-ui/react";
 import type { Editor } from "@tiptap/core";
-import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function computeShouldShow(editor: Editor | null): boolean {
   if (!editor) return false;
@@ -24,19 +26,34 @@ export function isInsideRadixPopperPortal(target: EventTarget | null): boolean {
 }
 
 export function useFloatingBubble({ editor }: { editor: Editor | null }): {
-  open: boolean;
+  isMounted: boolean;
   refs: ReturnType<typeof useFloating>["refs"];
-  floatingStyles: ReturnType<typeof useFloating>["floatingStyles"];
+  style: CSSProperties;
   getFloatingProps: (userProps?: Record<string, unknown>) => Record<string, unknown>;
 } {
   const [open, setOpen] = useState(false);
+  const selectingRef = useRef(false);
 
   const { refs, floatingStyles, context, update } = useFloating({
     open,
     onOpenChange: setOpen,
     placement: "top",
+    transform: false,
     middleware: [offset(4), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
+  });
+
+  const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
+    duration: { open: 150, close: 100 },
+    initial: { opacity: 0, transform: "scale(0.95)" },
+    common: ({ side }) => ({
+      transformOrigin: {
+        top: "bottom",
+        bottom: "top",
+        left: "right",
+        right: "left",
+      }[side],
+    }),
   });
 
   useEffect(() => {
@@ -54,6 +71,7 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
     if (!editor) return;
 
     const handleSelectionUpdate = () => {
+      if (selectingRef.current) return;
       setOpen(computeShouldShow(editor));
       update();
     };
@@ -63,8 +81,6 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
     };
     const handleBlur = ({ event }: { event: FocusEvent }) => {
       const target = event.relatedTarget;
-      // Focus left the document entirely (DevTools, another window/tab, the
-      // browser chrome). Keep the bubble open so the user can inspect it.
       if (!(target instanceof Element)) return;
       const floating = refs.floating.current;
       if (floating?.contains(target)) return;
@@ -72,17 +88,32 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
       setOpen(false);
     };
     const handleDragStart = () => setOpen(false);
+    const handleMouseDown = (event: MouseEvent) => {
+      if (event.button !== 0) return;
+      selectingRef.current = true;
+      setOpen(false);
+    };
+    const handleMouseUp = () => {
+      if (!selectingRef.current) return;
+      selectingRef.current = false;
+      setOpen(computeShouldShow(editor));
+      update();
+    };
 
     editor.on("selectionUpdate", handleSelectionUpdate);
     editor.on("focus", handleFocus);
     editor.on("blur", handleBlur);
     editor.view.dom.addEventListener("dragstart", handleDragStart);
+    editor.view.dom.addEventListener("mousedown", handleMouseDown);
+    editor.view.root.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       editor.off("selectionUpdate", handleSelectionUpdate);
       editor.off("focus", handleFocus);
       editor.off("blur", handleBlur);
       editor.view.dom.removeEventListener("dragstart", handleDragStart);
+      editor.view.dom.removeEventListener("mousedown", handleMouseDown);
+      editor.view.root.removeEventListener("mouseup", handleMouseUp);
     };
   }, [editor, refs, update]);
 
@@ -93,7 +124,12 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
 
   const { getFloatingProps } = useInteractions([dismiss]);
 
-  return { open, refs, floatingStyles, getFloatingProps };
+  return {
+    isMounted,
+    refs,
+    style: { ...floatingStyles, ...transitionStyles },
+    getFloatingProps,
+  };
 }
 
 function computeSelectionRect(editor: Editor): DOMRect {

@@ -13,14 +13,14 @@ export function FloatingBubbleShell({
   editor: Editor | null;
   children: ReactNode;
 }) {
-  const { open, refs, floatingStyles, getFloatingProps } = useFloatingBubble({ editor });
+  const { isMounted, refs, style, getFloatingProps } = useFloatingBubble({ editor });
 
-  if (!editor || !open) return null;
+  if (!editor || !isMounted) return null;
 
   return (
     <div
       ref={refs.setFloating}
-      style={floatingStyles}
+      style={style}
       className={SHELL_CLASS}
       {...getFloatingProps()}
     >
