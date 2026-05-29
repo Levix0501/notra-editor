@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { computeShouldShow } from "../src/bubble-menu/use-floating-bubble";
+import { computeShouldShow, isInsideRadixPopperPortal } from "../src/bubble-menu/use-floating-bubble";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 const helloDoc = {
@@ -42,5 +42,36 @@ describe("computeShouldShow", () => {
     expect(editor).not.toBeNull();
     editor?.commands.setTextSelection({ from: 1, to: 6 });
     expect(computeShouldShow(editor)).toBe(false);
+  });
+});
+
+describe("isInsideRadixPopperPortal", () => {
+  it("returns false for null", () => {
+    expect(isInsideRadixPopperPortal(null)).toBe(false);
+  });
+
+  it("returns false for an element outside any portal wrapper", () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    expect(isInsideRadixPopperPortal(div)).toBe(false);
+    document.body.removeChild(div);
+  });
+
+  it("returns true for an element inside [data-radix-popper-content-wrapper]", () => {
+    const portal = document.createElement("div");
+    portal.setAttribute("data-radix-popper-content-wrapper", "");
+    const inner = document.createElement("button");
+    portal.appendChild(inner);
+    document.body.appendChild(portal);
+    expect(isInsideRadixPopperPortal(inner)).toBe(true);
+    document.body.removeChild(portal);
+  });
+
+  it("returns true for the wrapper element itself", () => {
+    const portal = document.createElement("div");
+    portal.setAttribute("data-radix-popper-content-wrapper", "");
+    document.body.appendChild(portal);
+    expect(isInsideRadixPopperPortal(portal)).toBe(true);
+    document.body.removeChild(portal);
   });
 });
