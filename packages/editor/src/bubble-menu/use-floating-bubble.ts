@@ -9,8 +9,6 @@ import {
 } from "@floating-ui/react";
 import type { Editor } from "@tiptap/core";
 import { useEffect, useState } from "react";
-import type { UseFloatingReturn } from "@floating-ui/react";
-import type { Dispatch, SetStateAction } from "react";
 
 export function computeShouldShow(editor: Editor | null): boolean {
   if (!editor) return false;
@@ -25,9 +23,11 @@ export function isInsideRadixPopperPortal(target: EventTarget | null): boolean {
   return target.closest("[data-radix-popper-content-wrapper]") !== null;
 }
 
-export function useFloatingBubble({ editor }: { editor: Editor | null }): UseFloatingReturn & {
+export function useFloatingBubble({ editor }: { editor: Editor | null }): {
   open: boolean;
-  getFloatingProps: ReturnType<typeof useInteractions>[0]["getFloatingProps"];
+  refs: ReturnType<typeof useFloating>["refs"];
+  floatingStyles: ReturnType<typeof useFloating>["floatingStyles"];
+  getFloatingProps: (userProps?: Record<string, unknown>) => Record<string, unknown>;
 } {
   const [open, setOpen] = useState(false);
 
