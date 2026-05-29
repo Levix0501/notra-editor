@@ -30,6 +30,7 @@
     "tailwindcss": "^4.0.0"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.0",
     "@radix-ui/react-popover": "^1.1.0",
     "@tiptap/core": "^3.0.0",
     "@tiptap/extension-bubble-menu": "^3.0.0",
