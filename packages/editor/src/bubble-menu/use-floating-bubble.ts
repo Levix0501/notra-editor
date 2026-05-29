@@ -63,11 +63,12 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
     };
     const handleBlur = ({ event }: { event: FocusEvent }) => {
       const target = event.relatedTarget;
-      if (target instanceof Element) {
-        const floating = refs.floating.current;
-        if (floating?.contains(target)) return;
-        if (isInsideRadixPopperPortal(target)) return;
-      }
+      // Focus left the document entirely (DevTools, another window/tab, the
+      // browser chrome). Keep the bubble open so the user can inspect it.
+      if (!(target instanceof Element)) return;
+      const floating = refs.floating.current;
+      if (floating?.contains(target)) return;
+      if (isInsideRadixPopperPortal(target)) return;
       setOpen(false);
     };
     const handleDragStart = () => setOpen(false);
