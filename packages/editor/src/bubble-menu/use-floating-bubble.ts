@@ -31,7 +31,7 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
 } {
   const [open, setOpen] = useState(false);
 
-  const { refs, floatingStyles, context } = useFloating({
+  const { refs, floatingStyles, context, update } = useFloating({
     open,
     onOpenChange: setOpen,
     placement: "top",
@@ -53,8 +53,14 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
   useEffect(() => {
     if (!editor) return;
 
-    const handleSelectionUpdate = () => setOpen(computeShouldShow(editor));
-    const handleFocus = () => setOpen(computeShouldShow(editor));
+    const handleSelectionUpdate = () => {
+      setOpen(computeShouldShow(editor));
+      update();
+    };
+    const handleFocus = () => {
+      setOpen(computeShouldShow(editor));
+      update();
+    };
     const handleBlur = ({ event }: { event: FocusEvent }) => {
       const target = event.relatedTarget;
       if (target instanceof Element) {
@@ -77,7 +83,7 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
       editor.off("blur", handleBlur);
       editor.view.dom.removeEventListener("dragstart", handleDragStart);
     };
-  }, [editor, refs]);
+  }, [editor, refs, update]);
 
   const dismiss = useDismiss(context, {
     escapeKey: true,
