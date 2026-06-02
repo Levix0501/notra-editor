@@ -71,8 +71,8 @@ describe("slash item transforms", () => {
     // "/h1" occupies positions 1..4 (text starts at pos 1).
     getItem("heading-1").run({ editor, range: { from: 1, to: 4 } });
     expect(editor.isActive("heading", { level: 1 })).toBe(true);
-    // The "/h1" query text is gone (toggleHeading may leave a trailing empty
-    // block in happy-dom; assert on textContent rather than getText()).
+    // The "/h1" query text is gone. StarterKit's TrailingNode keeps an empty
+    // paragraph at the doc end, so assert on textContent (not getText()).
     expect(editor.state.doc.textContent).toBe("");
   });
 
