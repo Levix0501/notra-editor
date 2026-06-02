@@ -11,11 +11,11 @@ export function NotraSlashMenu({ editor }: { editor: Editor | null }) {
   const { state, isMounted, refs, style, onSelect, onPointerEnter } = useSlashMenu({ editor });
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  // Keep the active row scrolled into view.
+  // Keep the active row scrolled into view when the highlight moves.
   useEffect(() => {
-    const active = listRef.current?.querySelector('button[data-active="true"]');
-    active?.scrollIntoView({ block: "nearest" });
-  }, [state.activeIndex, state.items]);
+    const rows = listRef.current?.querySelectorAll("button");
+    rows?.[state.activeIndex]?.scrollIntoView({ block: "nearest" });
+  }, [state.activeIndex]);
 
   if (!editor || !isMounted) return null;
 

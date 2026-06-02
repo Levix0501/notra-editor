@@ -7,7 +7,13 @@ const rect = () => null;
 
 function opened(command = vi.fn()) {
   const store = createSlashStore();
-  store.open({ items: slashMenuItems, command, range: { from: 1, to: 2 }, query: "", clientRect: rect });
+  store.open({
+    items: slashMenuItems,
+    command,
+    range: { from: 1, to: 2 },
+    query: "",
+    clientRect: rect,
+  });
   return { store, command };
 }
 
@@ -32,7 +38,13 @@ describe("createSlashStore", () => {
     const store = createSlashStore();
     const listener = vi.fn();
     const unsub = store.subscribe(listener);
-    store.open({ items: slashMenuItems, command: vi.fn(), range: { from: 1, to: 2 }, query: "", clientRect: rect });
+    store.open({
+      items: slashMenuItems,
+      command: vi.fn(),
+      range: { from: 1, to: 2 },
+      query: "",
+      clientRect: rect,
+    });
     expect(listener).toHaveBeenCalledTimes(1);
     unsub();
     store.close();
@@ -80,7 +92,12 @@ describe("createSlashStore", () => {
   it("update() clamps activeIndex into the shorter list", () => {
     const { store } = opened();
     for (let i = 0; i < 7; i++) store.onKeyDown(key("ArrowDown")); // index 7
-    store.update({ items: filterSlashItems(slashMenuItems, "head"), range: { from: 1, to: 5 }, query: "head", clientRect: rect });
+    store.update({
+      items: filterSlashItems(slashMenuItems, "head"),
+      range: { from: 1, to: 5 },
+      query: "head",
+      clientRect: rect,
+    });
     expect(store.getSnapshot().activeIndex).toBe(2); // 3 headings -> max index 2
   });
 

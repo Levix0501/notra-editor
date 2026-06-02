@@ -9,14 +9,24 @@ const noop = () => {};
 describe("SlashMenuList", () => {
   it("renders one button per item", () => {
     const { container } = render(
-      <SlashMenuList items={slashMenuItems} activeIndex={0} onSelect={noop} onPointerEnter={noop} />,
+      <SlashMenuList
+        items={slashMenuItems}
+        activeIndex={0}
+        onSelect={noop}
+        onPointerEnter={noop}
+      />,
     );
     expect(container.querySelectorAll("button")).toHaveLength(8);
   });
 
   it("marks exactly the active row with data-active=true", () => {
     const { container } = render(
-      <SlashMenuList items={slashMenuItems} activeIndex={2} onSelect={noop} onPointerEnter={noop} />,
+      <SlashMenuList
+        items={slashMenuItems}
+        activeIndex={2}
+        onSelect={noop}
+        onPointerEnter={noop}
+      />,
     );
     const active = container.querySelectorAll('button[data-active="true"]');
     expect(active).toHaveLength(1);
@@ -26,7 +36,12 @@ describe("SlashMenuList", () => {
   it("calls onSelect with the row index on mousedown", () => {
     const onSelect = vi.fn();
     const { container } = render(
-      <SlashMenuList items={slashMenuItems} activeIndex={0} onSelect={onSelect} onPointerEnter={noop} />,
+      <SlashMenuList
+        items={slashMenuItems}
+        activeIndex={0}
+        onSelect={onSelect}
+        onPointerEnter={noop}
+      />,
     );
     const rows = container.querySelectorAll("button");
     const target = rows[3];

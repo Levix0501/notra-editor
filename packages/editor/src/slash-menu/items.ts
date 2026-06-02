@@ -25,8 +25,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Text",
     keywords: ["text", "paragraph", "p", "body"],
     icon: Pilcrow,
-    run: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).setParagraph().run(),
+    run: ({ editor, range }) => editor.chain().focus().deleteRange(range).setParagraph().run(),
   },
   {
     id: "heading-1",
@@ -57,32 +56,28 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Bullet List",
     keywords: ["bullet", "unordered", "list", "ul"],
     icon: List,
-    run: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).toggleBulletList().run(),
+    run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBulletList().run(),
   },
   {
     id: "ordered-list",
     title: "Ordered List",
     keywords: ["ordered", "numbered", "list", "ol"],
     icon: ListOrdered,
-    run: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
+    run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
   },
   {
     id: "blockquote",
     title: "Quote",
     keywords: ["quote", "blockquote", "citation"],
     icon: TextQuote,
-    run: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
+    run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
   },
   {
     id: "code-block",
     title: "Code Block",
     keywords: ["code", "codeblock", "pre", "snippet"],
     icon: Code2,
-    run: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
+    run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },
 ];
 
