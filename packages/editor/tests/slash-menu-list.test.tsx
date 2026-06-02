@@ -20,7 +20,7 @@ describe("SlashMenuList", () => {
     );
     const active = container.querySelectorAll('button[data-active="true"]');
     expect(active).toHaveLength(1);
-    expect(active[0].textContent).toContain("Heading 2");
+    expect(active[0]?.textContent).toContain("Heading 2");
   });
 
   it("calls onSelect with the row index on mousedown", () => {
@@ -29,7 +29,9 @@ describe("SlashMenuList", () => {
       <SlashMenuList items={slashMenuItems} activeIndex={0} onSelect={onSelect} onPointerEnter={noop} />,
     );
     const rows = container.querySelectorAll("button");
-    fireEvent.mouseDown(rows[3]);
+    const target = rows[3];
+    if (!target) throw new Error("expected at least four rows");
+    fireEvent.mouseDown(target);
     expect(onSelect).toHaveBeenCalledWith(3);
   });
 
