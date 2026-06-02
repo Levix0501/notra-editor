@@ -23,6 +23,7 @@ export type SlashOpenPayload = {
 
 export type SlashUpdatePayload = {
   items: SlashMenuItem[];
+  command: SlashCommand;
   range: Range;
   query: string;
   clientRect: (() => DOMRect | null) | null;
@@ -94,6 +95,7 @@ export function createSlashStore(): SlashStore {
       });
     },
     update(payload) {
+      command = payload.command;
       setState({
         ...state,
         open: true,

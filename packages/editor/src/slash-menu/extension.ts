@@ -47,6 +47,7 @@ export function buildSlashCommand() {
             onUpdate: (props) => {
               store.update({
                 items: props.items,
+                command: props.command,
                 range: props.range,
                 query: props.query,
                 clientRect: props.clientRect ?? null,

@@ -94,6 +94,7 @@ describe("createSlashStore", () => {
     for (let i = 0; i < 7; i++) store.onKeyDown(key("ArrowDown")); // index 7
     store.update({
       items: filterSlashItems(slashMenuItems, "head"),
+      command: vi.fn(),
       range: { from: 1, to: 5 },
       query: "head",
       clientRect: rect,
@@ -109,5 +110,31 @@ describe("createSlashStore", () => {
     expect(store.onKeyDown(key("Enter"))).toBe(true);
     expect(command).not.toHaveBeenCalled();
     expect(store.getSnapshot().activeIndex).toBe(0);
+  });
+
+  it("update() refreshes the command used on select", () => {
+    // Regression: @tiptap/suggestion rebuilds props.command per update with the
+    // current range closed over. open() then update() must adopt the latest
+    // command, or selectActive() deletes only the trigger char and leaves the query.
+    const store = createSlashStore();
+    const initialCommand = vi.fn();
+    const latestCommand = vi.fn();
+    store.open({
+      items: slashMenuItems,
+      command: initialCommand,
+      range: { from: 1, to: 2 },
+      query: "",
+      clientRect: rect,
+    });
+    store.update({
+      items: slashMenuItems,
+      command: latestCommand,
+      range: { from: 1, to: 6 },
+      query: "head",
+      clientRect: rect,
+    });
+    store.selectActive();
+    expect(latestCommand).toHaveBeenCalledWith(slashMenuItems[0]);
+    expect(initialCommand).not.toHaveBeenCalled();
   });
 });
