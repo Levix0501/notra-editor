@@ -24,6 +24,8 @@ export type SlashMenuItem = {
   check?: (editor: Editor) => boolean;
 };
 
+const checkHeading = (editor: Editor) => isNodeInSchema("heading", editor);
+
 export const slashMenuItems: SlashMenuItem[] = [
   {
     id: "paragraph",
@@ -37,7 +39,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Heading 1",
     keywords: ["h1", "heading", "title", "big"],
     icon: Heading1,
-    check: (editor) => isNodeInSchema("heading", editor),
+    check: checkHeading,
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 1 }).run(),
   },
@@ -46,7 +48,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Heading 2",
     keywords: ["h2", "heading", "subtitle"],
     icon: Heading2,
-    check: (editor) => isNodeInSchema("heading", editor),
+    check: checkHeading,
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 2 }).run(),
   },
@@ -55,7 +57,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Heading 3",
     keywords: ["h3", "heading"],
     icon: Heading3,
-    check: (editor) => isNodeInSchema("heading", editor),
+    check: checkHeading,
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 3 }).run(),
   },

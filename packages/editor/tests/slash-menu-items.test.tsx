@@ -1,4 +1,5 @@
 import { renderHook } from "@testing-library/react";
+import type { Editor } from "@tiptap/core";
 import { Pilcrow } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import type { SlashMenuItem } from "../src/slash-menu/items";
@@ -135,12 +136,12 @@ describe("filterSlashItems ranking", () => {
 });
 
 describe("availableSlashItems", () => {
-  const mk = (id: string, check?: (editor: never) => boolean): SlashMenuItem => ({
+  const mk = (id: string, check?: (editor: Editor) => boolean): SlashMenuItem => ({
     id,
     title: id,
     keywords: [],
     icon: Pilcrow,
-    check: check as SlashMenuItem["check"],
+    check,
     run: () => {},
   });
 
