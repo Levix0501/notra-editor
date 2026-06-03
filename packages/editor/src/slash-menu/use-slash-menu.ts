@@ -13,6 +13,7 @@ import { useCallback, useLayoutEffect, useRef, useSyncExternalStore } from "reac
 
 import { getSlashStore } from "./extension";
 import { createSlashStore, type SlashState } from "./store";
+import { useOutsidePointerDown } from "./use-outside-pointerdown";
 
 // Stable fallback so hooks stay unconditional while editor is null.
 const FALLBACK_STORE = createSlashStore();
@@ -85,6 +86,9 @@ export function useSlashMenu({ editor }: { editor: Editor | null }): {
     if (next) rectRef.current = next;
     update();
   }, [state.clientRect, update]);
+
+  const onOutside = useCallback(() => store.close(), [store]);
+  useOutsidePointerDown(refs.floating, state.open, onOutside);
 
   const onSelect = useCallback(
     (index: number) => {
