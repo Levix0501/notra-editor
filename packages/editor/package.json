@@ -33,6 +33,8 @@
     "@floating-ui/react": "^0.27.0",
     "@radix-ui/react-popover": "^1.1.0",
     "@tiptap/core": "^3.0.0",
+    "@tiptap/extension-drag-handle": "^3.25.0",
+    "@tiptap/extension-drag-handle-react": "^3.25.0",
     "@tiptap/extension-link": "^3.0.0",
     "@tiptap/extension-placeholder": "^3.0.0",
     "@tiptap/pm": "^3",
