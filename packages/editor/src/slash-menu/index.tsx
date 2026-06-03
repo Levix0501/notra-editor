@@ -32,6 +32,7 @@ export function NotraSlashMenu({ editor }: { editor: Editor | null }) {
       <SlashMenuList
         items={state.items}
         activeIndex={state.activeIndex}
+        grouped={state.query.trim() === ""}
         onSelect={onSelect}
         onPointerEnter={onPointerEnter}
       />

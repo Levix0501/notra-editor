@@ -58,3 +58,47 @@ describe("SlashMenuList", () => {
     expect(container.querySelectorAll("button")).toHaveLength(0);
   });
 });
+
+describe("SlashMenuList grouping & subtitles", () => {
+  it("renders group labels and subtitles when grouped", () => {
+    const { container, getByText } = render(
+      <SlashMenuList
+        items={slashMenuItems}
+        activeIndex={0}
+        grouped
+        onSelect={noop}
+        onPointerEnter={noop}
+      />,
+    );
+    expect(getByText("Basic")).toBeTruthy();
+    expect(getByText("Lists")).toBeTruthy();
+    expect(getByText("Blocks")).toBeTruthy();
+    expect(getByText("Numbered list")).toBeTruthy();
+    const titles = Array.from(container.querySelectorAll("button")).map(
+      (b) => b.querySelector("span > span")?.textContent,
+    );
+    expect(titles).toEqual([
+      "Text",
+      "Heading 1",
+      "Heading 2",
+      "Heading 3",
+      "Bullet List",
+      "Ordered List",
+      "Quote",
+      "Code Block",
+    ]);
+  });
+
+  it("renders flat with no group labels when not grouped", () => {
+    const { container, queryByText } = render(
+      <SlashMenuList
+        items={slashMenuItems}
+        activeIndex={0}
+        onSelect={noop}
+        onPointerEnter={noop}
+      />,
+    );
+    expect(queryByText("Basic")).toBeNull();
+    expect(container.querySelectorAll("button")).toHaveLength(8);
+  });
+});
