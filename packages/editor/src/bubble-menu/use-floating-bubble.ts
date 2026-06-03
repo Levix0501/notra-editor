@@ -12,17 +12,21 @@ import type { Editor } from "@tiptap/core";
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 
+import { isFormattableSelection } from "../selection";
+
 export function computeShouldShow(editor: Editor | null): boolean {
-  if (!editor) return false;
-  if (!editor.isEditable) return false;
-  const { selection } = editor.state;
-  if (selection.empty) return false;
-  return selection.from !== selection.to;
+  return isFormattableSelection(editor);
 }
 
-export function isInsideRadixPopperPortal(target: EventTarget | null): boolean {
+// Selectors for portals rendered outside the editor DOM (e.g. the Radix popover
+// behind the link button). Focus or clicks that land inside one of these must NOT
+// close the bubble. It's an array so another portal library is one entry away;
+// only Radix is used today.
+const EXTERNAL_PORTAL_SELECTORS = ["[data-radix-popper-content-wrapper]"];
+
+export function isInsideExternalPortal(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;
-  return target.closest("[data-radix-popper-content-wrapper]") !== null;
+  return target.closest(EXTERNAL_PORTAL_SELECTORS.join(",")) !== null;
 }
 
 export function useFloatingBubble({ editor }: { editor: Editor | null }): {
@@ -86,7 +90,7 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
       if (!(target instanceof Element)) return;
       const floating = refs.floating.current;
       if (floating?.contains(target)) return;
-      if (isInsideRadixPopperPortal(target)) return;
+      if (isInsideExternalPortal(target)) return;
       setOpen(false);
     };
     const handleDragStart = () => setOpen(false);
@@ -121,7 +125,7 @@ export function useFloatingBubble({ editor }: { editor: Editor | null }): {
 
   const dismiss = useDismiss(context, {
     escapeKey: true,
-    outsidePress: (event) => !isInsideRadixPopperPortal(event.target),
+    outsidePress: (event) => !isInsideExternalPortal(event.target),
   });
 
   const { getFloatingProps } = useInteractions([dismiss]);

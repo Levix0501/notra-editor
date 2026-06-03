@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { computeShouldShow, isInsideRadixPopperPortal } from "../src/bubble-menu/use-floating-bubble";
+import { computeShouldShow, isInsideExternalPortal } from "../src/bubble-menu/use-floating-bubble";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 const helloDoc = {
@@ -35,25 +35,35 @@ describe("computeShouldShow", () => {
   });
 
   it("returns false when the editor is not editable", () => {
-    const { result } = renderHook(() =>
-      useNotraEditor({ content: helloDoc, editable: false }),
-    );
+    const { result } = renderHook(() => useNotraEditor({ content: helloDoc, editable: false }));
     const editor = result.current;
     expect(editor).not.toBeNull();
     editor?.commands.setTextSelection({ from: 1, to: 6 });
     expect(computeShouldShow(editor)).toBe(false);
   });
+
+  it("returns false for a selection inside a code block", () => {
+    const { result } = renderHook(() => useNotraEditor());
+    const editor = result.current;
+    expect(editor).not.toBeNull();
+    editor?.commands.setContent({
+      type: "doc",
+      content: [{ type: "codeBlock", content: [{ type: "text", text: "const x" }] }],
+    });
+    editor?.commands.setTextSelection({ from: 1, to: 6 });
+    expect(computeShouldShow(editor)).toBe(false);
+  });
 });
 
-describe("isInsideRadixPopperPortal", () => {
+describe("isInsideExternalPortal", () => {
   it("returns false for null", () => {
-    expect(isInsideRadixPopperPortal(null)).toBe(false);
+    expect(isInsideExternalPortal(null)).toBe(false);
   });
 
   it("returns false for an element outside any portal wrapper", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
-    expect(isInsideRadixPopperPortal(div)).toBe(false);
+    expect(isInsideExternalPortal(div)).toBe(false);
     document.body.removeChild(div);
   });
 
@@ -63,7 +73,7 @@ describe("isInsideRadixPopperPortal", () => {
     const inner = document.createElement("button");
     portal.appendChild(inner);
     document.body.appendChild(portal);
-    expect(isInsideRadixPopperPortal(inner)).toBe(true);
+    expect(isInsideExternalPortal(inner)).toBe(true);
     document.body.removeChild(portal);
   });
 
@@ -71,7 +81,7 @@ describe("isInsideRadixPopperPortal", () => {
     const portal = document.createElement("div");
     portal.setAttribute("data-radix-popper-content-wrapper", "");
     document.body.appendChild(portal);
-    expect(isInsideRadixPopperPortal(portal)).toBe(true);
+    expect(isInsideExternalPortal(portal)).toBe(true);
     document.body.removeChild(portal);
   });
 });
