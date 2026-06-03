@@ -81,12 +81,27 @@ export const slashMenuItems: SlashMenuItem[] = [
   },
 ];
 
+// Lower rank = more relevant; null means no match. Matching scope is title +
+// keywords only (subtitle is display-only, by design).
+function matchRank(item: SlashMenuItem, q: string): number | null {
+  const title = item.title.toLowerCase();
+  if (title === q) return 0;
+  if (title.startsWith(q)) return 1;
+  const keywords = item.keywords.map((k) => k.toLowerCase());
+  if (keywords.some((k) => k === q)) return 2;
+  if (keywords.some((k) => k.startsWith(q))) return 3;
+  if (title.includes(q) || keywords.some((k) => k.includes(q))) return 4;
+  return null;
+}
+
 export function filterSlashItems(items: SlashMenuItem[], query: string): SlashMenuItem[] {
   const q = query.trim().toLowerCase();
   if (q === "") return items;
-  return items.filter(
-    (item) =>
-      item.title.toLowerCase().includes(q) ||
-      item.keywords.some((keyword) => keyword.toLowerCase().includes(q)),
-  );
+  const ranked = items
+    .map((item, order) => ({ item, order, rank: matchRank(item, q) }))
+    .filter(
+      (entry): entry is { item: SlashMenuItem; order: number; rank: number } => entry.rank !== null,
+    );
+  ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
+  return ranked.map((entry) => entry.item);
 }

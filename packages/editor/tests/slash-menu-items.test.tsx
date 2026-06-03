@@ -1,6 +1,7 @@
 import { renderHook } from "@testing-library/react";
+import { Pilcrow } from "lucide-react";
 import { describe, expect, it } from "vitest";
-
+import type { SlashMenuItem } from "../src/slash-menu/items";
 import { filterSlashItems, slashMenuItems } from "../src/slash-menu/items";
 import { useNotraEditor } from "../src/use-notra-editor";
 
@@ -90,5 +91,45 @@ describe("slash item transforms", () => {
     if (!editor) return;
     getItem("code-block").run({ editor, range: { from: 1, to: 6 } });
     expect(editor.isActive("codeBlock")).toBe(true);
+  });
+});
+
+describe("filterSlashItems ranking", () => {
+  const mk = (id: string, title: string, keywords: string[]): SlashMenuItem => ({
+    id,
+    title,
+    keywords,
+    icon: Pilcrow,
+    run: () => {},
+  });
+
+  it("orders by exact title > title prefix > exact keyword > keyword prefix > contains", () => {
+    const sample: SlashMenuItem[] = [
+      mk("contains", "Xcodex", ["zz"]), // title contains "co"
+      mk("kw-prefix", "Banana", ["coconut"]), // keyword starts with "co"
+      mk("title-prefix", "Code Block", []), // title starts with "co"
+      mk("exact", "Co", []), // title equals "co"
+      mk("kw-exact", "Melon", ["co"]), // keyword equals "co"
+    ];
+    expect(filterSlashItems(sample, "co").map((i) => i.id)).toEqual([
+      "exact",
+      "title-prefix",
+      "kw-exact",
+      "kw-prefix",
+      "contains",
+    ]);
+  });
+
+  it("keeps declaration order for equal-rank matches (stable)", () => {
+    const sample: SlashMenuItem[] = [mk("a", "Cobra", []), mk("b", "Cobalt", [])];
+    expect(filterSlashItems(sample, "co").map((i) => i.id)).toEqual(["a", "b"]);
+  });
+
+  it("still returns the three headings in order for 'head'", () => {
+    expect(filterSlashItems(slashMenuItems, "head").map((i) => i.id)).toEqual([
+      "heading-1",
+      "heading-2",
+      "heading-3",
+    ]);
   });
 });
