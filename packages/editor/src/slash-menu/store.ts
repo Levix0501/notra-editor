@@ -107,29 +107,30 @@ export function createSlashStore(): SlashStore {
       });
     },
     onKeyDown(event) {
-      if (!state.open) return false;
+      // No items means the menu is hidden (see index.tsx). Let every key fall through to
+      // the editor so it behaves like plain text input — Enter newlines, arrows move, etc.
+      if (!state.open || state.items.length === 0) return false;
+      // Guaranteed len > 0 by the guard above.
       const len = state.items.length;
       switch (event.key) {
         case "ArrowDown":
-          if (len > 0) setState({ ...state, activeIndex: (state.activeIndex + 1) % len });
+          setState({ ...state, activeIndex: (state.activeIndex + 1) % len });
           return true;
         case "ArrowUp":
-          if (len > 0) setState({ ...state, activeIndex: (state.activeIndex - 1 + len) % len });
+          setState({ ...state, activeIndex: (state.activeIndex - 1 + len) % len });
           return true;
         case "Tab": {
-          if (len > 0) {
-            const next = event.shiftKey
-              ? (state.activeIndex - 1 + len) % len
-              : (state.activeIndex + 1) % len;
-            setState({ ...state, activeIndex: next });
-          }
+          const next = event.shiftKey
+            ? (state.activeIndex - 1 + len) % len
+            : (state.activeIndex + 1) % len;
+          setState({ ...state, activeIndex: next });
           return true;
         }
         case "Home":
-          if (len > 0) setState({ ...state, activeIndex: 0 });
+          setState({ ...state, activeIndex: 0 });
           return true;
         case "End":
-          if (len > 0) setState({ ...state, activeIndex: len - 1 });
+          setState({ ...state, activeIndex: len - 1 });
           return true;
         case "Enter":
           selectActive();

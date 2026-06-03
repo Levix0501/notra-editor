@@ -8,7 +8,6 @@ const ICON_CLASS = "mt-0.5 h-4 w-4 shrink-0";
 const TITLE_CLASS = "text-sm";
 const SUBTITLE_CLASS = "text-xs text-muted-foreground";
 const GROUP_LABEL_CLASS = "px-2 pb-1 pt-2 text-xs font-medium text-muted-foreground";
-const EMPTY_CLASS = "px-2 py-1.5 text-sm text-muted-foreground";
 
 export function SlashMenuList({
   items,
@@ -23,9 +22,9 @@ export function SlashMenuList({
   onSelect: (index: number) => void;
   onPointerEnter: (index: number) => void;
 }) {
-  if (items.length === 0) {
-    return <div className={EMPTY_CLASS}>No results</div>;
-  }
+  // No matches: render nothing. The popover host (index.tsx) hides the whole box in this
+  // case, so the user keeps typing as if no menu were open — no "No results" placeholder.
+  if (items.length === 0) return null;
 
   const renderRow = (item: SlashMenuItem, index: number) => {
     const Icon = item.icon;

@@ -102,12 +102,14 @@ describe("createSlashStore", () => {
     expect(store.getSnapshot().activeIndex).toBe(2); // 3 headings -> max index 2
   });
 
-  it("empty items: Arrow/Enter are consumed no-ops, command not called", () => {
+  it("empty items: Arrow/Enter pass through (not consumed), command not called", () => {
+    // With no matches the menu is hidden and behaves like plain text input: keys
+    // must fall through to the editor (Enter inserts a newline, arrows move the caret).
     const command = vi.fn();
     const store = createSlashStore();
     store.open({ items: [], command, range: { from: 1, to: 2 }, query: "zz", clientRect: rect });
-    expect(store.onKeyDown(key("ArrowDown"))).toBe(true);
-    expect(store.onKeyDown(key("Enter"))).toBe(true);
+    expect(store.onKeyDown(key("ArrowDown"))).toBe(false);
+    expect(store.onKeyDown(key("Enter"))).toBe(false);
     expect(command).not.toHaveBeenCalled();
     expect(store.getSnapshot().activeIndex).toBe(0);
   });
@@ -167,7 +169,7 @@ describe("createSlashStore extra keys", () => {
     expect(store.getSnapshot().activeIndex).toBe(0);
   });
 
-  it("empty list: Tab/Home/End are consumed no-ops", () => {
+  it("empty list: Tab/Home/End pass through (not consumed)", () => {
     const store = createSlashStore();
     store.open({
       items: [],
@@ -176,9 +178,9 @@ describe("createSlashStore extra keys", () => {
       query: "zz",
       clientRect: rect,
     });
-    expect(store.onKeyDown(keyWith("Tab"))).toBe(true);
-    expect(store.onKeyDown(keyWith("Home"))).toBe(true);
-    expect(store.onKeyDown(keyWith("End"))).toBe(true);
+    expect(store.onKeyDown(keyWith("Tab"))).toBe(false);
+    expect(store.onKeyDown(keyWith("Home"))).toBe(false);
+    expect(store.onKeyDown(keyWith("End"))).toBe(false);
     expect(store.getSnapshot().activeIndex).toBe(0);
   });
 });

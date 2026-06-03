@@ -8,16 +8,19 @@ const LIST_CLASS =
   "z-50 flex max-h-80 min-w-56 flex-col gap-0.5 overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none";
 
 export function NotraSlashMenu({ editor }: { editor: Editor | null }) {
-  const { state, isMounted, refs, style, onSelect, onPointerEnter } = useSlashMenu({ editor });
+  const { view, isMounted, refs, style, onSelect, onPointerEnter } = useSlashMenu({ editor });
   const listRef = useRef<HTMLDivElement | null>(null);
 
   // Keep the active row scrolled into view when the highlight moves.
   useEffect(() => {
     const rows = listRef.current?.querySelectorAll("button");
-    rows?.[state.activeIndex]?.scrollIntoView({ block: "nearest" });
-  }, [state.activeIndex]);
+    rows?.[view.activeIndex]?.scrollIntoView({ block: "nearest" });
+  }, [view.activeIndex]);
 
-  if (!editor || !isMounted) return null;
+  // Hide the whole popover when there are no matches so an empty query reads as plain text
+  // input. view (not state) drives this: during the close transition view retains the last
+  // non-empty items, so a populated menu still fades out instead of vanishing instantly.
+  if (!editor || !isMounted || view.items.length === 0) return null;
 
   return (
     <div
@@ -30,9 +33,9 @@ export function NotraSlashMenu({ editor }: { editor: Editor | null }) {
       role="listbox"
     >
       <SlashMenuList
-        items={state.items}
-        activeIndex={state.activeIndex}
-        grouped={state.query.trim() === ""}
+        items={view.items}
+        activeIndex={view.activeIndex}
+        grouped={view.query.trim() === ""}
         onSelect={onSelect}
         onPointerEnter={onPointerEnter}
       />

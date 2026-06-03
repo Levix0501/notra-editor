@@ -50,12 +50,13 @@ describe("SlashMenuList", () => {
     expect(onSelect).toHaveBeenCalledWith(3);
   });
 
-  it("shows a no-results message for an empty list", () => {
-    const { getByText, container } = render(
+  it("renders nothing for an empty list (no 'No results' message)", () => {
+    const { container, queryByText } = render(
       <SlashMenuList items={[]} activeIndex={0} onSelect={noop} onPointerEnter={noop} />,
     );
-    expect(getByText("No results")).toBeTruthy();
+    expect(queryByText("No results")).toBeNull();
     expect(container.querySelectorAll("button")).toHaveLength(0);
+    expect(container.textContent).toBe("");
   });
 });
 

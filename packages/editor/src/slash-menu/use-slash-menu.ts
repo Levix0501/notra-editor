@@ -12,8 +12,11 @@ import type { CSSProperties } from "react";
 import { useCallback, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 
 import { getSlashStore } from "./extension";
+import type { SlashMenuItem } from "./items";
 import { createSlashStore, type SlashState } from "./store";
 import { useOutsidePointerDown } from "./use-outside-pointerdown";
+
+type SlashView = { items: SlashMenuItem[]; activeIndex: number; query: string };
 
 // Stable fallback so hooks stay unconditional while editor is null.
 const FALLBACK_STORE = createSlashStore();
@@ -33,6 +36,7 @@ const FALLBACK_RECT = {
 
 export function useSlashMenu({ editor }: { editor: Editor | null }): {
   state: SlashState;
+  view: SlashView;
   isMounted: boolean;
   refs: ReturnType<typeof useFloating>["refs"];
   style: CSSProperties;
@@ -44,6 +48,27 @@ export function useSlashMenu({ editor }: { editor: Editor | null }): {
   const subscribe = useCallback((listener: () => void) => store.subscribe(listener), [store]);
   const getSnapshot = useCallback(() => store.getSnapshot(), [store]);
   const state = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+  // Last view (items/highlight/query) shown while the menu was open. close() resets the
+  // store to CLOSED (items: []), but useTransitionStyles keeps the menu mounted through the
+  // close transition. Since index.tsx hides the menu on an empty list, rendering the wiped
+  // [] mid-transition would drop the menu instantly and cut the fade-out. Retaining the last
+  // open snapshot lets a populated menu fade out unchanged. Same rationale as rectRef below —
+  // updated during render (not in an effect) so the opening frame shows the real items
+  // immediately instead of a stale/empty one.
+  const viewRef = useRef<SlashView>({
+    items: state.items,
+    activeIndex: state.activeIndex,
+    query: state.query,
+  });
+  if (state.open) {
+    viewRef.current = {
+      items: state.items,
+      activeIndex: state.activeIndex,
+      query: state.query,
+    };
+  }
+  const view = viewRef.current;
 
   const { refs, floatingStyles, context, update } = useFloating({
     open: state.open,
@@ -101,6 +126,7 @@ export function useSlashMenu({ editor }: { editor: Editor | null }): {
 
   return {
     state,
+    view,
     isMounted,
     refs,
     style: { ...floatingStyles, ...transitionStyles },
