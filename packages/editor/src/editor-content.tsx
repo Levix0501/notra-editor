@@ -1,6 +1,7 @@
 import { EditorContent } from "@tiptap/react";
 
 import { NotraBubbleMenu } from "./bubble-menu";
+import { NotraDragHandle } from "./drag-handle";
 import { NotraSlashMenu } from "./slash-menu";
 import type { NotraEditorInstance } from "./types";
 
@@ -17,6 +18,7 @@ export function NotraEditorContent({ editor, className }: Props) {
       <EditorContent editor={editor} />
       <NotraBubbleMenu editor={editor} />
       <NotraSlashMenu editor={editor} />
+      <NotraDragHandle editor={editor} />
     </div>
   );
 }

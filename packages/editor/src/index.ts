@@ -1,5 +1,6 @@
 export type { JSONContent } from "@tiptap/core";
 export { NotraBubbleMenu } from "./bubble-menu";
+export { NotraDragHandle } from "./drag-handle";
 export { NotraEditor } from "./editor";
 export { NotraEditorContent } from "./editor-content";
 export { NotraSlashMenu } from "./slash-menu";
