@@ -9,7 +9,7 @@ import {
 } from "@floating-ui/react";
 import type { Editor } from "@tiptap/core";
 import type { CSSProperties } from "react";
-import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { useCallback, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 
 import { getSlashStore } from "./extension";
 import { createSlashStore, type SlashState } from "./store";
@@ -72,15 +72,19 @@ export function useSlashMenu({ editor }: { editor: Editor | null }): {
   // rect keeps the menu fading out in place at the caret.
   const rectRef = useRef<DOMRect>(FALLBACK_RECT);
 
-  // Anchor the floating element to the "/" caret rect.
-  useEffect(() => {
+  // Set the virtual reference once. Recreating it on every keystroke would tear down and
+  // rebuild floating-ui's autoUpdate loop each time, forcing extra synchronous layout reads.
+  useLayoutEffect(() => {
+    refs.setReference({ getBoundingClientRect: () => rectRef.current });
+  }, [refs]);
+
+  // Anchor to the "/" caret rect and reposition. useLayoutEffect positions before paint so
+  // the menu never shows a frame at a stale spot.
+  useLayoutEffect(() => {
     const next = state.clientRect?.();
     if (next) rectRef.current = next;
-    refs.setReference({
-      getBoundingClientRect: () => rectRef.current,
-    });
     update();
-  }, [state.clientRect, refs, update]);
+  }, [state.clientRect, update]);
 
   const onSelect = useCallback(
     (index: number) => {
