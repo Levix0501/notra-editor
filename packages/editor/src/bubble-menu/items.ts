@@ -12,8 +12,12 @@ import {
   type LucideIcon,
   Strikethrough,
 } from "lucide-react";
+import type { ComponentType } from "react";
 
-export type BubbleMenuItem = {
+import { LinkPopover } from "./link-popover";
+
+export type ToggleItem = {
+  kind: "toggle";
   id: string;
   label: string;
   icon: LucideIcon;
@@ -21,8 +25,17 @@ export type BubbleMenuItem = {
   run: (editor: Editor) => void;
 };
 
+export type CustomItem = {
+  kind: "custom";
+  id: string;
+  component: ComponentType<{ editor: Editor }>;
+};
+
+export type BubbleMenuItem = ToggleItem | CustomItem;
+
 export const bubbleMenuItems: BubbleMenuItem[] = [
   {
+    kind: "toggle",
     id: "heading-1",
     label: "Heading 1",
     icon: Heading1,
@@ -30,6 +43,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(),
   },
   {
+    kind: "toggle",
     id: "heading-2",
     label: "Heading 2",
     icon: Heading2,
@@ -37,6 +51,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
   },
   {
+    kind: "toggle",
     id: "heading-3",
     label: "Heading 3",
     icon: Heading3,
@@ -44,6 +59,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
   },
   {
+    kind: "toggle",
     id: "bold",
     label: "Bold",
     icon: Bold,
@@ -51,6 +67,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleBold().run(),
   },
   {
+    kind: "toggle",
     id: "italic",
     label: "Italic",
     icon: Italic,
@@ -58,6 +75,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleItalic().run(),
   },
   {
+    kind: "toggle",
     id: "strike",
     label: "Strike",
     icon: Strikethrough,
@@ -65,6 +83,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleStrike().run(),
   },
   {
+    kind: "toggle",
     id: "code",
     label: "Code",
     icon: Code,
@@ -72,6 +91,12 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleCode().run(),
   },
   {
+    kind: "custom",
+    id: "link",
+    component: LinkPopover,
+  },
+  {
+    kind: "toggle",
     id: "bullet-list",
     label: "Bullet list",
     icon: List,
@@ -79,6 +104,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleBulletList().run(),
   },
   {
+    kind: "toggle",
     id: "ordered-list",
     label: "Ordered list",
     icon: ListOrdered,
@@ -86,6 +112,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
     run: (e) => e.chain().focus().toggleOrderedList().run(),
   },
   {
+    kind: "toggle",
     id: "code-block",
     label: "Code block",
     icon: Code2,

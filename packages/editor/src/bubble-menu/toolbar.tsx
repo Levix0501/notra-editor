@@ -1,7 +1,6 @@
 import type { Editor } from "@tiptap/core";
 
-import { type BubbleMenuItem, bubbleMenuItems } from "./items";
-import { LinkPopover } from "./link-popover";
+import { bubbleMenuItems, type ToggleItem } from "./items";
 
 const BUTTON_CLASS =
   "inline-flex h-7 w-7 items-center justify-center rounded text-foreground hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground";
@@ -9,22 +8,20 @@ const BUTTON_CLASS =
 const ICON_CLASS = "h-4 w-4";
 
 export function Toolbar({ editor }: { editor: Editor }) {
-  const before = bubbleMenuItems.slice(0, 7);
-  const after = bubbleMenuItems.slice(7);
   return (
     <div className="flex items-center gap-0.5" role="toolbar">
-      {before.map((item) => (
-        <ToolbarButton key={item.id} editor={editor} item={item} />
-      ))}
-      <LinkPopover editor={editor} />
-      {after.map((item) => (
-        <ToolbarButton key={item.id} editor={editor} item={item} />
-      ))}
+      {bubbleMenuItems.map((item) =>
+        item.kind === "custom" ? (
+          <item.component key={item.id} editor={editor} />
+        ) : (
+          <ToolbarButton key={item.id} editor={editor} item={item} />
+        ),
+      )}
     </div>
   );
 }
 
-function ToolbarButton({ editor, item }: { editor: Editor; item: BubbleMenuItem }) {
+function ToolbarButton({ editor, item }: { editor: Editor; item: ToggleItem }) {
   const Icon = item.icon;
   return (
     <button
