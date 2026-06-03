@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { isFormattableSelection, isInCodeContext } from "../src/selection";
+import { isFormattableSelection, isInCodeContext, isNodeInSchema } from "../src/selection";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 function setup(editable = true) {
@@ -128,5 +128,19 @@ describe("isInCodeContext", () => {
       });
     });
     expect(isInCodeContext(editor.state, { from: 1, to: 2 })).toBe(true);
+  });
+});
+
+describe("isNodeInSchema", () => {
+  it("is true for nodes present in the default schema", () => {
+    const editor = setup();
+    expect(isNodeInSchema("heading", editor)).toBe(true);
+    expect(isNodeInSchema("paragraph", editor)).toBe(true);
+    expect(isNodeInSchema("codeBlock", editor)).toBe(true);
+  });
+
+  it("is false for an unknown node", () => {
+    const editor = setup();
+    expect(isNodeInSchema("bananaSplit", editor)).toBe(false);
   });
 });

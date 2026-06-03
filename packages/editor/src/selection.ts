@@ -31,3 +31,9 @@ export function isFormattableSelection(editor: Editor | null): boolean {
   if (doc.textBetween(from, to).length === 0) return false;
   return !isInCodeContext(editor.state, { from, to });
 }
+
+// Whether a node type with this name exists in the editor's schema. Used by
+// slash items to hide commands whose target node was not installed.
+export function isNodeInSchema(name: string, editor: Editor): boolean {
+  return Boolean(editor.schema.nodes[name]);
+}

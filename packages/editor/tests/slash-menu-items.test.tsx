@@ -2,7 +2,7 @@ import { renderHook } from "@testing-library/react";
 import { Pilcrow } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import type { SlashMenuItem } from "../src/slash-menu/items";
-import { filterSlashItems, slashMenuItems } from "../src/slash-menu/items";
+import { availableSlashItems, filterSlashItems, slashMenuItems } from "../src/slash-menu/items";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 describe("slashMenuItems", () => {
@@ -130,6 +130,30 @@ describe("filterSlashItems ranking", () => {
       "heading-1",
       "heading-2",
       "heading-3",
+    ]);
+  });
+});
+
+describe("availableSlashItems", () => {
+  const mk = (id: string, check?: (editor: never) => boolean): SlashMenuItem => ({
+    id,
+    title: id,
+    keywords: [],
+    icon: Pilcrow,
+    check: check as SlashMenuItem["check"],
+    run: () => {},
+  });
+
+  it("drops items whose check returns false and keeps those without a check", () => {
+    const dummyEditor = {} as Parameters<typeof availableSlashItems>[1];
+    const items: SlashMenuItem[] = [
+      mk("kept-no-check"),
+      mk("kept-true", () => true),
+      mk("dropped", () => false),
+    ];
+    expect(availableSlashItems(items, dummyEditor).map((i) => i.id)).toEqual([
+      "kept-no-check",
+      "kept-true",
     ]);
   });
 });

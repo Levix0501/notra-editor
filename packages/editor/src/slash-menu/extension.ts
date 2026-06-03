@@ -4,7 +4,7 @@ import { PluginKey } from "@tiptap/pm/state";
 import Suggestion from "@tiptap/suggestion";
 
 import { isInCodeContext } from "../selection";
-import { filterSlashItems, type SlashMenuItem, slashMenuItems } from "./items";
+import { availableSlashItems, filterSlashItems, type SlashMenuItem, slashMenuItems } from "./items";
 import { createSlashStore, type SlashStore } from "./store";
 
 export const slashCommandPluginKey = new PluginKey("slashCommand");
@@ -35,7 +35,8 @@ export function buildSlashCommand() {
           char: "/",
           pluginKey: slashCommandPluginKey,
           allow: ({ state, range }) => !isInCodeContext(state, range),
-          items: ({ query }) => filterSlashItems(slashMenuItems, query),
+          items: ({ query, editor }) =>
+            filterSlashItems(availableSlashItems(slashMenuItems, editor), query),
           command: ({ editor, range, props }) => {
             props.run({ editor, range });
           },

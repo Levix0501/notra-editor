@@ -11,12 +11,17 @@ import {
   TextQuote,
 } from "lucide-react";
 
+import { isNodeInSchema } from "../selection";
+
 export type SlashMenuItem = {
   id: string;
   title: string;
   keywords: string[];
   icon: LucideIcon;
   run: (props: { editor: Editor; range: Range }) => void;
+  group?: string;
+  subtitle?: string;
+  check?: (editor: Editor) => boolean;
 };
 
 export const slashMenuItems: SlashMenuItem[] = [
@@ -32,6 +37,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Heading 1",
     keywords: ["h1", "heading", "title", "big"],
     icon: Heading1,
+    check: (editor) => isNodeInSchema("heading", editor),
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 1 }).run(),
   },
@@ -40,6 +46,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Heading 2",
     keywords: ["h2", "heading", "subtitle"],
     icon: Heading2,
+    check: (editor) => isNodeInSchema("heading", editor),
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 2 }).run(),
   },
@@ -48,6 +55,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Heading 3",
     keywords: ["h3", "heading"],
     icon: Heading3,
+    check: (editor) => isNodeInSchema("heading", editor),
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 3 }).run(),
   },
@@ -56,6 +64,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Bullet List",
     keywords: ["bullet", "unordered", "list", "ul"],
     icon: List,
+    check: (editor) => isNodeInSchema("bulletList", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBulletList().run(),
   },
   {
@@ -63,6 +72,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Ordered List",
     keywords: ["ordered", "numbered", "list", "ol"],
     icon: ListOrdered,
+    check: (editor) => isNodeInSchema("orderedList", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
   },
   {
@@ -70,6 +80,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Quote",
     keywords: ["quote", "blockquote", "citation"],
     icon: TextQuote,
+    check: (editor) => isNodeInSchema("blockquote", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
   },
   {
@@ -77,6 +88,7 @@ export const slashMenuItems: SlashMenuItem[] = [
     title: "Code Block",
     keywords: ["code", "codeblock", "pre", "snippet"],
     icon: Code2,
+    check: (editor) => isNodeInSchema("codeBlock", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },
 ];
@@ -105,4 +117,8 @@ export function filterSlashItems(items: SlashMenuItem[], query: string): SlashMe
     );
   ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
   return ranked.map((entry) => entry.item);
+}
+
+export function availableSlashItems(items: SlashMenuItem[], editor: Editor): SlashMenuItem[] {
+  return items.filter((item) => item.check?.(editor) ?? true);
 }
