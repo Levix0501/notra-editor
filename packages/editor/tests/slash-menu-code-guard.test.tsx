@@ -75,7 +75,10 @@ describe("slash command code-context guard", () => {
       editor.commands.setContent({
         type: "doc",
         content: [
-          { type: "paragraph", content: [{ type: "text", marks: [{ type: "code" }], text: "foo " }] },
+          {
+            type: "paragraph",
+            content: [{ type: "text", marks: [{ type: "code" }], text: "foo " }],
+          },
         ],
       });
       editor.commands.setTextSelection(5); // after "foo ", inside the inline-code mark
