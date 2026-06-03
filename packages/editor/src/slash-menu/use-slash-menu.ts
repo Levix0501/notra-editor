@@ -9,7 +9,7 @@ import {
 } from "@floating-ui/react";
 import type { Editor } from "@tiptap/core";
 import type { CSSProperties } from "react";
-import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 
 import { getSlashStore } from "./extension";
 import { createSlashStore, type SlashState } from "./store";
@@ -66,11 +66,18 @@ export function useSlashMenu({ editor }: { editor: Editor | null }): {
     initial: { opacity: 0, transform: "scale(0.95)" },
   });
 
+  // Last known good caret rect. While the menu is closing, the store clears clientRect
+  // (it becomes null), so without this the reference would fall back to (0,0) and the
+  // still-mounted exit transition would flash in the top-left corner. Retaining the last
+  // rect keeps the menu fading out in place at the caret.
+  const rectRef = useRef<DOMRect>(FALLBACK_RECT);
+
   // Anchor the floating element to the "/" caret rect.
   useEffect(() => {
-    const rect = state.clientRect;
+    const next = state.clientRect?.();
+    if (next) rectRef.current = next;
     refs.setReference({
-      getBoundingClientRect: () => rect?.() ?? FALLBACK_RECT,
+      getBoundingClientRect: () => rectRef.current,
     });
     update();
   }, [state.clientRect, refs, update]);
