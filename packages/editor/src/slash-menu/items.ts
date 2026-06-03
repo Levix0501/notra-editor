@@ -89,7 +89,8 @@ function matchRank(item: SlashMenuItem, q: string): number | null {
   if (title.startsWith(q)) return 1;
   const keywords = item.keywords.map((k) => k.toLowerCase());
   if (keywords.some((k) => k === q)) return 2;
-  if (keywords.some((k) => k.startsWith(q))) return 3;
+  // rank 3: keyword strict prefix (exact keywords already returned at rank 2)
+  if (keywords.some((k) => k !== q && k.startsWith(q))) return 3;
   if (title.includes(q) || keywords.some((k) => k.includes(q))) return 4;
   return null;
 }
