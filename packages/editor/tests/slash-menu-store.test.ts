@@ -138,3 +138,47 @@ describe("createSlashStore", () => {
     expect(initialCommand).not.toHaveBeenCalled();
   });
 });
+
+describe("createSlashStore extra keys", () => {
+  function keyWith(name: string, init: KeyboardEventInit = {}) {
+    return new KeyboardEvent("keydown", { key: name, ...init });
+  }
+
+  it("Tab moves to the next item and wraps; consumed", () => {
+    const { store } = opened();
+    expect(store.onKeyDown(keyWith("Tab"))).toBe(true);
+    expect(store.getSnapshot().activeIndex).toBe(1);
+    for (let i = 0; i < 7; i++) store.onKeyDown(keyWith("Tab")); // 1 -> wraps to 0
+    expect(store.getSnapshot().activeIndex).toBe(0);
+  });
+
+  it("Shift+Tab moves to the previous item and wraps", () => {
+    const { store } = opened();
+    expect(store.onKeyDown(keyWith("Tab", { shiftKey: true }))).toBe(true);
+    expect(store.getSnapshot().activeIndex).toBe(7);
+  });
+
+  it("Home jumps to first, End jumps to last; both consumed", () => {
+    const { store } = opened();
+    store.onKeyDown(keyWith("ArrowDown")); // index 1
+    expect(store.onKeyDown(keyWith("End"))).toBe(true);
+    expect(store.getSnapshot().activeIndex).toBe(7);
+    expect(store.onKeyDown(keyWith("Home"))).toBe(true);
+    expect(store.getSnapshot().activeIndex).toBe(0);
+  });
+
+  it("empty list: Tab/Home/End are consumed no-ops", () => {
+    const store = createSlashStore();
+    store.open({
+      items: [],
+      command: vi.fn(),
+      range: { from: 1, to: 2 },
+      query: "zz",
+      clientRect: rect,
+    });
+    expect(store.onKeyDown(keyWith("Tab"))).toBe(true);
+    expect(store.onKeyDown(keyWith("Home"))).toBe(true);
+    expect(store.onKeyDown(keyWith("End"))).toBe(true);
+    expect(store.getSnapshot().activeIndex).toBe(0);
+  });
+});

@@ -116,6 +116,21 @@ export function createSlashStore(): SlashStore {
         case "ArrowUp":
           if (len > 0) setState({ ...state, activeIndex: (state.activeIndex - 1 + len) % len });
           return true;
+        case "Tab": {
+          if (len > 0) {
+            const next = event.shiftKey
+              ? (state.activeIndex - 1 + len) % len
+              : (state.activeIndex + 1) % len;
+            setState({ ...state, activeIndex: next });
+          }
+          return true;
+        }
+        case "Home":
+          if (len > 0) setState({ ...state, activeIndex: 0 });
+          return true;
+        case "End":
+          if (len > 0) setState({ ...state, activeIndex: len - 1 });
+          return true;
         case "Enter":
           selectActive();
           return true;
