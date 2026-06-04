@@ -36,6 +36,7 @@ export function computeDragHandleOffset({
   referenceHeight: number;
   floatingHeight: number;
 }): { mainAxis: number; crossAxis: number } {
+  // crossAxis may be negative if the handle is taller than the block; floating-ui handles that.
   const crossAxis =
     referenceHeight > TALL_BLOCK_THRESHOLD ? 0 : referenceHeight / 2 - floatingHeight / 2;
   return { mainAxis: HANDLE_MAIN_AXIS_GAP, crossAxis };

@@ -56,4 +56,13 @@ describe("computeDragHandleOffset", () => {
   it("top-aligns on a tall block (> 40px)", () => {
     expect(computeDragHandleOffset({ referenceHeight: 120, floatingHeight: 24 }).crossAxis).toBe(0);
   });
+
+  it("top-aligns just past the threshold (41px)", () => {
+    expect(computeDragHandleOffset({ referenceHeight: 41, floatingHeight: 24 }).crossAxis).toBe(0);
+  });
+
+  it("still centers at exactly the threshold (40px)", () => {
+    // 40/2 - 24/2 = 8
+    expect(computeDragHandleOffset({ referenceHeight: 40, floatingHeight: 24 }).crossAxis).toBe(8);
+  });
 });
