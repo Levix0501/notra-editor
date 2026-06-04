@@ -16,7 +16,7 @@
   }
 
   .notra-editor .ProseMirror {
-    @apply min-h-32 outline-none;
+    @apply min-h-32 px-12 outline-none;
   }
 
   .notra-editor .ProseMirror p.is-editor-empty:first-child::before {
