@@ -74,4 +74,14 @@
     /* Glide between blocks instead of snapping. */
     transition: top 200ms ease-out;
   }
+
+  /* Drag-to-reorder via a tiny grip is awkward on touch; hide on small
+     viewports (matches notion-next's 768px breakpoint). The extension toggles
+     the handle with inline `visibility`, never `display`, so this `display:
+     none` wins with no `!important`. */
+  @media (max-width: 768px) {
+    .notra-editor .drag-handle {
+      display: none;
+    }
+  }
 }
