@@ -1,8 +1,12 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { createI18n } from "../src/i18n/core";
+import { builtinCatalogs, type MessageKey } from "../src/i18n/messages";
 import { getSlashStore } from "../src/slash-menu/extension";
-import { slashMenuItems } from "../src/slash-menu/items";
+import { resolveSlashItems, slashMenuItems } from "../src/slash-menu/items";
+
+const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
 import { useSlashMenu } from "../src/slash-menu/use-slash-menu";
 import { useNotraEditor } from "../src/use-notra-editor";
 
@@ -30,7 +34,7 @@ describe("slash menu closing view", () => {
     const store = getSlashStore(editor);
     if (!store) throw new Error("no store");
 
-    const items = slashMenuItems.slice(0, 3);
+    const items = resolveSlashItems(slashMenuItems, en).slice(0, 3);
     const { result } = renderHook(() => useSlashMenu({ editor }));
 
     act(() => {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { SlashMenuItem } from "./items";
+import type { ResolvedSlashMenuItem } from "./items";
 
 const ROW_CLASS =
   "flex w-full items-start gap-2 rounded px-2 py-1.5 text-left text-foreground hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground";
@@ -16,7 +16,7 @@ export function SlashMenuList({
   onSelect,
   onPointerEnter,
 }: {
-  items: SlashMenuItem[];
+  items: ResolvedSlashMenuItem[];
   activeIndex: number;
   grouped?: boolean;
   onSelect: (index: number) => void;
@@ -26,7 +26,7 @@ export function SlashMenuList({
   // case, so the user keeps typing as if no menu were open — no "No results" placeholder.
   if (items.length === 0) return null;
 
-  const renderRow = (item: SlashMenuItem, index: number) => {
+  const renderRow = (item: ResolvedSlashMenuItem, index: number) => {
     const Icon = item.icon;
     return (
       <button

@@ -1,14 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { filterSlashItems, slashMenuItems } from "../src/slash-menu/items";
+import { createI18n } from "../src/i18n/core";
+import { builtinCatalogs, type MessageKey } from "../src/i18n/messages";
+import { filterSlashItems, resolveSlashItems, slashMenuItems } from "../src/slash-menu/items";
 import { createSlashStore } from "../src/slash-menu/store";
+
+const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
+const resolvedItems = resolveSlashItems(slashMenuItems, en);
 
 const rect = () => null;
 
 function opened(command = vi.fn()) {
   const store = createSlashStore();
   store.open({
-    items: slashMenuItems,
+    items: resolvedItems,
     command,
     range: { from: 1, to: 2 },
     query: "",
@@ -39,7 +44,7 @@ describe("createSlashStore", () => {
     const listener = vi.fn();
     const unsub = store.subscribe(listener);
     store.open({
-      items: slashMenuItems,
+      items: resolvedItems,
       command: vi.fn(),
       range: { from: 1, to: 2 },
       query: "",
@@ -74,7 +79,7 @@ describe("createSlashStore", () => {
     const { store, command } = opened();
     store.onKeyDown(key("ArrowDown")); // index 1
     expect(store.onKeyDown(key("Enter"))).toBe(true);
-    expect(command).toHaveBeenCalledWith(slashMenuItems[1]);
+    expect(command).toHaveBeenCalledWith(resolvedItems[1]);
   });
 
   it("Escape closes and is consumed", () => {
@@ -93,7 +98,7 @@ describe("createSlashStore", () => {
     const { store } = opened();
     for (let i = 0; i < 7; i++) store.onKeyDown(key("ArrowDown")); // index 7
     store.update({
-      items: filterSlashItems(slashMenuItems, "head"),
+      items: filterSlashItems(resolvedItems, "head"),
       command: vi.fn(),
       range: { from: 1, to: 5 },
       query: "head",
@@ -122,21 +127,21 @@ describe("createSlashStore", () => {
     const initialCommand = vi.fn();
     const latestCommand = vi.fn();
     store.open({
-      items: slashMenuItems,
+      items: resolvedItems,
       command: initialCommand,
       range: { from: 1, to: 2 },
       query: "",
       clientRect: rect,
     });
     store.update({
-      items: slashMenuItems,
+      items: resolvedItems,
       command: latestCommand,
       range: { from: 1, to: 6 },
       query: "head",
       clientRect: rect,
     });
     store.selectActive();
-    expect(latestCommand).toHaveBeenCalledWith(slashMenuItems[0]);
+    expect(latestCommand).toHaveBeenCalledWith(resolvedItems[0]);
     expect(initialCommand).not.toHaveBeenCalled();
   });
 });

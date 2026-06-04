@@ -3,8 +3,15 @@ import { Extension } from "@tiptap/core";
 import { PluginKey } from "@tiptap/pm/state";
 import Suggestion from "@tiptap/suggestion";
 
+import { getI18n } from "../extensions/i18n";
 import { isInCodeContext } from "../selection";
-import { availableSlashItems, filterSlashItems, type SlashMenuItem, slashMenuItems } from "./items";
+import {
+  availableSlashItems,
+  filterSlashItems,
+  type ResolvedSlashMenuItem,
+  resolveSlashItems,
+  slashMenuItems,
+} from "./items";
 import { createSlashStore, type SlashStore } from "./store";
 
 export const slashCommandPluginKey = new PluginKey("slashCommand");
@@ -30,13 +37,16 @@ export function buildSlashCommand() {
       const store = getSlashStore(this.editor);
       if (!store) return [];
       return [
-        Suggestion<SlashMenuItem, SlashMenuItem>({
+        Suggestion<ResolvedSlashMenuItem, ResolvedSlashMenuItem>({
           editor: this.editor,
           char: "/",
           pluginKey: slashCommandPluginKey,
           allow: ({ state, range }) => !isInCodeContext(state, range),
-          items: ({ query, editor }) =>
-            filterSlashItems(availableSlashItems(slashMenuItems, editor), query),
+          items: ({ query, editor }) => {
+            const i18n = getI18n(editor);
+            const resolved = resolveSlashItems(slashMenuItems, i18n);
+            return filterSlashItems(availableSlashItems(resolved, editor), query);
+          },
           command: ({ editor, range, props }) => {
             props.run({ editor, range });
           },

@@ -1,9 +1,13 @@
 import { act, render, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { createI18n } from "../src/i18n/core";
+import { builtinCatalogs, type MessageKey } from "../src/i18n/messages";
 import { NotraSlashMenu } from "../src/slash-menu";
 import { getSlashStore } from "../src/slash-menu/extension";
-import { slashMenuItems } from "../src/slash-menu/items";
+import { resolveSlashItems, slashMenuItems } from "../src/slash-menu/items";
+
+const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
 import { useNotraEditor } from "../src/use-notra-editor";
 
 function makeRect(): DOMRect {
@@ -34,7 +38,7 @@ describe("slash menu empty results", () => {
 
     act(() => {
       store.open({
-        items: slashMenuItems.slice(0, 3),
+        items: resolveSlashItems(slashMenuItems, en).slice(0, 3),
         command: () => {},
         range: { from: 0, to: 0 },
         query: "",

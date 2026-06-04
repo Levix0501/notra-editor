@@ -1,8 +1,13 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { slashMenuItems } from "../src/slash-menu/items";
+import { createI18n } from "../src/i18n/core";
+import { builtinCatalogs, type MessageKey } from "../src/i18n/messages";
+import { resolveSlashItems, slashMenuItems } from "../src/slash-menu/items";
 import { SlashMenuList } from "../src/slash-menu/menu-list";
+
+const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
+const items = resolveSlashItems(slashMenuItems, en);
 
 const noop = () => {};
 
@@ -10,7 +15,7 @@ describe("SlashMenuList", () => {
   it("renders one button per item", () => {
     const { container } = render(
       <SlashMenuList
-        items={slashMenuItems}
+        items={items}
         activeIndex={0}
         onSelect={noop}
         onPointerEnter={noop}
@@ -22,7 +27,7 @@ describe("SlashMenuList", () => {
   it("marks exactly the active row with data-active=true", () => {
     const { container } = render(
       <SlashMenuList
-        items={slashMenuItems}
+        items={items}
         activeIndex={2}
         onSelect={noop}
         onPointerEnter={noop}
@@ -37,7 +42,7 @@ describe("SlashMenuList", () => {
     const onSelect = vi.fn();
     const { container } = render(
       <SlashMenuList
-        items={slashMenuItems}
+        items={items}
         activeIndex={0}
         onSelect={onSelect}
         onPointerEnter={noop}
@@ -64,7 +69,7 @@ describe("SlashMenuList grouping & subtitles", () => {
   it("renders group labels and subtitles when grouped", () => {
     const { container, getByText } = render(
       <SlashMenuList
-        items={slashMenuItems}
+        items={items}
         activeIndex={0}
         grouped
         onSelect={noop}
@@ -93,7 +98,7 @@ describe("SlashMenuList grouping & subtitles", () => {
   it("renders flat with no group labels when not grouped", () => {
     const { container, queryByText } = render(
       <SlashMenuList
-        items={slashMenuItems}
+        items={items}
         activeIndex={0}
         onSelect={noop}
         onPointerEnter={noop}

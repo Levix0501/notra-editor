@@ -12,11 +12,11 @@ import type { CSSProperties } from "react";
 import { useCallback, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 
 import { getSlashStore } from "./extension";
-import type { SlashMenuItem } from "./items";
+import type { ResolvedSlashMenuItem } from "./items";
 import { createSlashStore, type SlashState } from "./store";
 import { useOutsidePointerDown } from "./use-outside-pointerdown";
 
-type SlashView = { items: SlashMenuItem[]; activeIndex: number; query: string };
+type SlashView = { items: ResolvedSlashMenuItem[]; activeIndex: number; query: string };
 
 // Stable fallback so hooks stay unconditional while editor is null.
 const FALLBACK_STORE = createSlashStore();

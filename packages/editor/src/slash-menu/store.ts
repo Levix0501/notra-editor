@@ -1,20 +1,20 @@
 import type { Range } from "@tiptap/core";
 
-import type { SlashMenuItem } from "./items";
+import type { ResolvedSlashMenuItem } from "./items";
 
-export type SlashCommand = (item: SlashMenuItem) => void;
+export type SlashCommand = (item: ResolvedSlashMenuItem) => void;
 
 export type SlashState = {
   open: boolean;
   query: string;
-  items: SlashMenuItem[];
+  items: ResolvedSlashMenuItem[];
   activeIndex: number;
   range: Range | null;
   clientRect: (() => DOMRect | null) | null;
 };
 
 export type SlashOpenPayload = {
-  items: SlashMenuItem[];
+  items: ResolvedSlashMenuItem[];
   command: SlashCommand;
   range: Range;
   query: string;
@@ -22,7 +22,7 @@ export type SlashOpenPayload = {
 };
 
 export type SlashUpdatePayload = {
-  items: SlashMenuItem[];
+  items: ResolvedSlashMenuItem[];
   command: SlashCommand;
   range: Range;
   query: string;
