@@ -1,0 +1,50 @@
+import type { Messages } from "./en";
+
+export const zh: Messages = {
+  "placeholder.default": "开始输入…",
+
+  "slash.paragraph.title": "文本",
+  "slash.paragraph.subtitle": "纯文本段落",
+  "slash.paragraph.keywords": "文本 段落 text paragraph p body",
+  "slash.heading-1.title": "标题 1",
+  "slash.heading-1.subtitle": "大号章节标题",
+  "slash.heading-1.keywords": "标题 大标题 h1 heading title",
+  "slash.heading-2.title": "标题 2",
+  "slash.heading-2.subtitle": "中号章节标题",
+  "slash.heading-2.keywords": "标题 中标题 h2 heading",
+  "slash.heading-3.title": "标题 3",
+  "slash.heading-3.subtitle": "小号章节标题",
+  "slash.heading-3.keywords": "标题 小标题 h3 heading",
+  "slash.bullet-list.title": "无序列表",
+  "slash.bullet-list.subtitle": "项目符号列表",
+  "slash.bullet-list.keywords": "无序 列表 bullet unordered list ul",
+  "slash.ordered-list.title": "有序列表",
+  "slash.ordered-list.subtitle": "编号列表",
+  "slash.ordered-list.keywords": "有序 编号 列表 ordered numbered list ol",
+  "slash.blockquote.title": "引用",
+  "slash.blockquote.subtitle": "引用一段文字",
+  "slash.blockquote.keywords": "引用 quote blockquote citation",
+  "slash.code-block.title": "代码块",
+  "slash.code-block.subtitle": "代码片段块",
+  "slash.code-block.keywords": "代码 代码块 code codeblock pre snippet",
+
+  "slash.group.basic": "基础",
+  "slash.group.lists": "列表",
+  "slash.group.blocks": "块",
+
+  "bubble.heading-1.label": "标题 1",
+  "bubble.heading-2.label": "标题 2",
+  "bubble.heading-3.label": "标题 3",
+  "bubble.bold.label": "加粗",
+  "bubble.italic.label": "斜体",
+  "bubble.strike.label": "删除线",
+  "bubble.code.label": "行内代码",
+  "bubble.bullet-list.label": "无序列表",
+  "bubble.ordered-list.label": "有序列表",
+  "bubble.code-block.label": "代码块",
+
+  "aria.link": "链接",
+  "aria.dragToMove": "拖动以移动",
+
+  "link.apply": "应用",
+};

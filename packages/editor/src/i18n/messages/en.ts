@@ -1,0 +1,51 @@
+export const en = {
+  "placeholder.default": "Write something...",
+
+  "slash.paragraph.title": "Text",
+  "slash.paragraph.subtitle": "Plain text paragraph",
+  "slash.paragraph.keywords": "text paragraph p body",
+  "slash.heading-1.title": "Heading 1",
+  "slash.heading-1.subtitle": "Big section heading",
+  "slash.heading-1.keywords": "h1 heading title big",
+  "slash.heading-2.title": "Heading 2",
+  "slash.heading-2.subtitle": "Medium section heading",
+  "slash.heading-2.keywords": "h2 heading subtitle",
+  "slash.heading-3.title": "Heading 3",
+  "slash.heading-3.subtitle": "Small section heading",
+  "slash.heading-3.keywords": "h3 heading",
+  "slash.bullet-list.title": "Bullet List",
+  "slash.bullet-list.subtitle": "Unordered list",
+  "slash.bullet-list.keywords": "bullet unordered list ul",
+  "slash.ordered-list.title": "Ordered List",
+  "slash.ordered-list.subtitle": "Numbered list",
+  "slash.ordered-list.keywords": "ordered numbered list ol",
+  "slash.blockquote.title": "Quote",
+  "slash.blockquote.subtitle": "Capture a quotation",
+  "slash.blockquote.keywords": "quote blockquote citation",
+  "slash.code-block.title": "Code Block",
+  "slash.code-block.subtitle": "Code snippet block",
+  "slash.code-block.keywords": "code codeblock pre snippet",
+
+  "slash.group.basic": "Basic",
+  "slash.group.lists": "Lists",
+  "slash.group.blocks": "Blocks",
+
+  "bubble.heading-1.label": "Heading 1",
+  "bubble.heading-2.label": "Heading 2",
+  "bubble.heading-3.label": "Heading 3",
+  "bubble.bold.label": "Bold",
+  "bubble.italic.label": "Italic",
+  "bubble.strike.label": "Strike",
+  "bubble.code.label": "Code",
+  "bubble.bullet-list.label": "Bullet list",
+  "bubble.ordered-list.label": "Ordered list",
+  "bubble.code-block.label": "Code block",
+
+  "aria.link": "Link",
+  "aria.dragToMove": "Drag to move",
+
+  "link.apply": "Apply",
+} as const;
+
+export type MessageKey = keyof typeof en;
+export type Messages = Record<MessageKey, string>;
