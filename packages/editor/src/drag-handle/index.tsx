@@ -4,7 +4,7 @@ import { TextSelection } from "@tiptap/pm/state";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import { useEditorState } from "@tiptap/react";
 import { GripVertical } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   computeDragHandleEnabled,
@@ -19,6 +19,7 @@ const HIDDEN_STYLE = { opacity: 0, pointerEvents: "none" } as const;
 
 export function NotraDragHandle({ editor }: { editor: Editor | null }) {
   const [dragging, setDragging] = useState(false);
+  const focusResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Re-renders only when the boolean flips, not on every transaction.
   const hasTextSelection =
@@ -36,11 +37,20 @@ export function NotraDragHandle({ editor }: { editor: Editor | null }) {
     setDragging(false);
     // Let the drop transaction settle before restoring focus, so the cursor
     // lands at the drop point instead of where the drag began.
-    setTimeout(() => {
+    focusResetTimer.current = setTimeout(() => {
       editor?.view.dom.blur();
       editor?.view.focus();
     }, 0);
   }, [editor]);
+
+  // Clear a pending focus-reset if the handle unmounts mid-drop, so we don't
+  // touch a torn-down editor view.
+  useEffect(
+    () => () => {
+      if (focusResetTimer.current) clearTimeout(focusResetTimer.current);
+    },
+    [],
+  );
 
   if (!computeDragHandleEnabled(editor)) return null;
 
