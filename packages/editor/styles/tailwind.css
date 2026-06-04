@@ -66,4 +66,12 @@
     @apply underline;
     color: var(--notra-accent);
   }
+
+  /* Block drag handle: the positioned wrapper the official drag-handle
+     extension injects. It owns the `.drag-handle` class and sets `top`
+     inline via floating-ui as the hovered block changes. */
+  .notra-editor .drag-handle {
+    /* Glide between blocks instead of snapping. */
+    transition: top 200ms ease-out;
+  }
 }
