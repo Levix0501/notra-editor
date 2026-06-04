@@ -7,3 +7,16 @@ export function computeDragHandleEnabled(editor: Editor | null): editor is Edito
   if (editor === null) return false;
   return editor.isEditable;
 }
+
+// The handle gets out of the way while the block is being dragged (so there is
+// no ghost handle next to the drag image) and while the user is selecting text
+// (so it does not sit over the selection).
+export function shouldHideHandle({
+  dragging,
+  hasTextSelection,
+}: {
+  dragging: boolean;
+  hasTextSelection: boolean;
+}): boolean {
+  return dragging || hasTextSelection;
+}

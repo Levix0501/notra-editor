@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { computeDragHandleEnabled } from "../src/drag-handle/config";
+import { computeDragHandleEnabled, shouldHideHandle } from "../src/drag-handle/config";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 const helloDoc = {
@@ -22,5 +22,23 @@ describe("computeDragHandleEnabled", () => {
   it("returns false when the editor is not editable", () => {
     const { result } = renderHook(() => useNotraEditor({ content: helloDoc, editable: false }));
     expect(computeDragHandleEnabled(result.current)).toBe(false);
+  });
+});
+
+describe("shouldHideHandle", () => {
+  it("hides while dragging", () => {
+    expect(shouldHideHandle({ dragging: true, hasTextSelection: false })).toBe(true);
+  });
+
+  it("hides while a text selection is active", () => {
+    expect(shouldHideHandle({ dragging: false, hasTextSelection: true })).toBe(true);
+  });
+
+  it("shows when idle with no selection", () => {
+    expect(shouldHideHandle({ dragging: false, hasTextSelection: false })).toBe(false);
+  });
+
+  it("hides when both are true", () => {
+    expect(shouldHideHandle({ dragging: true, hasTextSelection: true })).toBe(true);
   });
 });
