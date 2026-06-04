@@ -1,5 +1,7 @@
 import type { Editor, Extensions, JSONContent } from "@tiptap/core";
 
+import type { Messages } from "./i18n/messages";
+
 export type NotraEditorInstance = Editor;
 
 export type NotraEditorOptions = {
@@ -8,6 +10,8 @@ export type NotraEditorOptions = {
   onUpdate?: (content: JSONContent) => void;
   onCreate?: (editor: NotraEditorInstance) => void;
   placeholder?: string;
+  locale?: string;
+  messages?: Record<string, Partial<Messages>>;
   editable?: boolean;
   autofocus?: boolean | "start" | "end";
 };

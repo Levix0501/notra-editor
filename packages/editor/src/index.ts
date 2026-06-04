@@ -10,3 +10,14 @@ export type {
   NotraEditorProps,
 } from "./types";
 export { useNotraEditor } from "./use-notra-editor";
+export {
+  builtinCatalogs,
+  createI18n,
+  type I18n,
+  I18nProvider,
+  type MessageKey,
+  type Messages,
+  useI18n,
+  useLocale,
+  useTranslate,
+} from "./i18n";
