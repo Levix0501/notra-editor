@@ -45,6 +45,21 @@ describe("NotraDragHandle — drag state", () => {
   });
 });
 
+describe("NotraDragHandle — plugin stability", () => {
+  it("keeps computePositionConfig referentially stable across re-renders", () => {
+    // An inline config object re-runs the official DragHandle's effect on every
+    // render, which reconfigures the editor and tears down + rebuilds every
+    // plugin view (including the dropcursor, orphaning its drop indicator so it
+    // lingers on the plugin's ~5s fallback). Memoizing the config avoids that
+    // churn, so a re-render keeps the same reference.
+    const { rerender } = render(<Harness />);
+    const first = dragHandleMock.props?.computePositionConfig;
+    rerender(<Harness />);
+    const second = dragHandleMock.props?.computePositionConfig;
+    expect(second).toBe(first);
+  });
+});
+
 describe("NotraDragHandle — text selection", () => {
   it("hides while a non-empty text selection is active", async () => {
     let editorRef: Editor | null = null;

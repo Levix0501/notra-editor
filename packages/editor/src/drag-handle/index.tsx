@@ -4,7 +4,7 @@ import { TextSelection } from "@tiptap/pm/state";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import { useEditorState } from "@tiptap/react";
 import { GripVertical } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   computeDragHandleEnabled,
@@ -22,6 +22,29 @@ const HIDDEN_STYLE = { opacity: 0, pointerEvents: "none" } as const;
 export function NotraDragHandle({ editor }: { editor: Editor | null }) {
   const [dragging, setDragging] = useState(false);
   const focusResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Must be a stable reference. The official <DragHandle> lists
+  // computePositionConfig in an effect's dependency array, so a fresh object
+  // each render re-runs that effect — which unregisters and re-registers its
+  // ProseMirror plugin, reconfiguring the editor and tearing down + rebuilding
+  // every plugin view. The dropcursor is one of them: rebuilding it mid-drag
+  // orphans its drop-indicator element (destroy() drops the listeners but not
+  // the element), so the line lingers on the plugin's ~5s fallback timeout.
+  const computePositionConfig = useMemo(
+    () => ({
+      placement: "left-start" as const,
+      strategy: "absolute" as const,
+      middleware: [
+        offset((state) =>
+          computeDragHandleOffset({
+            referenceHeight: state.rects.reference.height,
+            floatingHeight: state.rects.floating.height,
+          }),
+        ),
+      ],
+    }),
+    [],
+  );
 
   // Re-renders only when the boolean flips, not on every transaction.
   const hasTextSelection =
@@ -61,18 +84,7 @@ export function NotraDragHandle({ editor }: { editor: Editor | null }) {
   return (
     <DragHandle
       editor={editor}
-      computePositionConfig={{
-        placement: "left-start",
-        strategy: "absolute",
-        middleware: [
-          offset((state) =>
-            computeDragHandleOffset({
-              referenceHeight: state.rects.reference.height,
-              floatingHeight: state.rects.floating.height,
-            }),
-          ),
-        ],
-      }}
+      computePositionConfig={computePositionConfig}
       onElementDragStart={handleDragStart}
       onElementDragEnd={handleDragEnd}
     >
