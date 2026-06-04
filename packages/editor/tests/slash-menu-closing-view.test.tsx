@@ -5,10 +5,10 @@ import { createI18n } from "../src/i18n/core";
 import { builtinCatalogs, type MessageKey } from "../src/i18n/messages";
 import { getSlashStore } from "../src/slash-menu/extension";
 import { resolveSlashItems, slashMenuItems } from "../src/slash-menu/items";
-
-const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
 import { useSlashMenu } from "../src/slash-menu/use-slash-menu";
 import { useNotraEditor } from "../src/use-notra-editor";
+
+const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
 
 function makeRect(): DOMRect {
   return {

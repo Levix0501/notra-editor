@@ -6,9 +6,9 @@ import { builtinCatalogs, type MessageKey } from "../src/i18n/messages";
 import { NotraSlashMenu } from "../src/slash-menu";
 import { getSlashStore } from "../src/slash-menu/extension";
 import { resolveSlashItems, slashMenuItems } from "../src/slash-menu/items";
+import { useNotraEditor } from "../src/use-notra-editor";
 
 const en = createI18n<MessageKey>({ locale: "en", catalogs: builtinCatalogs });
-import { useNotraEditor } from "../src/use-notra-editor";
 
 function makeRect(): DOMRect {
   return {

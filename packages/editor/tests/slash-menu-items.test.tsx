@@ -148,3 +148,16 @@ describe("availableSlashItems", () => {
     ]);
   });
 });
+
+describe("slash i18n search (zh)", () => {
+  const zh = createI18n<MessageKey>({ locale: "zh", catalogs: builtinCatalogs });
+  const zhItems = resolveSlashItems(slashMenuItems, zh);
+
+  it("resolves Chinese titles", () => {
+    expect(zhItems.find((i) => i.id === "code-block")?.title).toBe("代码块");
+  });
+
+  it("matches by Chinese title/keyword", () => {
+    expect(filterSlashItems(zhItems, "代码").map((i) => i.id)).toContain("code-block");
+  });
+});
