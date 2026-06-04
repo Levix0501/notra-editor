@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { computeDragHandleEnabled, shouldHideHandle } from "../src/drag-handle/config";
+import { computeDragHandleEnabled, shouldHideHandle, computeDragHandleOffset } from "../src/drag-handle/config";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 const helloDoc = {
@@ -40,5 +40,20 @@ describe("shouldHideHandle", () => {
 
   it("hides when both are true", () => {
     expect(shouldHideHandle({ dragging: true, hasTextSelection: true })).toBe(true);
+  });
+});
+
+describe("computeDragHandleOffset", () => {
+  it("keeps a fixed 8px main-axis gap", () => {
+    expect(computeDragHandleOffset({ referenceHeight: 28, floatingHeight: 24 }).mainAxis).toBe(8);
+  });
+
+  it("vertically centers on a short block", () => {
+    // crossAxis = 28/2 - 24/2 = 2
+    expect(computeDragHandleOffset({ referenceHeight: 28, floatingHeight: 24 }).crossAxis).toBe(2);
+  });
+
+  it("top-aligns on a tall block (> 40px)", () => {
+    expect(computeDragHandleOffset({ referenceHeight: 120, floatingHeight: 24 }).crossAxis).toBe(0);
   });
 });
