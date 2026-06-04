@@ -11,17 +11,27 @@ import {
   TextQuote,
 } from "lucide-react";
 
+import type { I18n } from "../i18n/core";
+import type { MessageKey } from "../i18n/messages";
 import { isNodeInSchema } from "../selection";
 
+export type SlashGroupId = "basic" | "lists" | "blocks";
+
+// Raw item: identity + behavior only. Display text lives in the i18n catalog.
 export type SlashMenuItem = {
   id: string;
-  title: string;
-  keywords: string[];
   icon: LucideIcon;
   run: (props: { editor: Editor; range: Range }) => void;
-  group?: string;
-  subtitle?: string;
+  groupId?: SlashGroupId;
   check?: (editor: Editor) => boolean;
+};
+
+// Finished item after translation — what the store, list, and filter consume.
+export type ResolvedSlashMenuItem = SlashMenuItem & {
+  title: string;
+  subtitle?: string;
+  group?: string;
+  keywords: string[];
 };
 
 const checkHeading = (editor: Editor) => isNodeInSchema("heading", editor);
@@ -29,114 +39,112 @@ const checkHeading = (editor: Editor) => isNodeInSchema("heading", editor);
 export const slashMenuItems: SlashMenuItem[] = [
   {
     id: "paragraph",
-    title: "Text",
-    keywords: ["text", "paragraph", "p", "body"],
     icon: Pilcrow,
-    group: "Basic",
-    subtitle: "Plain text paragraph",
+    groupId: "basic",
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).setParagraph().run(),
   },
   {
     id: "heading-1",
-    title: "Heading 1",
-    keywords: ["h1", "heading", "title", "big"],
     icon: Heading1,
-    group: "Basic",
-    subtitle: "Big section heading",
+    groupId: "basic",
     check: checkHeading,
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 1 }).run(),
   },
   {
     id: "heading-2",
-    title: "Heading 2",
-    keywords: ["h2", "heading", "subtitle"],
     icon: Heading2,
-    group: "Basic",
-    subtitle: "Medium section heading",
+    groupId: "basic",
     check: checkHeading,
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 2 }).run(),
   },
   {
     id: "heading-3",
-    title: "Heading 3",
-    keywords: ["h3", "heading"],
     icon: Heading3,
-    group: "Basic",
-    subtitle: "Small section heading",
+    groupId: "basic",
     check: checkHeading,
     run: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleHeading({ level: 3 }).run(),
   },
   {
     id: "bullet-list",
-    title: "Bullet List",
-    keywords: ["bullet", "unordered", "list", "ul"],
     icon: List,
-    group: "Lists",
-    subtitle: "Unordered list",
+    groupId: "lists",
     check: (editor) => isNodeInSchema("bulletList", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBulletList().run(),
   },
   {
     id: "ordered-list",
-    title: "Ordered List",
-    keywords: ["ordered", "numbered", "list", "ol"],
     icon: ListOrdered,
-    group: "Lists",
-    subtitle: "Numbered list",
+    groupId: "lists",
     check: (editor) => isNodeInSchema("orderedList", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
   },
   {
     id: "blockquote",
-    title: "Quote",
-    keywords: ["quote", "blockquote", "citation"],
     icon: TextQuote,
-    group: "Blocks",
-    subtitle: "Capture a quotation",
+    groupId: "blocks",
     check: (editor) => isNodeInSchema("blockquote", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
   },
   {
     id: "code-block",
-    title: "Code Block",
-    keywords: ["code", "codeblock", "pre", "snippet"],
     icon: Code2,
-    group: "Blocks",
-    subtitle: "Code snippet block",
+    groupId: "blocks",
     check: (editor) => isNodeInSchema("codeBlock", editor),
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },
 ];
 
+export function resolveSlashItems(
+  items: SlashMenuItem[],
+  i18n: I18n<MessageKey>,
+): ResolvedSlashMenuItem[] {
+  return items.map((item) => ({
+    ...item,
+    title: i18n.t(`slash.${item.id}.title` as MessageKey),
+    subtitle: i18n.t(`slash.${item.id}.subtitle` as MessageKey),
+    group: item.groupId ? i18n.t(`slash.group.${item.groupId}` as MessageKey) : undefined,
+    keywords: i18n
+      .t(`slash.${item.id}.keywords` as MessageKey)
+      .split(/\s+/)
+      .filter(Boolean),
+  }));
+}
+
 // Lower rank = more relevant; null means no match. Matching scope is title +
 // keywords only (subtitle is display-only, by design).
-function matchRank(item: SlashMenuItem, q: string): number | null {
+function matchRank(item: ResolvedSlashMenuItem, q: string): number | null {
   const title = item.title.toLowerCase();
   if (title === q) return 0;
   if (title.startsWith(q)) return 1;
   const keywords = item.keywords.map((k) => k.toLowerCase());
   if (keywords.some((k) => k === q)) return 2;
-  // rank 3: keyword strict prefix (exact keywords already returned at rank 2)
   if (keywords.some((k) => k !== q && k.startsWith(q))) return 3;
   if (title.includes(q) || keywords.some((k) => k.includes(q))) return 4;
   return null;
 }
 
-export function filterSlashItems(items: SlashMenuItem[], query: string): SlashMenuItem[] {
+export function filterSlashItems(
+  items: ResolvedSlashMenuItem[],
+  query: string,
+): ResolvedSlashMenuItem[] {
   const q = query.trim().toLowerCase();
   if (q === "") return items;
   const ranked = items
     .map((item, order) => ({ item, order, rank: matchRank(item, q) }))
     .filter(
-      (entry): entry is { item: SlashMenuItem; order: number; rank: number } => entry.rank !== null,
+      (entry): entry is { item: ResolvedSlashMenuItem; order: number; rank: number } =>
+        entry.rank !== null,
     );
   ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
   return ranked.map((entry) => entry.item);
 }
 
-export function availableSlashItems(items: SlashMenuItem[], editor: Editor): SlashMenuItem[] {
+export function availableSlashItems<T extends { check?: (editor: Editor) => boolean }>(
+  items: T[],
+  editor: Editor,
+): T[] {
   return items.filter((item) => item.check?.(editor) ?? true);
 }
