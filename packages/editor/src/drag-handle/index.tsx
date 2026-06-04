@@ -1,6 +1,8 @@
 import { offset } from "@floating-ui/react";
 import type { Editor } from "@tiptap/core";
+import { TextSelection } from "@tiptap/pm/state";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
+import { useEditorState } from "@tiptap/react";
 import { GripVertical } from "lucide-react";
 import { useCallback, useState } from "react";
 
@@ -16,8 +18,18 @@ const BRIDGE_CLASS = "flex items-center pr-2";
 const HIDDEN_STYLE = { opacity: 0, pointerEvents: "none" } as const;
 
 export function NotraDragHandle({ editor }: { editor: Editor | null }) {
-  // Hooks must run before the editability short-circuit below.
   const [dragging, setDragging] = useState(false);
+
+  // Re-renders only when the boolean flips, not on every transaction.
+  const hasTextSelection =
+    useEditorState({
+      editor,
+      selector: ({ editor: e }) => {
+        if (!e) return false;
+        const { selection } = e.state;
+        return selection instanceof TextSelection && !selection.empty;
+      },
+    }) ?? false;
 
   const handleDragStart = useCallback(() => setDragging(true), []);
   const handleDragEnd = useCallback(() => {
@@ -32,7 +44,7 @@ export function NotraDragHandle({ editor }: { editor: Editor | null }) {
 
   if (!computeDragHandleEnabled(editor)) return null;
 
-  const hidden = shouldHideHandle({ dragging, hasTextSelection: false });
+  const hidden = shouldHideHandle({ dragging, hasTextSelection });
 
   return (
     <DragHandle

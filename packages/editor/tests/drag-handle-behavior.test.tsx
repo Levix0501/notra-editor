@@ -1,8 +1,7 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import type { Editor } from "@tiptap/core";
 import { describe, expect, it, vi } from "vitest";
 
-// Capture the props the official DragHandle is called with, so the test can
-// drive onElementDragStart/End. Children still render inline (passthrough).
 const dragHandleMock = vi.hoisted(() => ({ props: null as Record<string, any> | null }));
 vi.mock("@tiptap/extension-drag-handle-react", () => ({
   DragHandle: (props: Record<string, any>) => {
@@ -30,8 +29,6 @@ describe("NotraDragHandle — drag state", () => {
     const wrapper = screen.getByRole("button", { name: "Drag to move" }).parentElement as HTMLElement;
     expect(wrapper.style.opacity).toBe("");
 
-    // Fake timers only for the drag callbacks (the drop handler refocuses on a
-    // setTimeout); the editor was already created above under real timers.
     vi.useFakeTimers();
     try {
       act(() => dragHandleMock.props?.onElementDragStart?.(new Event("dragstart")));
@@ -45,5 +42,25 @@ describe("NotraDragHandle — drag state", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe("NotraDragHandle — text selection", () => {
+  it("hides while a non-empty text selection is active", async () => {
+    let editorRef: Editor | null = null;
+    function SelHarness() {
+      const editor = useNotraEditor({ content: helloDoc });
+      editorRef = editor;
+      return <NotraDragHandle editor={editor} />;
+    }
+    render(<SelHarness />);
+    const wrapper = screen.getByRole("button", { name: "Drag to move" }).parentElement as HTMLElement;
+    expect(wrapper.style.opacity).toBe("");
+
+    // Select the word "hello" (positions 1..6 inside the paragraph).
+    act(() => {
+      editorRef?.commands.setTextSelection({ from: 1, to: 6 });
+    });
+    await waitFor(() => expect(wrapper.style.opacity).toBe("0"));
   });
 });
