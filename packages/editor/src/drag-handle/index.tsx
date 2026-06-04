@@ -14,6 +14,8 @@ import {
 
 const HANDLE_CLASS =
   "flex h-6 w-5 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-accent-foreground active:cursor-grabbing";
+// Transparent, still-hoverable bridge to the editor edge. With the gutter this
+// is a fallback; it keeps the handle reachable if a consumer shrinks the gutter.
 const BRIDGE_CLASS = "flex items-center pr-2";
 const HIDDEN_STYLE = { opacity: 0, pointerEvents: "none" } as const;
 
