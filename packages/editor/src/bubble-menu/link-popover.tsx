@@ -52,7 +52,7 @@ export function LinkPopover({
           </Button>
         }
       />
-      <PopoverContent align="start" sideOffset={6} className="w-auto p-1.5">
+      <PopoverContent align="center" sideOffset={6} className="w-auto p-1.5">
         <div className="flex items-center gap-1">
           <Input
             autoFocus
@@ -69,7 +69,7 @@ export function LinkPopover({
                 apply();
               }
             }}
-            className="h-7 w-56"
+            className="h-7 w-56 border-0 focus-visible:ring-0"
           />
           <Button
             variant="ghost"
@@ -81,7 +81,7 @@ export function LinkPopover({
           >
             <CornerDownLeft className={ICON_CLASS} />
           </Button>
-          <Separator orientation="vertical" className="mx-0.5 h-5" />
+          <Separator orientation="vertical" className="h-5" />
           <Button
             variant="ghost"
             size="icon-sm"
