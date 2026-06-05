@@ -42,6 +42,9 @@ export const zh: Messages = {
   "bubble.bullet-list.label": "无序列表",
   "bubble.ordered-list.label": "有序列表",
   "bubble.code-block.label": "代码块",
+  "bubble.paragraph.label": "正文",
+  "bubble.blockquote.label": "引用",
+  "bubble.turn-into.label": "转换为",
 
   "aria.link": "链接",
   "aria.dragToMove": "拖动以移动",

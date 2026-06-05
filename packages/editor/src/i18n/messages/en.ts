@@ -40,6 +40,9 @@ export const en = {
   "bubble.bullet-list.label": "Bullet list",
   "bubble.ordered-list.label": "Ordered list",
   "bubble.code-block.label": "Code block",
+  "bubble.paragraph.label": "Text",
+  "bubble.blockquote.label": "Quote",
+  "bubble.turn-into.label": "Turn into",
 
   "aria.link": "Link",
   "aria.dragToMove": "Drag to move",
