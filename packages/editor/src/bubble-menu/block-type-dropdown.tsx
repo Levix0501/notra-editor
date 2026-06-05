@@ -34,6 +34,7 @@ export function BlockTypeDropdown({ editor }: { editor: Editor }) {
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           className={CONTENT_CLASS}
+          align="start"
           sideOffset={6}
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
