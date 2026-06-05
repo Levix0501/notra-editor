@@ -14,12 +14,13 @@ import {
 } from "lucide-react";
 import type { ComponentType } from "react";
 
+import type { MessageKey } from "../i18n/messages";
 import { LinkPopover } from "./link-popover";
 
 export type ToggleItem = {
   kind: "toggle";
   id: string;
-  label: string;
+  labelKey: MessageKey;
   icon: LucideIcon;
   isActive: (editor: Editor) => boolean;
   run: (editor: Editor) => void;
@@ -37,7 +38,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "heading-1",
-    label: "Heading 1",
+    labelKey: "bubble.heading-1.label",
     icon: Heading1,
     isActive: (e) => e.isActive("heading", { level: 1 }),
     run: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(),
@@ -45,7 +46,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "heading-2",
-    label: "Heading 2",
+    labelKey: "bubble.heading-2.label",
     icon: Heading2,
     isActive: (e) => e.isActive("heading", { level: 2 }),
     run: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
@@ -53,7 +54,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "heading-3",
-    label: "Heading 3",
+    labelKey: "bubble.heading-3.label",
     icon: Heading3,
     isActive: (e) => e.isActive("heading", { level: 3 }),
     run: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
@@ -61,7 +62,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "bold",
-    label: "Bold",
+    labelKey: "bubble.bold.label",
     icon: Bold,
     isActive: (e) => e.isActive("bold"),
     run: (e) => e.chain().focus().toggleBold().run(),
@@ -69,7 +70,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "italic",
-    label: "Italic",
+    labelKey: "bubble.italic.label",
     icon: Italic,
     isActive: (e) => e.isActive("italic"),
     run: (e) => e.chain().focus().toggleItalic().run(),
@@ -77,7 +78,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "strike",
-    label: "Strike",
+    labelKey: "bubble.strike.label",
     icon: Strikethrough,
     isActive: (e) => e.isActive("strike"),
     run: (e) => e.chain().focus().toggleStrike().run(),
@@ -85,7 +86,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "code",
-    label: "Code",
+    labelKey: "bubble.code.label",
     icon: Code,
     isActive: (e) => e.isActive("code"),
     run: (e) => e.chain().focus().toggleCode().run(),
@@ -98,7 +99,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "bullet-list",
-    label: "Bullet list",
+    labelKey: "bubble.bullet-list.label",
     icon: List,
     isActive: (e) => e.isActive("bulletList"),
     run: (e) => e.chain().focus().toggleBulletList().run(),
@@ -106,7 +107,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "ordered-list",
-    label: "Ordered list",
+    labelKey: "bubble.ordered-list.label",
     icon: ListOrdered,
     isActive: (e) => e.isActive("orderedList"),
     run: (e) => e.chain().focus().toggleOrderedList().run(),
@@ -114,7 +115,7 @@ export const bubbleMenuItems: BubbleMenuItem[] = [
   {
     kind: "toggle",
     id: "code-block",
-    label: "Code block",
+    labelKey: "bubble.code-block.label",
     icon: Code2,
     isActive: (e) => e.isActive("codeBlock"),
     run: (e) => e.chain().focus().toggleCodeBlock().run(),

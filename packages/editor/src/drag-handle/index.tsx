@@ -6,6 +6,7 @@ import { useEditorState } from "@tiptap/react";
 import { GripVertical } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useTranslate } from "../i18n/react";
 import {
   computeDragHandleEnabled,
   computeDragHandleOffset,
@@ -20,6 +21,7 @@ const BRIDGE_CLASS = "flex items-center pr-2";
 const HIDDEN_STYLE = { opacity: 0, pointerEvents: "none" } as const;
 
 export function NotraDragHandle({ editor }: { editor: Editor | null }) {
+  const t = useTranslate();
   const [dragging, setDragging] = useState(false);
   const focusResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -89,7 +91,7 @@ export function NotraDragHandle({ editor }: { editor: Editor | null }) {
       onElementDragEnd={handleDragEnd}
     >
       <div className={BRIDGE_CLASS} style={hidden ? HIDDEN_STYLE : undefined}>
-        <button type="button" aria-label="Drag to move" tabIndex={-1} className={HANDLE_CLASS}>
+        <button type="button" aria-label={t("aria.dragToMove")} tabIndex={-1} className={HANDLE_CLASS}>
           <GripVertical className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>

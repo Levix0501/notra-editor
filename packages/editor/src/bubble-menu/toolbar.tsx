@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 
+import { useTranslate } from "../i18n/react";
 import { bubbleMenuItems, type ToggleItem } from "./items";
 
 const BUTTON_CLASS =
@@ -22,11 +23,12 @@ export function Toolbar({ editor }: { editor: Editor }) {
 }
 
 function ToolbarButton({ editor, item }: { editor: Editor; item: ToggleItem }) {
+  const t = useTranslate();
   const Icon = item.icon;
   return (
     <button
       type="button"
-      aria-label={item.label}
+      aria-label={t(item.labelKey)}
       data-active={item.isActive(editor) ? "true" : "false"}
       onMouseDown={(e) => {
         e.preventDefault();

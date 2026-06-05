@@ -3,6 +3,8 @@ import type { Editor } from "@tiptap/core";
 import { Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
 
+import { useTranslate } from "../i18n/react";
+
 const BUTTON_CLASS =
   "inline-flex h-7 w-7 items-center justify-center rounded text-foreground hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground";
 
@@ -22,6 +24,7 @@ const APPLY_CLASS =
 export function LinkPopover({ editor }: { editor: Editor }) {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
+  const t = useTranslate();
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen) {
@@ -48,7 +51,7 @@ export function LinkPopover({ editor }: { editor: Editor }) {
       <Popover.Trigger asChild>
         <button
           type="button"
-          aria-label="Link"
+          aria-label={t("aria.link")}
           data-active={editor.isActive("link") ? "true" : "false"}
           className={BUTTON_CLASS}
         >
@@ -78,7 +81,7 @@ export function LinkPopover({ editor }: { editor: Editor }) {
               className={INPUT_CLASS}
             />
             <button type="submit" className={APPLY_CLASS}>
-              Apply
+              {t("link.apply")}
             </button>
           </form>
         </Popover.Content>
