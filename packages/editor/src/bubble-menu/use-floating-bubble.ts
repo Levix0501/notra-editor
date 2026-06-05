@@ -18,11 +18,16 @@ export function computeShouldShow(editor: Editor | null): boolean {
   return isFormattableSelection(editor);
 }
 
-// Selectors for portals rendered outside the editor DOM (e.g. the Radix popover
-// behind the link button). Focus or clicks that land inside one of these must NOT
-// close the bubble. It's an array so another portal library is one entry away;
-// only Radix is used today.
-const EXTERNAL_PORTAL_SELECTORS = ["[data-radix-popper-content-wrapper]"];
+// Selectors for portals rendered outside the editor DOM (the link popover and
+// block-type dropdown render into <body> via Base UI portals). Focus or clicks
+// that land inside one of these must NOT close the bubble. The data-slot entries
+// match the Base UI shadcn popover/menu content; the Radix wrapper is kept for
+// any Radix-based portal that may still mount behind the bubble.
+const EXTERNAL_PORTAL_SELECTORS = [
+  "[data-radix-popper-content-wrapper]",
+  '[data-slot="popover-content"]',
+  '[data-slot="dropdown-menu-content"]',
+];
 
 export function isInsideExternalPortal(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;

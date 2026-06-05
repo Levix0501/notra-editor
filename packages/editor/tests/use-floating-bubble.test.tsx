@@ -84,4 +84,24 @@ describe("isInsideExternalPortal", () => {
     expect(isInsideExternalPortal(portal)).toBe(true);
     document.body.removeChild(portal);
   });
+
+  it("returns true inside a Base UI shadcn popover content", () => {
+    const portal = document.createElement("div");
+    portal.setAttribute("data-slot", "popover-content");
+    const inner = document.createElement("input");
+    portal.appendChild(inner);
+    document.body.appendChild(portal);
+    expect(isInsideExternalPortal(inner)).toBe(true);
+    document.body.removeChild(portal);
+  });
+
+  it("returns true inside a Base UI shadcn dropdown menu content", () => {
+    const portal = document.createElement("div");
+    portal.setAttribute("data-slot", "dropdown-menu-content");
+    const inner = document.createElement("button");
+    portal.appendChild(inner);
+    document.body.appendChild(portal);
+    expect(isInsideExternalPortal(inner)).toBe(true);
+    document.body.removeChild(portal);
+  });
 });
