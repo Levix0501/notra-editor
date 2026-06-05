@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { activeBlockType, blockTypes } from "../src/bubble-menu/block-types";
+import { activeBlockType, applyBlockType, blockTypes } from "../src/bubble-menu/block-types";
 import { useNotraEditor } from "../src/use-notra-editor";
 
 function makeEditor() {
@@ -54,5 +54,21 @@ describe("activeBlockType", () => {
     editor.chain().focus().toggleBulletList().run();
     expect(editor.isActive("paragraph")).toBe(true); // nested paragraph is active...
     expect(activeBlockType(editor).id).toBe("bullet-list"); // ...but the list wins
+  });
+});
+
+describe("applyBlockType", () => {
+  it("converts the block and collapses the selection so the bubble dismisses", () => {
+    const editor = makeEditor();
+    editor.commands.setContent("<p>hello world</p>");
+    editor.chain().focus().setTextSelection({ from: 1, to: 6 }).run();
+    expect(editor.state.selection.empty).toBe(false); // a real selection is present...
+
+    const heading1 = blockTypes.find((b) => b.id === "heading-1");
+    if (!heading1) throw new Error("heading-1 block missing");
+    applyBlockType(editor, heading1);
+
+    expect(editor.isActive("heading", { level: 1 })).toBe(true); // ...the block converted...
+    expect(editor.state.selection.empty).toBe(true); // ...and the selection collapsed
   });
 });

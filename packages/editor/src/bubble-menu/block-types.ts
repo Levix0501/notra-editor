@@ -93,3 +93,12 @@ export const blockTypes: BlockType[] = [
 export function activeBlockType(editor: Editor): BlockType {
   return blockTypes.find((b) => b.id !== "paragraph" && b.isActive(editor)) ?? paragraphBlock;
 }
+
+// Apply a block-type conversion from the bubble menu, then collapse the
+// selection to a caret. The bubble menu is selection-driven, so collapsing the
+// selection dismisses it after the user picks a type; the editor keeps focus so
+// typing can continue.
+export function applyBlockType(editor: Editor, block: BlockType): void {
+  block.run(editor);
+  editor.chain().focus().setTextSelection(editor.state.selection.to).run();
+}

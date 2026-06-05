@@ -3,7 +3,7 @@ import type { Editor } from "@tiptap/core";
 import { Check, ChevronDown } from "lucide-react";
 
 import { useTranslate } from "../i18n/react";
-import { activeBlockType, blockTypes } from "./block-types";
+import { activeBlockType, applyBlockType, blockTypes } from "./block-types";
 
 const TRIGGER_CLASS =
   "inline-flex h-7 items-center gap-1 rounded px-1.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground";
@@ -48,7 +48,7 @@ export function BlockTypeDropdown({ editor }: { editor: Editor }) {
                 data-active={isActive ? "true" : "false"}
                 onSelect={(e) => {
                   e.preventDefault();
-                  b.run(editor);
+                  applyBlockType(editor, b);
                 }}
               >
                 <Icon className={ICON_CLASS} />
