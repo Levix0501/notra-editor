@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { sanitizeUrl } from "../lib/sanitize-url";
 
 export function canSetLink(editor: Editor | null): boolean {
-  if (!editor || !editor.isEditable) return false;
+  if (!editor?.isEditable) return false;
   try {
     return editor.can().setMark("link");
   } catch {
@@ -14,17 +14,14 @@ export function canSetLink(editor: Editor | null): boolean {
 }
 
 export function isLinkActive(editor: Editor | null): boolean {
-  if (!editor || !editor.isEditable) return false;
+  if (!editor?.isEditable) return false;
   return editor.isActive("link");
 }
 
 // Mirrors notion-next's shouldShowLinkButton. notra's schema has no image node,
 // so the image-caption guard is intentionally omitted (see design doc §5.2).
-export function shouldShowLinkButton(
-  editor: Editor | null,
-  hideWhenUnavailable: boolean,
-): boolean {
-  if (!editor || !editor.isEditable) return false;
+export function shouldShowLinkButton(editor: Editor | null, hideWhenUnavailable: boolean): boolean {
+  if (!editor?.isEditable) return false;
   if (!hideWhenUnavailable) return true;
   if (!("link" in editor.schema.marks)) return false;
   if (!editor.isActive("code")) return canSetLink(editor);

@@ -55,7 +55,6 @@ export function LinkPopover({
       <PopoverContent align="start" sideOffset={6} className="w-auto p-1.5">
         <div className="flex items-center gap-1">
           <Input
-            // biome-ignore lint/a11y/noAutofocus: focus is intentional for link-edit UX
             autoFocus
             type="url"
             autoCapitalize="off"

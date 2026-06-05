@@ -85,10 +85,6 @@ describe("useLinkPopover actions", () => {
 
     act(() => result.current.setUrl("https://example.com"));
     act(() => result.current.openLink());
-    expect(openSpy).toHaveBeenCalledWith(
-      "https://example.com/",
-      "_blank",
-      "noopener,noreferrer",
-    );
+    expect(openSpy).toHaveBeenCalledWith("https://example.com/", "_blank", "noopener,noreferrer");
   });
 });
