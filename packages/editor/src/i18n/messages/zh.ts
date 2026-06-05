@@ -50,4 +50,7 @@ export const zh: Messages = {
   "aria.dragToMove": "拖动以移动",
 
   "link.apply": "应用",
+  "link.placeholder": "粘贴链接…",
+  "link.open": "在新窗口打开",
+  "link.remove": "移除链接",
 };

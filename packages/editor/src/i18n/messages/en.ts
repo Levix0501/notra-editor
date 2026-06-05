@@ -48,6 +48,9 @@ export const en = {
   "aria.dragToMove": "Drag to move",
 
   "link.apply": "Apply",
+  "link.placeholder": "Paste a link...",
+  "link.open": "Open in new window",
+  "link.remove": "Remove link",
 } as const;
 
 export type MessageKey = keyof typeof en;
