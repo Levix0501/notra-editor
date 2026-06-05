@@ -3,20 +3,19 @@ import { describe, expect, it } from "vitest";
 import { bubbleMenuItems } from "../src/bubble-menu/items";
 
 describe("bubbleMenuItems", () => {
-  it("contains exactly one custom item: the link popover", () => {
+  it("has two custom items: the block-type dropdown and the link popover", () => {
     const custom = bubbleMenuItems.filter((item) => item.kind === "custom");
-    expect(custom).toHaveLength(1);
-    expect(custom[0]?.id).toBe("link");
+    expect(custom.map((item) => item.id)).toEqual(["block-type", "link"]);
   });
 
-  it("places link between inline code and the bullet list", () => {
+  it("starts with the block-type dropdown and ends with the link", () => {
     const ids = bubbleMenuItems.map((item) => item.id);
-    expect(ids.indexOf("link")).toBe(ids.indexOf("code") + 1);
-    expect(ids.indexOf("bullet-list")).toBe(ids.indexOf("link") + 1);
+    expect(ids[0]).toBe("block-type");
+    expect(ids[ids.length - 1]).toBe("link");
   });
 
-  it("has no item kinds other than toggle and custom", () => {
-    const nonCustom = bubbleMenuItems.filter((item) => item.kind !== "custom");
-    expect(nonCustom.every((item) => item.kind === "toggle")).toBe(true);
+  it("keeps only inline marks as toggle items", () => {
+    const toggles = bubbleMenuItems.filter((item) => item.kind === "toggle");
+    expect(toggles.map((item) => item.id)).toEqual(["bold", "italic", "strike", "code"]);
   });
 });
