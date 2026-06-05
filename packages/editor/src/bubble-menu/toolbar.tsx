@@ -1,12 +1,9 @@
 import type { Editor } from "@tiptap/core";
 
+import { Button } from "@/components/ui/button";
+
 import { useTranslate } from "../i18n/react";
 import { bubbleMenuItems, type ToggleItem } from "./items";
-
-const BUTTON_CLASS =
-  "inline-flex h-7 w-7 items-center justify-center rounded text-foreground hover:bg-accent hover:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground";
-
-const ICON_CLASS = "h-4 w-4";
 
 export function Toolbar({ editor }: { editor: Editor }) {
   return (
@@ -26,17 +23,18 @@ function ToolbarButton({ editor, item }: { editor: Editor; item: ToggleItem }) {
   const t = useTranslate();
   const Icon = item.icon;
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon-sm"
       aria-label={t(item.labelKey)}
       data-active={item.isActive(editor) ? "true" : "false"}
+      className="data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
       onMouseDown={(e) => {
         e.preventDefault();
         item.run(editor);
       }}
-      className={BUTTON_CLASS}
     >
-      <Icon className={ICON_CLASS} />
-    </button>
+      <Icon className="h-4 w-4" />
+    </Button>
   );
 }
