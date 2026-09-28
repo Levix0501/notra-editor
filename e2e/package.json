@@ -1,0 +1,16 @@
+{
+  "name": "@notra/e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:playground": "playwright install chromium firefox webkit && playwright test --config playwright.playground.config.ts",
+    "test:ssr": "playwright install chromium && playwright test --config playwright.ssr.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@notra/editor": "workspace:*",
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

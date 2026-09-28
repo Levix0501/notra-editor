@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# Test output
+test-results/
+playwright-report/
+blob-report/
+.logs/
+__screenshots__/
+.vitest/
+
+# Tooling
+*.tgz
+.DS_Store
+*.log
