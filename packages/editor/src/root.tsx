@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react'
 import { withBaseNodes } from './base-nodes'
-import { NotraEditorContext } from './context'
+import { NotraEditorContext, NotraMessagesContext } from './context'
 import {
   bindEditorMessages,
   type NotraLocale,
@@ -105,7 +105,9 @@ export function Root({
 
   return (
     <EditorContext value={tiptapContext}>
-      <NotraEditorContext value={editor}>{children}</NotraEditorContext>
+      <NotraEditorContext value={editor}>
+        <NotraMessagesContext value={currentMessages}>{children}</NotraMessagesContext>
+      </NotraEditorContext>
     </EditorContext>
   )
 }

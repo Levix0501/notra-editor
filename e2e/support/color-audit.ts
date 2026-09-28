@@ -39,15 +39,34 @@ export interface ColorAudit {
   rules: ColorRule[]
 }
 
+/** Options of `auditContentColors`. */
+export interface ColorAuditOptions {
+  /** The shadcn semantic tokens. */
+  tokens: string[]
+  /**
+   * Audits the classes of every element of the subtree, not only those of its root, and takes
+   * each token's value from the element that the rule applies to, so that tokens that an
+   * ancestor such as a `dark` container redefines are taken into account.
+   */
+  subtree?: boolean
+}
+
 /**
  * Runs in the page. Finds the CSS rules that `content`'s classes contribute and that set a color
  * property to a shadcn semantic token (or to `transparent`, `currentcolor` or `inherit`). For
  * every element such a rule applies to, it records the computed value of the property and the
- * values that the matching rules declare, computed from the tokens' current values.
+ * values that the matching rules declare, computed from the tokens' current values. With the
+ * `subtree` option, the classes of every element in `content`'s subtree count, and each token's
+ * value is taken from the element that the rule applies to.
  *
  * The function is self-contained so that Playwright can serialize it into the page.
  */
-export function auditContentColors(content: Element, tokens: string[]): ColorAudit {
+export function auditContentColors(
+  content: Element,
+  options: string[] | ColorAuditOptions,
+): ColorAudit {
+  const tokens = Array.isArray(options) ? options : options.tokens
+  const subtree = !Array.isArray(options) && options.subtree === true
   const longhands: Record<string, string[]> = {
     color: ['color'],
     'background-color': ['background-color'],
@@ -139,7 +158,14 @@ export function auditContentColors(content: Element, tokens: string[]): ColorAud
     return new RegExp(`\\.${escaped}(?![\\w-]|\\\\)`)
   }
 
-  const classPatterns = Array.from(content.classList).map((className) => ({
+  const ownerClasses = subtree
+    ? [
+        ...new Set(
+          [content, ...content.querySelectorAll('*')].flatMap((node) => [...node.classList]),
+        ),
+      ]
+    : Array.from(content.classList)
+  const classPatterns = ownerClasses.map((className) => ({
     className,
     pattern: classPattern(className),
   }))
@@ -159,8 +185,9 @@ export function auditContentColors(content: Element, tokens: string[]): ColorAud
     return getComputedStyle(probe).color
   }
 
-  function tokenColor(token: string, opacity: number | null): string {
-    const value = rootStyle.getPropertyValue(`--${token}`).trim()
+  function tokenColor(token: string, opacity: number | null, element: Element): string {
+    const style = subtree ? getComputedStyle(element) : rootStyle
+    const value = style.getPropertyValue(`--${token}`).trim()
     return computedColor(
       opacity === null ? value : `color-mix(in oklab, ${value} ${opacity}%, transparent)`,
     )
@@ -180,10 +207,16 @@ export function auditContentColors(content: Element, tokens: string[]): ColorAud
     return computedColor(keyword)
   }
 
+  const numbers = new Map<Element, number>()
+
   function describe(element: Element): string {
     const classes = Array.from(element.classList)
     if (element === content) return 'content'
-    return `${element.tagName.toLowerCase()}${classes.length ? `.${classes.join('.')}` : ''}`
+    const description = `${element.tagName.toLowerCase()}${classes.length ? `.${classes.join('.')}` : ''}`
+    if (!subtree) return description
+    // Elements with the same classes, such as the options of a list, are told apart.
+    if (!numbers.has(element)) numbers.set(element, numbers.size + 1)
+    return `${description}#${numbers.get(element)}`
   }
 
   const checks = new Map<string, ColorCheck>()
@@ -241,7 +274,7 @@ export function auditContentColors(content: Element, tokens: string[]): ColorAud
               checks.set(key, check)
             }
             const expected = token
-              ? tokenColor(token, opacity)
+              ? tokenColor(token, opacity, element)
               : keywordColor(keyword as string, element, pseudo, longhand)
             const candidate: ColorCandidate = {
               className: owner.className,
@@ -263,10 +296,11 @@ export function auditContentColors(content: Element, tokens: string[]): ColorAud
 }
 
 /**
- * Runs in the page. Returns the classes of `content` for which no stylesheet of the page has a
- * rule, which would mean the host's Tailwind CSS build did not generate them.
+ * Runs in the page. Returns the classes of `content`, or with `subtree` of every element in its
+ * subtree, for which no stylesheet of the page has a rule, which would mean the host's Tailwind
+ * CSS build did not generate them.
  */
-export function classesWithoutRules(content: Element): string[] {
+export function classesWithoutRules(content: Element, subtree?: boolean): string[] {
   const selectors: string[] = []
   function visit(rules: CSSRuleList): void {
     for (const rule of Array.from(rules)) {
@@ -281,7 +315,14 @@ export function classesWithoutRules(content: Element): string[] {
       // Stylesheets from other origins cannot be read.
     }
   }
-  return Array.from(content.classList).filter((className) => {
+  const classes = subtree
+    ? [
+        ...new Set(
+          [content, ...content.querySelectorAll('*')].flatMap((node) => [...node.classList]),
+        ),
+      ]
+    : Array.from(content.classList)
+  return classes.filter((className) => {
     const escaped = CSS.escape(className).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const pattern = new RegExp(`\\.${escaped}(?![\\w-]|\\\\)`)
     return !selectors.some((selector) => pattern.test(selector))

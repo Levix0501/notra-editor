@@ -56,6 +56,22 @@ test.describe('playground setup', () => {
     expect(themeCss).toBe(join('packages/editor', manifest.exports['./theme.css']))
   })
 
+  test('its editor is the reference composition of the slash menu', () => {
+    const source = readRepositoryFile('apps/playground/src/app.tsx').replace(/\s+/g, ' ')
+    expect(source).toMatch(/import \{[^}]*\bSlashMenu\b[^}]*\} from '@notra\/editor'/)
+    expect(source).toContain('const extensions = [NotraKit]')
+    const root = source.indexOf('<NotraEditor.Root extensions={extensions}')
+    const content = source.indexOf('<NotraEditor.Content />')
+    const menu = source.indexOf(
+      '<SlashMenu.Root> <SlashMenu.Content> <SlashMenu.Empty /> <SlashMenu.List>{(item) => <SlashMenu.Item item={item} />}</SlashMenu.List> </SlashMenu.Content> </SlashMenu.Root>',
+    )
+    const end = source.indexOf('</NotraEditor.Root>')
+    expect(root).toBeGreaterThan(-1)
+    expect(content).toBeGreaterThan(root)
+    expect(menu).toBeGreaterThan(root)
+    expect(end).toBeGreaterThan(Math.max(content, menu))
+  })
+
   test('it is a Vite 8 application in the pnpm workspace', () => {
     const require = createRequire(join(playgroundDir, 'package.json'))
     const vite = JSON.parse(readFileSync(require.resolve('vite/package.json'), 'utf8'))
