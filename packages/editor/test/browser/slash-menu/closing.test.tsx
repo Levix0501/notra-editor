@@ -67,11 +67,33 @@ describe('closing the slash menu', () => {
     }
   })
 
-  it('stays open when the pointer is pressed on the menu or within the query', async () => {
+  it('stays open when the pointer is pressed on the menu', async () => {
     const { editor } = await openAndType('/he')
     const menu = document.querySelector('[data-slot="slash-menu-content"]') as HTMLElement
     await click(menu, { position: { x: 2, y: 2 } })
     await expectOpen(true)
+    expect(editor.getJSON()).toEqual(doc(paragraph('/he')))
+  })
+
+  it('stays open when the pointer is pressed within the query', async () => {
+    const { editor, surface } = await openAndType('/he')
+    await expectOpen(true)
+    expect(editor.state.selection.from).toBe(4)
+
+    // Press on the right part of the query's `h`, which puts the cursor directly after it.
+    const text = surface.querySelector('p')?.firstChild
+    if (!(text instanceof Text)) throw new Error('the paragraph holds no text node')
+    const range = document.createRange()
+    range.setStart(text, 1)
+    range.setEnd(text, 2)
+    const h = range.getBoundingClientRect()
+    const box = surface.getBoundingClientRect()
+    await click(surface, {
+      position: { x: h.left + h.width * 0.75 - box.left, y: (h.top + h.bottom) / 2 - box.top },
+    })
+
+    await expect.poll(() => editor.state.selection.from).toBe(3)
+    expect(isOpen()).toBe(true)
     expect(editor.getJSON()).toEqual(doc(paragraph('/he')))
   })
 
