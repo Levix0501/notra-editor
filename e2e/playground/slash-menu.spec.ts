@@ -60,6 +60,37 @@ test.describe('slash menu', () => {
     await expect.poll(() => documentContent(page)).toEqual([paragraph('/')])
   })
 
+  test('selects Bulleted list with the arrow keys and Enter after other text', async ({ page }) => {
+    await page.keyboard.type('abc ')
+    await page.keyboard.type('/')
+    await expect(slashMenu(page)).toBeVisible()
+
+    for (let press = 0; press < 5; press += 1) await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowUp')
+    await expect(slashMenu(page).locator('[aria-selected="true"]')).toContainText(
+      locales.en.blockBulletList,
+    )
+    await page.keyboard.press('Enter')
+
+    await expect(slashMenu(page)).toHaveCount(0)
+    await expect
+      .poll(() => documentContent(page))
+      .toEqual([
+        paragraph('abc '),
+        { type: 'bulletList', content: [{ type: 'listItem', content: [paragraph()] }] },
+      ])
+    await expect(editorSurface(page)).toBeFocused()
+
+    // The cursor is in the paragraph of the new list item.
+    await page.keyboard.type('x')
+    await expect
+      .poll(() => documentContent(page))
+      .toEqual([
+        paragraph('abc '),
+        { type: 'bulletList', content: [{ type: 'listItem', content: [paragraph('x')] }] },
+      ])
+  })
+
   test('puts a bullet list after a paragraph with other text', async ({ page }) => {
     await page.keyboard.type('abc ')
     await page.keyboard.type('/')
