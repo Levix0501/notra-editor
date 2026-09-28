@@ -167,8 +167,11 @@ function handleTextInput(
 
   if (!text.endsWith('/') || !editor.isEditable) return false
   const tr = deflt()
-  const slash = from + text.length - 1
-  if (!opensMenu(tr.doc, slash)) return false
+  // The typed text ends directly before the cursor. Typed over a selected node, at a gap cursor
+  // or over the whole document, it does not start at `from` but inside a paragraph that the
+  // replacement puts there.
+  const slash = tr.selection.from - 1
+  if (!tr.selection.empty || !opensMenu(tr.doc, slash)) return false
   view.dispatch(tr.setMeta(key, { type: 'open', from: slash } satisfies SlashMenuMeta))
   return true
 }

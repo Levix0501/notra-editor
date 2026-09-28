@@ -1,4 +1,7 @@
 import type { JSONContent } from '@tiptap/core'
+import { GapCursor } from '@tiptap/pm/gapcursor'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
+import { AllSelection, NodeSelection, type Selection } from '@tiptap/pm/state'
 import { describe, expect, it } from 'vitest'
 import {
   blockquote,
@@ -7,6 +10,7 @@ import {
   doc,
   expectOpen,
   heading,
+  horizontalRule,
   isOpen,
   listItem,
   paragraph,
@@ -55,6 +59,36 @@ const staying: Array<Position & { keys?: string }> = [
   { name: 'when 、 is typed', content: doc(paragraph()), cursor: 1, keys: '、' },
 ]
 
+interface Replacement {
+  name: string
+  content: JSONContent
+  /** The selection that the typed `/` replaces. */
+  select: (node: ProseMirrorNode) => Selection
+  /** The document after `/` is typed, in which a paragraph starts with the `/`. */
+  result: JSONContent
+}
+
+const replacing: Replacement[] = [
+  {
+    name: 'over the whole document',
+    content: doc(paragraph('abc'), paragraph('def')),
+    select: (node) => new AllSelection(node),
+    result: doc(paragraph('/')),
+  },
+  {
+    name: 'over a selected divider',
+    content: doc(paragraph('a'), horizontalRule, paragraph('b')),
+    select: (node) => NodeSelection.create(node, 3),
+    result: doc(paragraph('a'), paragraph('/'), paragraph('b')),
+  },
+  {
+    name: 'at a gap cursor before a divider',
+    content: doc(horizontalRule, paragraph('abc')),
+    select: (node) => new GapCursor(node.resolve(0)),
+    result: doc(paragraph('/'), horizontalRule, paragraph('abc')),
+  },
+]
+
 describe('opening the slash menu', () => {
   it.each(opening)('opens when / is typed $name', async ({ content, cursor }) => {
     const { editor } = await renderMenu({ initialContent: content })
@@ -62,6 +96,22 @@ describe('opening the slash menu', () => {
     await type('/')
     await expectOpen(true)
   })
+
+  it.each(replacing)(
+    'opens when / typed $name starts a paragraph',
+    async ({ content, select, result }) => {
+      const { editor } = await renderMenu({ initialContent: content })
+      await placeCursor(editor, 'end')
+      const selection = select(editor.state.doc)
+      await run(() => {
+        editor.view.dispatch(editor.state.tr.setSelection(selection))
+      })
+      expect(editor.state.selection.eq(selection)).toBe(true)
+      await type('/')
+      await expectOpen(true)
+      expect(editor.getJSON()).toEqual(result)
+    },
+  )
 
   it.each(staying)('stays closed $name', async ({ content, cursor, keys = '/' }) => {
     const { editor } = await renderMenu({ initialContent: content })
