@@ -123,6 +123,9 @@ export class SlashMenuController implements SlashMenuPluginHost {
     this.items = items
     this.messages = messages
     this.sync()
+    // The editable surface names the highlighted option, and the view computes its attributes
+    // only when it updates, so update it while the menu is open.
+    if (this.isOpen()) this.editor.view.updateState(this.editor.view.state)
   }
 
   /** Recomputes the snapshot from the editor state and notifies subscribers of a change. */

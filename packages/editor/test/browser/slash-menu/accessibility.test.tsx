@@ -3,7 +3,9 @@ import { page } from 'vitest/browser'
 import { locales } from '../../../src/messages'
 import {
   accessibleName,
+  commandItem,
   expectOpen,
+  isOpen,
   menuElement,
   options,
   placeCursor,
@@ -78,6 +80,29 @@ describe('accessibility', () => {
     await placeCursor(editor, 'end')
     await type('/zzzz')
     await expectOpen(true)
+    expect(surface.getAttribute('aria-controls')).toBe(
+      document.querySelector('[role="listbox"]')?.id,
+    )
+    expect(surface.hasAttribute('aria-activedescendant')).toBe(false)
+  })
+
+  it('follows a change of the items while the menu is open', async () => {
+    const { editor, surface, update } = await renderMenu({
+      items: [commandItem('One'), commandItem('Two'), commandItem('Three')],
+    })
+    await placeCursor(editor, 'end')
+    await type('/{ArrowDown}{ArrowDown}')
+    await expectOpen(true)
+    expect(surface.getAttribute('aria-activedescendant')).toBe(optionTitled('Three').id)
+
+    await update({ items: [commandItem('One')] })
+    const only = optionTitled('One')
+    expect(only.getAttribute('aria-selected')).toBe('true')
+    expect(surface.getAttribute('aria-activedescendant')).toBe(only.id)
+
+    await update({ items: [] })
+    expect(isOpen()).toBe(true)
+    expect(options()).toHaveLength(0)
     expect(surface.getAttribute('aria-controls')).toBe(
       document.querySelector('[role="listbox"]')?.id,
     )
