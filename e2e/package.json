@@ -11,6 +11,7 @@
     "@notra/editor": "workspace:*",
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "typescript": "catalog:"
   }
 }

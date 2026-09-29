@@ -11,6 +11,32 @@ export interface NotraMessages {
   placeholder: string
   /** Accessible name of the editable surface. */
   editorLabel: string
+  /** Hint shown in the empty paragraph that holds the cursor while a slash menu is rendered. */
+  slashMenuHint: string
+  /** Accessible name of the slash menu's list of items. */
+  slashMenuLabel: string
+  /** Message that `SlashMenu.Empty` shows when no item matches the query. */
+  slashMenuEmpty: string
+  /** Group of the default slash menu items. */
+  blockGroupBasic: string
+  /** Title of the default item that inserts a paragraph. */
+  blockText: string
+  /** Title of the default item that inserts a level-1 heading. */
+  blockHeading1: string
+  /** Title of the default item that inserts a level-2 heading. */
+  blockHeading2: string
+  /** Title of the default item that inserts a level-3 heading. */
+  blockHeading3: string
+  /** Title of the default item that inserts a bullet list. */
+  blockBulletList: string
+  /** Title of the default item that inserts an ordered list. */
+  blockOrderedList: string
+  /** Title of the default item that inserts a blockquote. */
+  blockQuote: string
+  /** Title of the default item that inserts a code block. */
+  blockCodeBlock: string
+  /** Title of the default item that inserts a horizontal rule. */
+  blockDivider: string
 }
 
 /** The built-in strings of every supported locale. */

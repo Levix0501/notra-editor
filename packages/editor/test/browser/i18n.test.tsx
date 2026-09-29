@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { page } from 'vitest/browser'
 import { NotraKit, type NotraMessages } from '../../src'
 import { locales } from '../../src/messages'
-import { beforeContent, renderEditor } from './render'
+import { beforeContent, exposedTexts, renderEditor } from './render'
 
 const { en, 'zh-CN': zhCN } = locales
 
@@ -14,40 +14,6 @@ function placeholderElement(surface: HTMLElement): Element {
 
 function displayedPlaceholder(surface: HTMLElement): string | null {
   return beforeContent(placeholderElement(surface))
-}
-
-/** Every text that `root` renders or exposes as an accessible name or description. */
-function exposedTexts(root: HTMLElement): string[] {
-  const texts: string[] = []
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
-  for (let node = walker.nextNode(); node; node = walker.nextNode())
-    texts.push(node.nodeValue ?? '')
-  const namingAttributes = [
-    'aria-label',
-    'aria-description',
-    'aria-placeholder',
-    'aria-roledescription',
-    'aria-valuetext',
-    'title',
-    'alt',
-    'placeholder',
-  ]
-  for (const element of [root, ...root.querySelectorAll('*')]) {
-    for (const pseudo of ['::before', '::after', '::marker']) {
-      const content = getComputedStyle(element, pseudo).content
-      if (content && content !== 'none' && content !== 'normal') texts.push(JSON.parse(content))
-    }
-    for (const attribute of namingAttributes) {
-      const value = element.getAttribute(attribute)
-      if (value !== null) texts.push(value)
-    }
-    for (const attribute of ['aria-labelledby', 'aria-describedby']) {
-      for (const id of element.getAttribute(attribute)?.split(/\s+/) ?? []) {
-        texts.push(document.getElementById(id)?.textContent ?? '')
-      }
-    }
-  }
-  return texts.map((text) => text.trim()).filter(Boolean)
 }
 
 describe('placeholder', () => {
@@ -107,7 +73,7 @@ describe('localization', () => {
     expect(surface.getAttribute('aria-label')).toBe(zhCN.editorLabel)
   })
 
-  it('takes every built-in string from the locale and messages', async () => {
+  it('takes every built-in string of the editor from the locale and messages', async () => {
     const markers = Object.fromEntries(
       Object.keys(en).map((key) => [key, `marker:${key}`]),
     ) as unknown as NotraMessages
@@ -116,7 +82,8 @@ describe('localization', () => {
     const texts = exposedTexts(container)
     expect(texts.length).toBeGreaterThan(0)
     for (const text of texts) expect(Object.values(markers)).toContain(text)
-    expect(new Set(texts)).toEqual(new Set(Object.values(markers)))
+    // The slash menu's strings appear only with the menu; see slash-menu/strings.test.tsx.
+    expect(new Set(texts)).toEqual(new Set([markers.placeholder, markers.editorLabel]))
   })
 
   it('updates the strings when locale or messages change', async () => {

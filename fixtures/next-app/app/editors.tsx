@@ -1,6 +1,6 @@
 'use client'
 
-import { NotraEditor, NotraKit } from '@notra/editor'
+import { NotraEditor, NotraKit, SlashMenu } from '@notra/editor'
 import type { JSONContent } from '@tiptap/core'
 import { useState } from 'react'
 
@@ -47,6 +47,17 @@ const sampleDocument: JSONContent = {
 
 const emptyDocument: JSONContent = { type: 'doc', content: [{ type: 'paragraph' }] }
 
+function EditorSlashMenu() {
+  return (
+    <SlashMenu.Root>
+      <SlashMenu.Content>
+        <SlashMenu.Empty />
+        <SlashMenu.List>{(item) => <SlashMenu.Item item={item} />}</SlashMenu.List>
+      </SlashMenu.Content>
+    </SlashMenu.Root>
+  )
+}
+
 export function Editors() {
   const [updates, setUpdates] = useState(0)
   const countUpdate = () => setUpdates((count) => count + 1)
@@ -60,6 +71,7 @@ export function Editors() {
           onUpdate={countUpdate}
         >
           <NotraEditor.Content />
+          <EditorSlashMenu />
         </NotraEditor.Root>
       </section>
       <section data-testid="empty-editor">
@@ -69,6 +81,7 @@ export function Editors() {
           onUpdate={countUpdate}
         >
           <NotraEditor.Content />
+          <EditorSlashMenu />
         </NotraEditor.Root>
       </section>
       <p data-testid="update-count">Updates: {updates}</p>

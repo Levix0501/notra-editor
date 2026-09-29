@@ -147,3 +147,117 @@ test('the fixture integrates the package as a shadcn host', () => {
     '@tiptap/react',
   ])
 })
+
+function slashMenu(page: Page): Locator {
+  return page.locator('[data-slot="slash-menu-content"]')
+}
+
+test('opens the slash menu after hydration without server or hydration errors', async ({
+  page,
+}) => {
+  const problems: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'error' || message.type() === 'warning') {
+      problems.push(`${message.type()}: ${message.text()} (${message.location().url})`)
+    }
+  })
+  page.on('pageerror', (error) => problems.push(`page error: ${error.message}`))
+
+  const response = await page.goto('/')
+  expect(response?.status()).toBe(200)
+  const surface = page.getByTestId('empty-editor').locator('[contenteditable="true"]')
+  await expect(surface).toBeVisible()
+  await surface.click()
+  await page.keyboard.type('/')
+  await expect(slashMenu(page)).toBeVisible()
+  await expect(slashMenu(page).getByRole('option')).toHaveCount(9)
+  await page.keyboard.press('Escape')
+  await expect(slashMenu(page)).toHaveCount(0)
+
+  expect(problems.filter((problem) => /hydrat/i.test(problem))).toEqual([])
+  expect(problems).toEqual([])
+
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: strips terminal color codes
+  const log = readFileSync(nextDevLog, 'utf8').replace(/\u001b\[[0-9;]*m/g, '')
+  expect(log).toMatch(/GET \/ 200/)
+  expect(log).not.toMatch(/⨯|\bError\b|\bGET \/ 5\d\d\b/)
+})
+
+test('the slash menu and the empty-line hint take the fixture token values in light and dark mode', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const surface = page.getByTestId('empty-editor').locator('[contenteditable="true"]')
+  await surface.click()
+  await page.keyboard.type('Title')
+  await page.keyboard.press('Enter')
+  const hint = surface.locator('p').last()
+  await expect(hint).toHaveAttribute('data-empty-line-hint', /./)
+
+  const audits: ColorAudit[] = []
+  const auditInModes = async (locator: Locator) => {
+    for (const dark of [false, true]) {
+      await setDark(page, dark)
+      const declared = dark ? darkTokens : lightTokens
+      const result = await locator.evaluate(auditContentColors, {
+        tokens: shadcnTokens,
+        subtree: true,
+      })
+      expectAuditPasses(result)
+      const tokens = [...new Set(result.rules.map((rule) => rule.token))]
+      expect(tokens.length).toBeGreaterThan(0)
+      const colors = await page.evaluate(colorBytes, [
+        ...tokens.map((token) => declared.get(`--${token}`) ?? 'invalid'),
+        ...tokens.map((token) => `var(--${token})`),
+      ])
+      tokens.forEach((token, index) => {
+        const fromFile = colors[index]
+        const inPage = colors[index + tokens.length]
+        expect(sameColorBytes(fromFile, inPage), `--${token}: ${fromFile} vs ${inPage}`).toBe(true)
+      })
+      audits.push(result)
+    }
+    await setDark(page, false)
+  }
+
+  // The empty-line hint.
+  await auditInModes(hint)
+
+  // The menu with a highlighted item, other items, a group heading and hints.
+  await page.keyboard.type('/')
+  await expect(slashMenu(page)).toBeVisible()
+  await expect(slashMenu(page).locator('[aria-selected="true"]')).toHaveCount(1)
+  await expect(slashMenu(page).locator('[data-slot="slash-menu-group-heading"]')).toHaveCount(1)
+  await expect(slashMenu(page).locator('[data-slot="slash-menu-item-hint"]')).toHaveCount(8)
+  const distributed = distributedClassCandidates()
+  const classes = await slashMenu(page).evaluate((menu) => [
+    ...new Set([menu, ...menu.querySelectorAll('*')].flatMap((node) => [...node.classList])),
+  ])
+  const iconClass = /^lucide/
+  expect(classes.filter((name) => !distributed.has(name) && !iconClass.test(name))).toEqual([])
+  expect(
+    (await slashMenu(page).evaluate(classesWithoutRules, true)).filter(
+      (name) => !iconClass.test(name),
+    ),
+  ).toEqual([])
+  await auditInModes(slashMenu(page))
+
+  // The menu with the no-results message.
+  await page.keyboard.type('zzzz')
+  await expect(slashMenu(page).locator('[data-slot="slash-menu-empty"]')).toBeVisible()
+  await auditInModes(slashMenu(page))
+
+  // Every token color rule of these elements was checked on at least one of them.
+  const checked = new Set(
+    audits.flatMap((audit) =>
+      audit.rules
+        .filter((rule) => rule.matches > 0)
+        .map((rule) => `${rule.className} ${rule.property}`),
+    ),
+  )
+  expect(
+    audits
+      .flatMap((audit) => audit.rules)
+      .filter((rule) => !checked.has(`${rule.className} ${rule.property}`)),
+  ).toEqual([])
+})

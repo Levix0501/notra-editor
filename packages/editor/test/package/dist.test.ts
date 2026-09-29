@@ -139,6 +139,11 @@ describe('package manifest', () => {
     }
   })
 
+  it('depends on lucide-react for the icons of the default slash menu items', () => {
+    expect(manifest.dependencies).toHaveProperty('lucide-react')
+    expect(manifest.peerDependencies).not.toHaveProperty('lucide-react')
+  })
+
   it('declares every package that the distributed code imports', () => {
     const imported = new Set(
       distModules()
@@ -156,12 +161,20 @@ describe('package manifest', () => {
 })
 
 describe('entry point', () => {
-  it('exports the primitives, the hook and NotraKit', async () => {
+  it('exports the primitives, the hook, NotraKit and the default slash menu items', async () => {
     const entry = await import(join(distDir, 'index.js'))
-    expect(Object.keys(entry).sort()).toEqual(['NotraEditor', 'NotraKit', 'useNotraEditor'])
+    expect(Object.keys(entry).sort()).toEqual(
+      ['NotraEditor', 'NotraKit', 'SlashMenu', 'defaultSlashMenuItems', 'useNotraEditor'].sort(),
+    )
     expect(Object.keys(entry.NotraEditor).sort()).toEqual(['Content', 'Root'])
     expect(typeof entry.NotraEditor.Root).toBe('function')
     expect(typeof entry.NotraEditor.Content).toBe('function')
+    expect(Object.keys(entry.SlashMenu).sort()).toEqual(
+      ['Content', 'Empty', 'Item', 'List', 'Root'].sort(),
+    )
+    for (const member of Object.values(entry.SlashMenu)) expect(typeof member).toBe('function')
+    expect(Array.isArray(entry.defaultSlashMenuItems)).toBe(true)
+    expect(entry.defaultSlashMenuItems).toHaveLength(9)
     expect(typeof entry.useNotraEditor).toBe('function')
     expect(entry.NotraKit.name).toBe('notraKit')
     expect(readFileSync(join(distDir, 'theme.css'), 'utf8')).toMatch(
@@ -177,10 +190,23 @@ describe('client directive', () => {
       ({ code }) =>
         /from\s*["']react(?:\/jsx-runtime)?["']/.test(code) ||
         /\bfunction\s+(?:[A-Z]\w*|use[A-Z]\w*)\s*\(/.test(code) ||
-        /\bconst\s+NotraEditor\s*=/.test(code),
+        /\bconst\s+(?:NotraEditor|SlashMenu)\s*=/.test(code),
     )
     expect(clientModules.map(({ file }) => file).sort()).toEqual(
-      ['content.js', 'context.js', 'notra-editor.js', 'root.js'].sort(),
+      [
+        'content.js',
+        'context.js',
+        'notra-editor.js',
+        'root.js',
+        join('slash-menu', 'content.js'),
+        join('slash-menu', 'context.js'),
+        join('slash-menu', 'default-items.js'),
+        join('slash-menu', 'empty.js'),
+        join('slash-menu', 'item.js'),
+        join('slash-menu', 'list.js'),
+        join('slash-menu', 'root.js'),
+        join('slash-menu', 'slash-menu.js'),
+      ].sort(),
     )
     for (const { file, code } of clientModules) {
       expect(code.startsWith('"use client";') || code.startsWith("'use client';"), file).toBe(true)
@@ -226,6 +252,29 @@ describe('distributed styles', () => {
     expect(classes.filter((name) => !generated.has(name))).toEqual([])
   })
 
+  it('makes every default class of the slash menu and the empty-line hint a Tailwind CSS utility', async () => {
+    const styles: Record<string, string> = await import(join(distDir, 'slash-menu', 'styles.js'))
+    const names = Object.keys(styles)
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'slashMenuContentClassName',
+        'slashMenuListClassName',
+        'slashMenuItemClassName',
+        'slashMenuEmptyClassName',
+        'emptyLineHintClassName',
+      ]),
+    )
+    const generated = await utilities()
+    for (const name of names) {
+      const classes = (styles[name] as string).split(' ')
+      expect(classes.length, name).toBeGreaterThan(0)
+      expect(
+        classes.filter((candidate) => !generated.has(candidate)),
+        name,
+      ).toEqual([])
+    }
+  })
+
   it('takes every color from a shadcn semantic token', async () => {
     const generated = await utilities()
     const usedTokens = new Set<string>()
@@ -240,7 +289,17 @@ describe('distributed styles', () => {
     }
     expect(violations).toEqual([])
     expect([...usedTokens].sort()).toEqual(
-      ['border', 'foreground', 'muted', 'muted-foreground', 'ring'].sort(),
+      [
+        'accent',
+        'accent-foreground',
+        'border',
+        'foreground',
+        'muted',
+        'muted-foreground',
+        'popover',
+        'popover-foreground',
+        'ring',
+      ].sort(),
     )
 
     const theme = postcss.parse(readFileSync(join(distDir, 'theme.css'), 'utf8'))

@@ -52,7 +52,7 @@ export const sampleDocument: JSONContent = {
     { type: 'heading', attrs: { level: 3 }, content: [text('Markdown shortcuts')] },
     paragraph(
       text(
-        'Type # for a heading, - for a list, > for a quote, ``` for code and --- for a divider.',
+        'Type # for a heading, - for a list, > for a quote, ``` for code and --- for a divider, or type / to pick a block from a menu.',
       ),
     ),
   ],

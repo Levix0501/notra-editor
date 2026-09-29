@@ -1,4 +1,4 @@
-import { NotraEditor, NotraKit, type NotraLocale, useNotraEditor } from '@notra/editor'
+import { NotraEditor, NotraKit, type NotraLocale, SlashMenu, useNotraEditor } from '@notra/editor'
 import type { JSONContent } from '@tiptap/core'
 import { useEffect, useState } from 'react'
 import { sampleDocument } from './sample-document'
@@ -87,6 +87,12 @@ export function App() {
           <div className="min-h-64 rounded-lg border border-border px-6 py-4">
             <NotraEditor.Content />
           </div>
+          <SlashMenu.Root>
+            <SlashMenu.Content>
+              <SlashMenu.Empty />
+              <SlashMenu.List>{(item) => <SlashMenu.Item item={item} />}</SlashMenu.List>
+            </SlashMenu.Content>
+          </SlashMenu.Root>
         </NotraEditor.Root>
 
         <section className="flex flex-col gap-2">
