@@ -1,6 +1,6 @@
 {
   "name": "notra-editor",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "description": "A block-based rich text editor for React with a Notion-style editing experience, built on Tiptap, shadcn/ui and Tailwind CSS.",
   "keywords": [
     "editor",
