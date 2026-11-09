@@ -1,0 +1,16 @@
+{
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "tailwindCSS.experimental.configFile": {
+    "packages/editor/src/styles.css": "packages/editor/src/**",
+    "apps/playground/src/app.css": "apps/playground/src/**"
+  },
+  "tailwindCSS.classFunctions": ["cn", "cva"]
+}

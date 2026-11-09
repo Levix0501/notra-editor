@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Only install package versions that have been public for at least one day.
+# This protects the supply chain against freshly published malicious releases.
+minimumReleaseAge: 1440
+
+# Dependencies allowed to run install scripts. Everything else ships prebuilt
+# binaries through optional dependencies, so their scripts are not needed.
+allowBuilds:
+  "@parcel/watcher": false

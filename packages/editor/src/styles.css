@@ -1,0 +1,898 @@
+/*
+ * notra-editor stylesheet
+ *
+ * The editor uses the default shadcn/ui look: the `base-nova` component
+ * styles, the neutral theme and the shadcn/ui typography for the content.
+ *
+ * The stylesheet is self-contained and safe to load into any application,
+ * with or without Tailwind CSS:
+ *
+ * - Every Tailwind utility used by the editor is prefixed with `nt:`.
+ * - Every design token lives under the `--notra-*` namespace.
+ * - The CSS reset is scoped to `.notra-scope` elements (the editor root and
+ *   its floating menus) instead of being applied globally.
+ *
+ * Theming: override any `--notra-*` variable on `:root` (or on a wrapper
+ * element). Dark mode follows a `.dark` class or `data-theme="dark"` attribute
+ * on any ancestor, or can be forced with the `theme` prop.
+ */
+
+@layer theme, base;
+
+@import "tailwindcss/theme.css" layer(theme) prefix(nt);
+@import "tailwindcss/utilities.css" source(none);
+@import "tw-animate-css";
+
+@source "./**/*.{ts,tsx}";
+
+/* -------------------------------------------------------------------------- */
+/* Variants and utilities                                                     */
+/* -------------------------------------------------------------------------- */
+
+@custom-variant dark {
+  &:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *):not(:where(.notra-light, .notra-light *)) {
+    @slot;
+  }
+}
+
+/* The variants and utilities below are copied from `shadcn/tailwind.css`. */
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-checked {
+  &:where([data-state="checked"]),
+  &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-unchecked {
+  &:where([data-state="unchecked"]),
+  &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-selected {
+  &:where([data-selected="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-active {
+  &:where([data-state="active"]),
+  &:where([data-active]:not([data-active="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant data-horizontal {
+  &:where([data-orientation="horizontal"]) {
+    @slot;
+  }
+}
+
+@custom-variant data-vertical {
+  &:where([data-orientation="vertical"]) {
+    @slot;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Theme                                                                      */
+/* -------------------------------------------------------------------------- */
+
+@theme inline {
+  --font-sans: var(--notra-font-sans);
+  --font-mono: var(--notra-font-mono);
+
+  --color-background: var(--notra-background);
+  --color-foreground: var(--notra-foreground);
+  --color-popover: var(--notra-popover);
+  --color-popover-foreground: var(--notra-popover-foreground);
+  --color-primary: var(--notra-primary);
+  --color-primary-foreground: var(--notra-primary-foreground);
+  --color-secondary: var(--notra-secondary);
+  --color-secondary-foreground: var(--notra-secondary-foreground);
+  --color-muted: var(--notra-muted);
+  --color-muted-foreground: var(--notra-muted-foreground);
+  --color-accent: var(--notra-accent);
+  --color-accent-foreground: var(--notra-accent-foreground);
+  --color-destructive: var(--notra-destructive);
+  --color-border: var(--notra-border);
+  --color-input: var(--notra-input);
+  --color-ring: var(--notra-ring);
+
+  --radius-sm: calc(var(--notra-radius) * 0.6);
+  --radius-md: calc(var(--notra-radius) * 0.8);
+  --radius-lg: var(--notra-radius);
+  --radius-xl: calc(var(--notra-radius) * 1.4);
+  --radius-2xl: calc(var(--notra-radius) * 1.8);
+  --radius-3xl: calc(var(--notra-radius) * 2.2);
+  --radius-4xl: calc(var(--notra-radius) * 2.6);
+}
+
+/*
+ * Design tokens: the shadcn/ui neutral theme. Declared with zero specificity
+ * so that any plain `:root { --notra-*: ... }` override in the host
+ * application wins.
+ */
+:where(:root),
+:where(.notra-light) {
+  --notra-radius: 0.625rem;
+  --notra-z-index: 50;
+  --notra-font-sans:
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --notra-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --notra-background: oklch(1 0 0);
+  --notra-foreground: oklch(0.145 0 0);
+  --notra-popover: oklch(1 0 0);
+  --notra-popover-foreground: oklch(0.145 0 0);
+  --notra-primary: oklch(0.205 0 0);
+  --notra-primary-foreground: oklch(0.985 0 0);
+  --notra-secondary: oklch(0.97 0 0);
+  --notra-secondary-foreground: oklch(0.205 0 0);
+  --notra-muted: oklch(0.97 0 0);
+  --notra-muted-foreground: oklch(0.556 0 0);
+  --notra-accent: oklch(0.97 0 0);
+  --notra-accent-foreground: oklch(0.205 0 0);
+  --notra-destructive: oklch(0.577 0.245 27.325);
+  --notra-border: oklch(0.922 0 0);
+  --notra-input: oklch(0.922 0 0);
+  --notra-ring: oklch(0.708 0 0);
+
+  /* Text and highlight colors (Tailwind CSS palette) */
+  --notra-text-gray: --theme(--color-neutral-500 inline);
+  --notra-text-red: --theme(--color-red-600 inline);
+  --notra-text-orange: --theme(--color-orange-600 inline);
+  --notra-text-yellow: --theme(--color-yellow-600 inline);
+  --notra-text-green: --theme(--color-green-600 inline);
+  --notra-text-blue: --theme(--color-blue-600 inline);
+  --notra-text-purple: --theme(--color-purple-600 inline);
+  --notra-text-pink: --theme(--color-pink-600 inline);
+  --notra-highlight-gray: --theme(--color-neutral-200 inline);
+  --notra-highlight-red: --theme(--color-red-200 inline);
+  --notra-highlight-orange: --theme(--color-orange-200 inline);
+  --notra-highlight-yellow: --theme(--color-yellow-200 inline);
+  --notra-highlight-green: --theme(--color-green-200 inline);
+  --notra-highlight-blue: --theme(--color-blue-200 inline);
+  --notra-highlight-purple: --theme(--color-purple-200 inline);
+  --notra-highlight-pink: --theme(--color-pink-200 inline);
+
+  /* Code syntax highlighting (GitHub light, like the shadcn/ui code block) */
+  --notra-syntax-comment: #6e7781;
+  --notra-syntax-keyword: #cf222e;
+  --notra-syntax-string: #0a3069;
+  --notra-syntax-number: #0550ae;
+  --notra-syntax-function: #8250df;
+  --notra-syntax-variable: #953800;
+  --notra-syntax-tag: #116329;
+  --notra-syntax-addition: #116329;
+  --notra-syntax-deletion: #82071e;
+}
+
+:where(.dark),
+:where([data-theme="dark"]) {
+  --notra-background: oklch(0.145 0 0);
+  --notra-foreground: oklch(0.985 0 0);
+  --notra-popover: oklch(0.205 0 0);
+  --notra-popover-foreground: oklch(0.985 0 0);
+  --notra-primary: oklch(0.922 0 0);
+  --notra-primary-foreground: oklch(0.205 0 0);
+  --notra-secondary: oklch(0.269 0 0);
+  --notra-secondary-foreground: oklch(0.985 0 0);
+  --notra-muted: oklch(0.269 0 0);
+  --notra-muted-foreground: oklch(0.708 0 0);
+  --notra-accent: oklch(0.269 0 0);
+  --notra-accent-foreground: oklch(0.985 0 0);
+  --notra-destructive: oklch(0.704 0.191 22.216);
+  --notra-border: oklch(1 0 0 / 10%);
+  --notra-input: oklch(1 0 0 / 15%);
+  --notra-ring: oklch(0.556 0 0);
+
+  --notra-text-gray: --theme(--color-neutral-400 inline);
+  --notra-text-red: --theme(--color-red-400 inline);
+  --notra-text-orange: --theme(--color-orange-400 inline);
+  --notra-text-yellow: --theme(--color-yellow-400 inline);
+  --notra-text-green: --theme(--color-green-400 inline);
+  --notra-text-blue: --theme(--color-blue-400 inline);
+  --notra-text-purple: --theme(--color-purple-400 inline);
+  --notra-text-pink: --theme(--color-pink-400 inline);
+  --notra-highlight-gray: --theme(--color-neutral-800 inline);
+  --notra-highlight-red: --theme(--color-red-900 inline);
+  --notra-highlight-orange: --theme(--color-orange-900 inline);
+  --notra-highlight-yellow: --theme(--color-yellow-900 inline);
+  --notra-highlight-green: --theme(--color-green-900 inline);
+  --notra-highlight-blue: --theme(--color-blue-900 inline);
+  --notra-highlight-purple: --theme(--color-purple-900 inline);
+  --notra-highlight-pink: --theme(--color-pink-900 inline);
+
+  /* Code syntax highlighting (GitHub dark) */
+  --notra-syntax-comment: #8b949e;
+  --notra-syntax-keyword: #ff7b72;
+  --notra-syntax-string: #a5d6ff;
+  --notra-syntax-number: #79c0ff;
+  --notra-syntax-function: #d2a8ff;
+  --notra-syntax-variable: #ffa657;
+  --notra-syntax-tag: #7ee787;
+  --notra-syntax-addition: #aff5b4;
+  --notra-syntax-deletion: #ffdcd7;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Base: a scoped version of Tailwind's preflight                             */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  :where(.notra-scope, .notra-scope *),
+  :where(.notra-scope, .notra-scope *)::before,
+  :where(.notra-scope, .notra-scope *)::after,
+  :where(.notra-scope, .notra-scope *)::backdrop,
+  :where(.notra-scope, .notra-scope *)::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid var(--notra-border);
+    outline-color: color-mix(in oklab, var(--notra-ring) 50%, transparent);
+  }
+
+  :where(.notra-scope) {
+    font-family: var(--notra-font-sans);
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: start;
+    text-transform: none;
+    color: var(--notra-foreground);
+    tab-size: 4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :where(.notra-scope) :where(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  :where(.notra-scope) :where(a) {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  :where(.notra-scope) :where(b, strong) {
+    font-weight: bolder;
+  }
+
+  :where(.notra-scope) :where(code, kbd, samp, pre) {
+    font-family: var(--notra-font-mono);
+    font-size: 1em;
+  }
+
+  :where(.notra-scope) :where(sub, sup) {
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+  }
+
+  :where(.notra-scope) :where(sub) {
+    bottom: -0.25em;
+  }
+
+  :where(.notra-scope) :where(sup) {
+    top: -0.5em;
+  }
+
+  :where(.notra-scope) :where(table) {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+
+  :where(.notra-scope) :where(ol, ul, menu) {
+    list-style: none;
+  }
+
+  :where(.notra-scope) :where(img, svg, video, canvas, audio, iframe, embed, object) {
+    display: block;
+    vertical-align: middle;
+  }
+
+  :where(.notra-scope) :where(img, video) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  :where(.notra-scope) :where(button, input, select, optgroup, textarea),
+  :where(.notra-scope) ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+
+  :where(.notra-scope) :where(button:not(:disabled), [role="button"]:not(:disabled)) {
+    cursor: pointer;
+  }
+
+  :where(.notra-scope) ::placeholder {
+    opacity: 1;
+    color: color-mix(in oklab, currentcolor 50%, transparent);
+  }
+
+  :where(.notra-scope) :where(hr) {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+
+  :where(.notra-scope) :where([hidden]:where(:not([hidden="until-found"]))) {
+    /* biome-ignore lint/complexity/noImportantStyles: mirrors Tailwind's preflight, `hidden` must always win */
+    display: none !important;
+  }
+
+  /* Overridable defaults for the editor root and the editable area. */
+  .notra-editor {
+    background-color: var(--notra-background);
+    color: var(--notra-foreground);
+  }
+
+  .notra-content {
+    min-height: 100%;
+    padding-block: 0.75rem;
+    padding-inline: 3.5rem;
+  }
+
+  .notra-editor[data-block-handle="false"] .notra-content {
+    padding-inline: 1.5rem;
+  }
+
+  @media (hover: none) {
+    .notra-content {
+      padding-inline: 1rem;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Content                                                                    */
+/*                                                                            */
+/* The content follows the shadcn/ui typography styles. It is unlayered on    */
+/* purpose: it must win against global element styles of the host            */
+/* application (e.g. `h1 { ... }`).                                           */
+/* -------------------------------------------------------------------------- */
+
+.notra-content {
+  position: relative;
+  outline: none;
+  font-size: 1rem;
+  line-height: 1.75rem;
+  caret-color: var(--notra-foreground);
+  overflow-wrap: break-word;
+}
+
+/*
+ * Vertical rhythm: every block is separated from the previous one. The
+ * zero-specificity list makes the element rules below easy to override.
+ */
+
+.notra-content
+  :where(p, ul, ol, blockquote, pre, hr, img, .tableWrapper, [data-resize-container], [data-type="details"]) {
+  margin-top: 1.5rem;
+}
+
+.notra-content h1 {
+  margin-top: 3rem;
+}
+
+.notra-content h2 {
+  margin-top: 2.5rem;
+}
+
+.notra-content h3 {
+  margin-top: 2rem;
+}
+
+.notra-content li {
+  margin-top: 0.5rem;
+}
+
+.notra-content li > :is(p, ul, ol) {
+  margin-top: 0;
+}
+
+.notra-content :is(th, td) > * + * {
+  margin-top: 0.5rem;
+}
+
+/* The first block of a container (document, list item, quote, cell, toggle). */
+.notra-content
+  :where(
+    p,
+    h1,
+    h2,
+    h3,
+    ul,
+    ol,
+    blockquote,
+    pre,
+    hr,
+    img,
+    .tableWrapper,
+    [data-resize-container],
+    [data-type="details"]
+  ):first-child {
+  margin-top: 0;
+}
+
+/* Text */
+
+.notra-content h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.notra-content h2 {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--notra-border);
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.notra-content h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.notra-content a {
+  font-weight: 500;
+  color: var(--notra-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.notra-content mark {
+  padding: 0.1em 0.15em;
+  border-radius: 0.25rem;
+  color: inherit;
+  background-color: var(--notra-highlight-yellow);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.notra-content :not(pre) > code {
+  position: relative;
+  padding: 0.2rem 0.3rem;
+  border-radius: 0.25rem;
+  font-family: var(--notra-font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--notra-muted);
+}
+
+.notra-content .is-empty::before {
+  content: attr(data-placeholder);
+  float: inline-start;
+  height: 0;
+  color: var(--notra-muted-foreground);
+  pointer-events: none;
+}
+
+.notra-content .notra-selection {
+  background-color: color-mix(in oklab, var(--notra-ring) 30%, transparent);
+}
+
+.notra-content .ProseMirror-hideselection *::selection {
+  background: transparent;
+}
+
+/* Lists */
+
+.notra-content :is(ul, ol) {
+  margin-left: 1.5rem;
+}
+
+.notra-content ul {
+  list-style-type: disc;
+}
+
+.notra-content ol {
+  list-style-type: decimal;
+}
+
+.notra-content ul[data-type="taskList"] {
+  margin-left: 0;
+  list-style: none;
+}
+
+.notra-content ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.notra-content ul[data-type="taskList"] li > label {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 1.75rem;
+  user-select: none;
+}
+
+.notra-content ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notra-content ul[data-type="taskList"] li[data-checked="true"] > div > p {
+  color: var(--notra-muted-foreground);
+  text-decoration: line-through;
+}
+
+/* Matches the shadcn/ui checkbox, with the Lucide `check` icon. */
+.notra-content ul[data-type="taskList"] input[type="checkbox"] {
+  position: relative;
+  display: grid;
+  place-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 1px solid var(--notra-input);
+  border-radius: 4px;
+  color: var(--notra-primary-foreground);
+  background-color: transparent;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  transition:
+    color 0.15s,
+    background-color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+
+  @variant dark {
+    background-color: color-mix(in oklab, var(--notra-input) 30%, transparent);
+  }
+}
+
+.notra-content ul[data-type="taskList"] input[type="checkbox"]::before {
+  content: "";
+  width: 0.875rem;
+  height: 0.875rem;
+  background-color: currentcolor;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  opacity: 0;
+}
+
+.notra-content ul[data-type="taskList"] input[type="checkbox"]:checked {
+  border-color: var(--notra-primary);
+  background-color: var(--notra-primary);
+}
+
+.notra-content ul[data-type="taskList"] input[type="checkbox"]:checked::before {
+  opacity: 1;
+}
+
+.notra-content ul[data-type="taskList"] input[type="checkbox"]:focus-visible {
+  border-color: var(--notra-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--notra-ring) 50%, transparent);
+}
+
+/* Quote */
+
+.notra-content blockquote {
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--notra-border);
+  font-style: italic;
+}
+
+/* Divider */
+
+.notra-content hr {
+  border: none;
+  border-top: 1px solid var(--notra-border);
+  cursor: pointer;
+}
+
+/* Code block (styled like the shadcn/ui code block) */
+
+.notra-content pre {
+  padding: 0.75rem;
+  border: 1px solid var(--notra-input);
+  border-radius: var(--notra-radius);
+  font-family: var(--notra-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.625;
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 2;
+
+  @variant dark {
+    background-color: color-mix(in oklab, var(--notra-input) 30%, transparent);
+  }
+}
+
+.notra-content pre code {
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  background: none;
+}
+
+.notra-content pre :is(.hljs-comment, .hljs-quote) {
+  color: var(--notra-syntax-comment);
+}
+
+.notra-content pre :is(.hljs-keyword, .hljs-selector-tag, .hljs-doctag, .hljs-template-tag, .hljs-type) {
+  color: var(--notra-syntax-keyword);
+}
+
+.notra-content pre :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string) {
+  color: var(--notra-syntax-string);
+}
+
+.notra-content
+  pre
+  :is(
+    .hljs-number,
+    .hljs-literal,
+    .hljs-symbol,
+    .hljs-bullet,
+    .hljs-attr,
+    .hljs-selector-id,
+    .hljs-selector-class,
+    .hljs-variable.constant_
+  ) {
+  color: var(--notra-syntax-number);
+}
+
+.notra-content pre :is(.hljs-title, .hljs-section, .hljs-title.function_) {
+  color: var(--notra-syntax-function);
+}
+
+.notra-content
+  pre
+  :is(.hljs-variable, .hljs-template-variable, .hljs-built_in, .hljs-params, .hljs-property, .hljs-title.class_) {
+  color: var(--notra-syntax-variable);
+}
+
+.notra-content pre :is(.hljs-name, .hljs-tag, .hljs-selector-pseudo, .hljs-meta) {
+  color: var(--notra-syntax-tag);
+}
+
+.notra-content pre .hljs-addition {
+  color: var(--notra-syntax-addition);
+}
+
+.notra-content pre .hljs-deletion {
+  color: var(--notra-syntax-deletion);
+}
+
+.notra-content pre .hljs-emphasis {
+  font-style: italic;
+}
+
+.notra-content pre .hljs-strong {
+  font-weight: 600;
+}
+
+/* Image */
+
+.notra-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: calc(var(--notra-radius) * 0.8);
+}
+
+.notra-content [data-resize-container] {
+  max-width: 100%;
+}
+
+.notra-content [data-resize-wrapper] {
+  max-width: 100%;
+}
+
+.notra-content :is(img, [data-resize-container]).ProseMirror-selectednode img,
+.notra-content img.ProseMirror-selectednode {
+  outline: 3px solid color-mix(in oklab, var(--notra-ring) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.notra-content [data-resize-handle] {
+  z-index: 1;
+  width: 0.625rem;
+  height: 0.625rem;
+  margin: -0.3125rem;
+  border: 1px solid var(--notra-border);
+  border-radius: 9999px;
+  background-color: var(--notra-background);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.notra-content [data-resize-container]:hover [data-resize-handle],
+.notra-content [data-resize-container].ProseMirror-selectednode [data-resize-handle],
+.notra-content [data-resize-container][data-resize-state="true"] [data-resize-handle] {
+  opacity: 1;
+}
+
+.notra-content :is([data-resize-handle="top-left"], [data-resize-handle="bottom-right"]) {
+  cursor: nwse-resize;
+}
+
+.notra-content :is([data-resize-handle="top-right"], [data-resize-handle="bottom-left"]) {
+  cursor: nesw-resize;
+}
+
+/* Table (shadcn/ui typography table) */
+
+.notra-content .tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.notra-content table {
+  width: 100%;
+  margin: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  overflow: hidden;
+}
+
+.notra-content tr {
+  border-top: 1px solid var(--notra-border);
+}
+
+.notra-content tr:nth-child(even) {
+  background-color: var(--notra-muted);
+}
+
+.notra-content :is(th, td) {
+  position: relative;
+  min-width: 2em;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--notra-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.notra-content th {
+  font-weight: 700;
+}
+
+.notra-content .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-color: color-mix(in oklab, var(--notra-ring) 25%, transparent);
+  pointer-events: none;
+}
+
+.notra-content .column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  bottom: -2px;
+  z-index: 3;
+  width: 4px;
+  background-color: var(--notra-ring);
+  pointer-events: none;
+}
+
+.notra-content.resize-cursor {
+  cursor: col-resize;
+}
+
+/* Toggle (details), with the Lucide `chevron-right` icon */
+
+.notra-content [data-type="details"] {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.notra-content [data-type="details"] > button {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.125rem;
+  border-radius: calc(var(--notra-radius) * 0.8);
+  color: var(--notra-muted-foreground);
+  background-color: transparent;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+
+.notra-content [data-type="details"] > button:hover {
+  color: var(--notra-foreground);
+  background-color: var(--notra-muted);
+}
+
+.notra-content [data-type="details"] > button::before {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  background-color: currentcolor;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  transition: transform 0.15s;
+}
+
+.notra-content [data-type="details"].is-open > button::before {
+  transform: rotate(90deg);
+}
+
+.notra-content [data-type="details"] > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notra-content [data-type="details"] summary {
+  display: block;
+  list-style: none;
+}
+
+.notra-content [data-type="details"] [data-type="detailsContent"] {
+  margin-top: 0.5rem;
+}
+
+/* Drag and drop (the drop cursor is rendered outside of the content element) */
+
+.notra-dropcursor {
+  border-radius: 9999px;
+  background-color: var(--notra-ring);
+}
