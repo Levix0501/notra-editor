@@ -1,10 +1,10 @@
 import type { Editor } from "@tiptap/core"
 import { NodeSelection, TextSelection } from "@tiptap/pm/state"
 import { cn } from "cn"
-import { CopyIcon, GripVerticalIcon, PlusIcon, Repeat2Icon, Trash2Icon } from "lucide-react"
-import { type DragEvent, type MouseEvent, type RefObject, useEffect, useRef, useState } from "react"
+import { CopyIcon, GripVerticalIcon, InfoIcon, PlusIcon, Repeat2Icon, Trash2Icon } from "lucide-react"
+import { type DragEvent, type MouseEvent, type RefObject, useEffect, useMemo, useRef, useState } from "react"
 
-import { blockTypes, convertBlock } from "#blocks/block-types.ts"
+import { convertBlock, getAvailableBlockTypes } from "#blocks/block-types.ts"
 import { useDictionary } from "#components/dictionary-context.tsx"
 import { ToolbarTooltip } from "#components/toolbar.tsx"
 import { Button } from "#components/ui/button.tsx"
@@ -12,16 +12,22 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "#components/ui/dropdown-menu.tsx"
+import { CALLOUT_TYPES, type CalloutType } from "#extensions/callout.ts"
 import { altKeyLabel } from "#lib/platform.ts"
 import { findBlockAtY, getHandlePosition, type HandlePosition, type HandleTarget, isListItem } from "./find-block"
 
 function canConvert(target: HandleTarget): boolean {
-  return target.node.isTextblock || isListItem(target.node) || target.node.type.name === "blockquote"
+  const { node } = target
+  // Source blocks hold text the editor cannot represent: converting them would turn it into plain text.
+  if (node.type.name === "rawBlock") return false
+  return node.isTextblock || isListItem(node) || node.type.name === "blockquote" || node.type.name === "callout"
 }
 
 interface BlockHandleProps {
@@ -36,6 +42,7 @@ interface BlockHandleProps {
  */
 export function BlockHandle({ editor, rootRef }: BlockHandleProps) {
   const dictionary = useDictionary()
+  const blockTypes = useMemo(() => getAvailableBlockTypes(editor), [editor])
   const [target, setTarget] = useState<HandleTarget | null>(null)
   const [position, setPosition] = useState<HandlePosition | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -145,6 +152,19 @@ export function BlockHandle({ editor, rootRef }: BlockHandleProps) {
       .run()
   }
 
+  const setCalloutType = (type: CalloutType) => {
+    if (!target) return
+    const { node, pos } = target
+    editor
+      .chain()
+      .focus()
+      .command(({ tr }) => {
+        tr.setNodeMarkup(pos, undefined, { ...node.attrs, type })
+        return true
+      })
+      .run()
+  }
+
   const deleteBlock = () => {
     if (!target) return
     editor
@@ -237,6 +257,29 @@ export function BlockHandle({ editor, rootRef }: BlockHandleProps) {
                       </DropdownMenuItem>
                     )
                   })}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSeparator />
+            </>
+          ) : null}
+          {target?.node.type.name === "callout" ? (
+            <>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <InfoIcon />
+                  {dictionary.callout.type}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="nt:w-44">
+                  <DropdownMenuRadioGroup
+                    value={target.node.attrs.type}
+                    onValueChange={(type: CalloutType) => setCalloutType(type)}
+                  >
+                    {CALLOUT_TYPES.map((type) => (
+                      <DropdownMenuRadioItem key={type} value={type} closeOnClick>
+                        {dictionary.callout[type]}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSeparator />

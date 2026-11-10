@@ -10,6 +10,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "#components/ui/inp
 import { Popover, PopoverContent, PopoverTrigger } from "#components/ui/popover.tsx"
 import { Separator } from "#components/ui/separator.tsx"
 import { Toggle } from "#components/ui/toggle.tsx"
+import { handleLinkClick } from "#extensions/link-click.ts"
 import { getNotraStorage } from "#extensions/notra-core.ts"
 import { normalizeUrl } from "#lib/url.ts"
 
@@ -130,7 +131,14 @@ export function LinkPopover({ editor, active, trigger = "toggle", registerShortc
                 variant="ghost"
                 size="sm"
                 nativeButton={false}
-                render={<a href={currentHref} target="_blank" rel="noopener noreferrer" />}
+                render={
+                  <a
+                    href={currentHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(event) => handleLinkClick(editor, currentHref, event.nativeEvent)}
+                  />
+                }
               >
                 <ExternalLinkIcon />
                 {dictionary.link.open}

@@ -38,3 +38,58 @@ export function App() {
 <hr>
 <p>Happy writing!</p>
 `
+
+/**
+ * A Markdown file as found in a Git repository. In the "Markdown file" mode,
+ * unchanged blocks are written back exactly as they are here.
+ */
+export const sampleMarkdown = `---
+title: Getting started
+tags: [docs, markdown]
+---
+
+<p align="center">
+  <img src="https://placehold.co/96x96/png" alt="Logo" width="96">
+</p>
+
+Getting started
+===============
+
+Edit this file like a document: only the blocks you change are rewritten,
+everything else is saved *exactly* as it was written, __including__ its style.
+
+> [!TIP]
+> Open the **Markdown** output and compare it with this source.
+
+#### Shortcuts
+
+* Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to add a link
+* Type \`/\` to insert a block
+* Read the [Tiptap docs][tiptap]
+
+1) Install the package
+1) Render the editor
+
+- [x] Front matter, HTML and alerts are kept
+- [ ] Try to break it
+
+| Feature        | Kept |
+|:---------------|-----:|
+| Front matter   |  yes |
+| HTML blocks    |  yes |
+
+<details>
+<summary>Toggles are written as HTML</summary>
+
+They work on GitHub too.
+
+</details>
+
+~~~ts
+const editor = useNotraEditor({ content, contentType: "markdown" })
+~~~
+
+***
+
+[tiptap]: https://tiptap.dev
+`

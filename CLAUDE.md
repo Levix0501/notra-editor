@@ -15,8 +15,11 @@ Run from this directory (requires pnpm 12):
 
 ## Architecture
 
-- `packages/editor/src/extensions/`: Tiptap extensions. `kit.ts` assembles them;
-  `notra-core.ts` holds runtime state (dictionary, upload handler) in editor storage.
+- `packages/editor/src/extensions/`: Tiptap extensions. `kit.ts` assembles them from the
+  `features` option; `notra-core.ts` holds runtime state (dictionary, handlers) in editor storage.
+- `packages/editor/src/extensions/markdown/`: Markdown support on top of `@tiptap/markdown`:
+  marked tokenizers (each editor has its own marked instance), source blocks for content the
+  editor cannot represent, and `source.ts`, which writes unchanged blocks back verbatim.
 - `packages/editor/src/components/`: React UI (bubble menu, slash menu, block handle,
   table menu, image panel). `components/ui/` contains shadcn/ui components.
 - `packages/editor/src/blocks/block-types.ts`: block types shared by the slash menu and the

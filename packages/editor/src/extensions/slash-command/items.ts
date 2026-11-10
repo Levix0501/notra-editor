@@ -2,7 +2,7 @@ import type { Editor, Range } from "@tiptap/core"
 import { ImageIcon, MinusIcon, Table2Icon } from "lucide-react"
 import type { ComponentType } from "react"
 
-import { type BlockTypeId, blockTypes } from "#blocks/block-types.ts"
+import { type BlockTypeId, blockTypes, isBlockTypeAvailable } from "#blocks/block-types.ts"
 import type { NotraDictionary } from "#i18n/dictionary.ts"
 import { getNotraStorage } from "../notra-core"
 
@@ -33,6 +33,7 @@ const BLOCK_KEYWORDS: Record<BlockTypeId, string[]> = {
   taskList: ["todo", "to-do", "task", "checkbox", "check", "[]"],
   toggle: ["toggle", "details", "collapse", "collapsible", "fold"],
   blockquote: ["quote", "blockquote", "citation", ">"],
+  callout: ["callout", "alert", "admonition", "note", "tip", "warning", "info"],
   codeBlock: ["code", "codeblock", "snippet", "pre", "```"],
 }
 
@@ -46,12 +47,19 @@ const BLOCK_GROUPS: Record<BlockTypeId, SlashCommandGroup> = {
   taskList: "basic",
   toggle: "basic",
   blockquote: "basic",
+  callout: "basic",
   codeBlock: "advanced",
 }
 
-/** Builds the default slash command items, localized with `dictionary`. */
-export function createDefaultSlashCommands(dictionary: NotraDictionary): SlashCommandItem[] {
-  const blockItems: SlashCommandItem[] = blockTypes.map((blockType) => ({
+/**
+ * Builds the default slash command items, localized with `dictionary`. With an
+ * `editor`, only the items whose blocks the editor supports are returned.
+ */
+export function createDefaultSlashCommands(dictionary: NotraDictionary, editor?: Editor): SlashCommandItem[] {
+  const isAvailable = (...nodes: string[]) => !editor || nodes.every((name) => editor.schema.nodes[name] !== undefined)
+
+  const available = editor ? blockTypes.filter((blockType) => isBlockTypeAvailable(editor, blockType)) : blockTypes
+  const blockItems: SlashCommandItem[] = available.map((blockType) => ({
     id: blockType.id,
     group: BLOCK_GROUPS[blockType.id],
     icon: blockType.icon,
@@ -101,7 +109,13 @@ export function createDefaultSlashCommands(dictionary: NotraDictionary): SlashCo
   const basic = blockItems.filter((item) => item.group === "basic")
   const advanced = blockItems.filter((item) => item.group === "advanced")
 
-  return [...basic, divider, image, ...advanced, table]
+  return [
+    ...basic,
+    ...(isAvailable("horizontalRule") ? [divider] : []),
+    ...(isAvailable("image") ? [image] : []),
+    ...advanced,
+    ...(isAvailable("table", "tableRow", "tableCell") ? [table] : []),
+  ]
 }
 
 function scoreItem(item: SlashCommandItem, query: string): number {

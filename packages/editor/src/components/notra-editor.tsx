@@ -1,7 +1,7 @@
 import type { Editor } from "@tiptap/core"
 import { EditorContent, useEditorState } from "@tiptap/react"
 import { cn } from "cn"
-import { type ReactNode, useMemo, useRef } from "react"
+import { type ReactNode, useEffect, useMemo, useRef } from "react"
 
 import { BlockHandle } from "#components/block-handle/block-handle.tsx"
 import { NotraBubbleMenu } from "#components/bubble-menu/bubble-menu.tsx"
@@ -38,26 +38,36 @@ export interface NotraEditorViewProps {
    * @default true
    */
   bubbleMenu?: boolean
+  /**
+   * Element that menus, popovers and tooltips are rendered into. Defaults to
+   * `document.body`. Use it to keep them inside a dialog, a shadow root or a
+   * fullscreen element.
+   */
+  portalContainer?: HTMLElement | null
   /** Extra UI rendered inside the editor root. */
   children?: ReactNode
 }
 
 /** Renders an editor created with `useNotraEditor`, including its menus. */
 export function NotraEditorView({
-  editor,
+  editor: editorProp,
   theme,
   className,
   blockHandle = true,
   bubbleMenu = true,
+  portalContainer,
   children,
 }: NotraEditorViewProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const themeClassName = useThemeClassName(theme)
+  // When `useNotraEditor` re-creates the editor, the previous one is destroyed
+  // (without storage and schema) and may still be rendered once.
+  const editor = editorProp?.isDestroyed ? null : editorProp
 
   const state = useEditorState({
     editor,
     selector: ({ editor: instance }) => ({
-      dictionary: instance ? getNotraStorage(instance).dictionary : defaultDictionary,
+      dictionary: instance && !instance.isDestroyed ? getNotraStorage(instance).dictionary : defaultDictionary,
       editable: instance?.isEditable ?? false,
     }),
     equalityFn: (a, b) => a.dictionary === b?.dictionary && a.editable === b?.editable,
@@ -67,7 +77,23 @@ export function NotraEditorView({
   const editable = state?.editable ?? false
   const showBlockHandle = blockHandle && editable
 
-  const portalValue = useMemo(() => ({ className: cn("notra-scope", themeClassName) }), [themeClassName])
+  const portalValue = useMemo(
+    () => ({ className: cn("notra-scope", themeClassName), container: portalContainer }),
+    [themeClassName, portalContainer],
+  )
+
+  // Menus rendered by editor plugins (the slash menu) read the container from the storage.
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    const storage = getNotraStorage(editor)
+    storage.portalContainer = portalContainer ?? null
+    return () => {
+      if (storage.portalContainer === portalContainer) storage.portalContainer = null
+    }
+  }, [editor, portalContainer])
+
+  const hasTable = editor?.schema.nodes.table !== undefined
+  const hasImage = editor?.schema.nodes.image !== undefined
 
   return (
     <NotraDictionaryContext value={dictionary}>
@@ -84,9 +110,9 @@ export function NotraEditorView({
             {editor && editable ? (
               <>
                 {bubbleMenu ? <NotraBubbleMenu editor={editor} /> : null}
-                <TableMenu editor={editor} />
+                {hasTable ? <TableMenu editor={editor} /> : null}
                 <SlashMenu editor={editor} />
-                <ImagePanel editor={editor} />
+                {hasImage ? <ImagePanel editor={editor} /> : null}
                 {showBlockHandle ? <BlockHandle editor={editor} rootRef={rootRef} /> : null}
               </>
             ) : null}
@@ -109,7 +135,15 @@ export interface NotraEditorProps extends UseNotraEditorOptions, Omit<NotraEdito
  *
  * <NotraEditor content="<p>Hello</p>" onUpdate={(editor) => save(editor.getJSON())} />
  */
-export function NotraEditor({ theme, className, blockHandle, bubbleMenu, children, ...options }: NotraEditorProps) {
+export function NotraEditor({
+  theme,
+  className,
+  blockHandle,
+  bubbleMenu,
+  portalContainer,
+  children,
+  ...options
+}: NotraEditorProps) {
   const editor = useNotraEditor(options)
 
   return (
@@ -119,6 +153,7 @@ export function NotraEditor({ theme, className, blockHandle, bubbleMenu, childre
       className={className}
       blockHandle={blockHandle}
       bubbleMenu={bubbleMenu}
+      portalContainer={portalContainer}
     >
       {children}
     </NotraEditorView>
