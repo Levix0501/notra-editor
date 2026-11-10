@@ -1,7 +1,8 @@
 import type { Editor } from "@tiptap/core"
 import { ChevronDownIcon } from "lucide-react"
+import { useMemo } from "react"
 
-import { type BlockTypeId, blockTypes, convertBlock } from "#blocks/block-types.ts"
+import { type BlockTypeId, convertBlock, getAvailableBlockTypes } from "#blocks/block-types.ts"
 import { useDictionary } from "#components/dictionary-context.tsx"
 import { ToolbarTooltip } from "#components/toolbar.tsx"
 import { Button } from "#components/ui/button.tsx"
@@ -23,6 +24,7 @@ interface TurnIntoMenuProps {
 export function TurnIntoMenu({ editor, activeId }: TurnIntoMenuProps) {
   const dictionary = useDictionary()
   const activeTitle = activeId ? dictionary.blocks[activeId] : dictionary.bubbleMenu.turnInto
+  const blockTypes = useMemo(() => getAvailableBlockTypes(editor), [editor])
 
   const turnInto = (id: BlockTypeId) => {
     const blockType = blockTypes.find((type) => type.id === id)

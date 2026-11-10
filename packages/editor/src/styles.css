@@ -412,7 +412,19 @@
  */
 
 .notra-content
-  :where(p, ul, ol, blockquote, pre, hr, img, .tableWrapper, [data-resize-container], [data-type="details"]) {
+  :where(
+    p,
+    ul,
+    ol,
+    blockquote,
+    pre,
+    hr,
+    img,
+    .tableWrapper,
+    [data-resize-container],
+    [data-type="details"],
+    [data-type="callout"]
+  ) {
   margin-top: 1.5rem;
 }
 
@@ -426,6 +438,10 @@
 
 .notra-content h3 {
   margin-top: 2rem;
+}
+
+.notra-content :is(h4, h5, h6) {
+  margin-top: 1.75rem;
 }
 
 .notra-content li {
@@ -447,6 +463,9 @@
     h1,
     h2,
     h3,
+    h4,
+    h5,
+    h6,
     ul,
     ol,
     blockquote,
@@ -455,7 +474,8 @@
     img,
     .tableWrapper,
     [data-resize-container],
-    [data-type="details"]
+    [data-type="details"],
+    [data-type="callout"]
   ):first-child {
   margin-top: 0;
 }
@@ -484,6 +504,26 @@
   line-height: 2rem;
   font-weight: 600;
   letter-spacing: -0.025em;
+}
+
+.notra-content h4 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.notra-content h5 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.notra-content h6 {
+  font-size: 1rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--notra-muted-foreground);
 }
 
 .notra-content a {
@@ -888,6 +928,120 @@
 
 .notra-content [data-type="details"] [data-type="detailsContent"] {
   margin-top: 0.5rem;
+}
+
+/* Callout (GitHub alert), with Lucide icons */
+
+.notra-content [data-type="callout"] {
+  --notra-callout-color: var(--notra-text-blue);
+  --notra-callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E");
+
+  position: relative;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--notra-border);
+  border-left: 3px solid var(--notra-callout-color);
+  border-radius: var(--notra-radius);
+}
+
+.notra-content [data-type="callout"]::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: 0.25rem;
+  padding-left: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--notra-callout-color);
+}
+
+.notra-content [data-type="callout"]::after {
+  content: "";
+  position: absolute;
+  top: calc(0.75rem + 0.375rem);
+  left: 1rem;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--notra-callout-color);
+  mask: var(--notra-callout-icon) center / contain no-repeat;
+  pointer-events: none;
+}
+
+.notra-content [data-type="callout"][data-callout-type="tip"] {
+  --notra-callout-color: var(--notra-text-green);
+  --notra-callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E");
+}
+
+.notra-content [data-type="callout"][data-callout-type="important"] {
+  --notra-callout-color: var(--notra-text-purple);
+  --notra-callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z'/%3E%3Cpath d='M12 15h.01'/%3E%3Cpath d='M12 7v4'/%3E%3C/svg%3E");
+}
+
+.notra-content [data-type="callout"][data-callout-type="warning"] {
+  --notra-callout-color: var(--notra-text-yellow);
+  --notra-callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E");
+}
+
+.notra-content [data-type="callout"][data-callout-type="caution"] {
+  --notra-callout-color: var(--notra-text-red);
+  --notra-callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16h.01'/%3E%3Cpath d='M12 8v4'/%3E%3Cpath d='M15.312 2a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586l-4.688-4.688A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2z'/%3E%3C/svg%3E");
+}
+
+/* Source the editor cannot represent (HTML, front matter…), kept verbatim */
+
+.notra-content pre[data-type="raw-block"] {
+  border-style: dashed;
+}
+
+.notra-content pre[data-type="raw-block"]::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--notra-font-sans);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--notra-muted-foreground);
+  user-select: none;
+}
+
+/* Source blocks displayed by the application (`renderRawBlock`) */
+
+.notra-content .notra-raw-block {
+  margin-top: 1.5rem;
+}
+
+.notra-content .notra-raw-block:first-child,
+.notra-content .notra-raw-block > pre {
+  margin-top: 0;
+}
+
+.notra-content .notra-raw-preview {
+  margin: -0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--notra-radius);
+  cursor: text;
+  transition: background-color 0.15s;
+}
+
+.notra-content .notra-raw-preview:hover {
+  background-color: var(--notra-muted);
+}
+
+.notra-content [data-type="raw-inline"] {
+  padding: 0.1rem 0.3rem;
+  border: 1px dashed var(--notra-border);
+  border-radius: 0.25rem;
+  font-family: var(--notra-font-mono);
+  font-size: 0.8125rem;
+  color: var(--notra-muted-foreground);
+  white-space: pre-wrap;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.notra-content [data-type="raw-inline"].ProseMirror-selectednode {
+  outline: 2px solid color-mix(in oklab, var(--notra-ring) 50%, transparent);
+  outline-offset: 1px;
 }
 
 /* Drag and drop (the drop cursor is rendered outside of the content element) */

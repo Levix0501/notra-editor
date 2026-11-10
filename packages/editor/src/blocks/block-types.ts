@@ -5,6 +5,7 @@ import {
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
+  InfoIcon,
   ListCollapseIcon,
   ListIcon,
   ListOrderedIcon,
@@ -28,6 +29,7 @@ export type BlockTypeId = keyof Pick<
   | "taskList"
   | "toggle"
   | "blockquote"
+  | "callout"
   | "codeBlock"
 >
 
@@ -37,6 +39,8 @@ export interface BlockType {
   icon: LucideIcon
   /** Markdown shortcut that creates this block, shown as a hint. */
   shortcut?: string
+  /** Node types the block needs. The block is not offered when one of them is missing. */
+  nodes: readonly string[]
   /** Whether the block containing the selection is of this type. */
   isActive: (editor: Editor) => boolean
   /** Converts the block(s) in the current selection into this type. */
@@ -94,6 +98,7 @@ function isPlainParagraph(editor: Editor): boolean {
     !editor.isActive("orderedList") &&
     !editor.isActive("taskList") &&
     !editor.isActive("blockquote") &&
+    !editor.isActive("callout") &&
     !editor.isActive("details")
   )
 }
@@ -102,6 +107,7 @@ export const blockTypes: readonly BlockType[] = [
   {
     id: "paragraph",
     icon: TypeIcon,
+    nodes: ["paragraph"],
     isActive: isPlainParagraph,
     convert: (chain) => chain.clearNodes().setParagraph(),
   },
@@ -109,6 +115,7 @@ export const blockTypes: readonly BlockType[] = [
     id: "heading1",
     icon: Heading1Icon,
     shortcut: "#",
+    nodes: ["heading"],
     isActive: (editor) => editor.isActive("heading", { level: 1 }),
     convert: (chain) => chain.clearNodes().setHeading({ level: 1 }),
   },
@@ -116,6 +123,7 @@ export const blockTypes: readonly BlockType[] = [
     id: "heading2",
     icon: Heading2Icon,
     shortcut: "##",
+    nodes: ["heading"],
     isActive: (editor) => editor.isActive("heading", { level: 2 }),
     convert: (chain) => chain.clearNodes().setHeading({ level: 2 }),
   },
@@ -123,6 +131,7 @@ export const blockTypes: readonly BlockType[] = [
     id: "heading3",
     icon: Heading3Icon,
     shortcut: "###",
+    nodes: ["heading"],
     isActive: (editor) => editor.isActive("heading", { level: 3 }),
     convert: (chain) => chain.clearNodes().setHeading({ level: 3 }),
   },
@@ -130,6 +139,7 @@ export const blockTypes: readonly BlockType[] = [
     id: "bulletList",
     icon: ListIcon,
     shortcut: "-",
+    nodes: ["bulletList", "listItem"],
     isActive: (editor) => editor.isActive("bulletList"),
     convert: (chain) => chain.clearNodes().toggleBulletList(),
   },
@@ -137,6 +147,7 @@ export const blockTypes: readonly BlockType[] = [
     id: "orderedList",
     icon: ListOrderedIcon,
     shortcut: "1.",
+    nodes: ["orderedList", "listItem"],
     isActive: (editor) => editor.isActive("orderedList"),
     convert: (chain) => chain.clearNodes().toggleOrderedList(),
   },
@@ -144,12 +155,14 @@ export const blockTypes: readonly BlockType[] = [
     id: "taskList",
     icon: ListTodoIcon,
     shortcut: "[]",
+    nodes: ["taskList", "taskItem"],
     isActive: (editor) => editor.isActive("taskList"),
     convert: (chain) => chain.clearNodes().toggleTaskList(),
   },
   {
     id: "toggle",
     icon: ListCollapseIcon,
+    nodes: ["details", "detailsSummary", "detailsContent"],
     isActive: (editor) => editor.isActive("details"),
     convert: convertToToggle,
   },
@@ -157,13 +170,22 @@ export const blockTypes: readonly BlockType[] = [
     id: "blockquote",
     icon: TextQuoteIcon,
     shortcut: ">",
+    nodes: ["blockquote"],
     isActive: (editor) => editor.isActive("blockquote"),
     convert: (chain) => chain.clearNodes().toggleBlockquote(),
+  },
+  {
+    id: "callout",
+    icon: InfoIcon,
+    nodes: ["callout"],
+    isActive: (editor) => editor.isActive("callout"),
+    convert: (chain) => chain.clearNodes().toggleCallout(),
   },
   {
     id: "codeBlock",
     icon: SquareCodeIcon,
     shortcut: "```",
+    nodes: ["codeBlock"],
     isActive: (editor) => editor.isActive("codeBlock"),
     convert: (chain) => chain.clearNodes().toggleCodeBlock(),
   },
@@ -180,8 +202,19 @@ const DETECTION_ORDER: readonly BlockTypeId[] = [
   "bulletList",
   "toggle",
   "blockquote",
+  "callout",
   "paragraph",
 ]
+
+/** Whether the editor has the node types a block type needs. */
+export function isBlockTypeAvailable(editor: Editor, blockType: BlockType): boolean {
+  return blockType.nodes.every((name) => editor.schema.nodes[name] !== undefined)
+}
+
+/** Returns the block types the editor can create, in menu order. */
+export function getAvailableBlockTypes(editor: Editor): BlockType[] {
+  return blockTypes.filter((blockType) => isBlockTypeAvailable(editor, blockType))
+}
 
 /** Returns the block type of the block containing the selection. */
 export function getActiveBlockType(editor: Editor): BlockType | undefined {

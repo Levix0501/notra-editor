@@ -1,4 +1,14 @@
-import { EyeIcon, type LucideIcon, MonitorIcon, MoonIcon, PencilLineIcon, SquarePenIcon, SunIcon } from "lucide-react"
+import {
+  EyeIcon,
+  FileCodeIcon,
+  FileTextIcon,
+  type LucideIcon,
+  MonitorIcon,
+  MoonIcon,
+  PencilLineIcon,
+  SquarePenIcon,
+  SunIcon,
+} from "lucide-react"
 import { type Editor, en, NotraEditorView, useNotraEditor, zhCN } from "notra-editor"
 import { useEffect, useState } from "react"
 
@@ -6,11 +16,13 @@ import { Badge } from "#components/ui/badge.tsx"
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "#components/ui/card.tsx"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#components/ui/tabs.tsx"
 import { ToggleGroup, ToggleGroupItem } from "#components/ui/toggle-group.tsx"
-import { sampleContent } from "./sample-content.ts"
+import { sampleContent, sampleMarkdown } from "./sample-content.ts"
 
 type ColorScheme = "light" | "dark" | "system"
 type Locale = "en" | "zh-CN"
 type Mode = "edit" | "read"
+/** A rich text document, or a Markdown file whose unchanged blocks are kept verbatim. */
+type DocumentKind = "rich-text" | "markdown"
 type OutputFormat = "markdown" | "json" | "html"
 
 const OUTPUT_FORMATS: readonly { value: OutputFormat; label: string }[] = [
@@ -80,15 +92,22 @@ export function App() {
   const [locale, setLocale] = useState<Locale>("en")
   const [mode, setMode] = useState<Mode>("edit")
   const [format, setFormat] = useState<OutputFormat>("markdown")
+  const [documentKind, setDocumentKind] = useState<DocumentKind>("rich-text")
   const [output, setOutput] = useState("")
 
   useColorScheme(scheme)
 
-  const editor = useNotraEditor({
-    content: sampleContent,
-    editable: mode === "edit",
-    dictionary: locale === "zh-CN" ? zhCN : en,
-  })
+  const isMarkdown = documentKind === "markdown"
+  const editor = useNotraEditor(
+    {
+      content: isMarkdown ? sampleMarkdown : sampleContent,
+      contentType: isMarkdown ? "markdown" : "html",
+      markdown: { preserveSource: isMarkdown },
+      editable: mode === "edit",
+      dictionary: locale === "zh-CN" ? zhCN : en,
+    },
+    [documentKind],
+  )
 
   useEffect(() => {
     // Expose the editor for debugging in the browser console.
@@ -136,6 +155,15 @@ export function App() {
               options={[
                 { value: "en", label: "English" },
                 { value: "zh-CN", label: "简体中文" },
+              ]}
+            />
+            <Choice
+              label="Document"
+              value={documentKind}
+              onChange={setDocumentKind}
+              options={[
+                { value: "rich-text", label: "Rich text", icon: FileTextIcon },
+                { value: "markdown", label: "Markdown file", icon: FileCodeIcon },
               ]}
             />
             <Choice

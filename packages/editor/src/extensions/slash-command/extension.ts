@@ -47,7 +47,7 @@ export const SlashCommand = Extension.create<Record<string, never>, SlashCommand
         },
         items: ({ query, editor }) => {
           const storage = getNotraStorage(editor)
-          const defaults = createDefaultSlashCommands(storage.dictionary)
+          const defaults = createDefaultSlashCommands(storage.dictionary, editor)
           const items = storage.slashCommands ? storage.slashCommands(defaults) : defaults
           return filterSlashCommands(items, query)
         },
@@ -61,6 +61,8 @@ export const SlashCommand = Extension.create<Record<string, never>, SlashCommand
             onStart: (props) => {
               const element = document.createElement("div")
               element.setAttribute("data-notra-slash-menu", "")
+              // A connected element is positioned where it is instead of being moved to `document.body`.
+              getNotraStorage(props.editor).portalContainer?.appendChild(element)
               // Floating UI positions the element asynchronously. Until then, keep
               // it out of the flow, where it would extend the end of the document.
               Object.assign(element.style, {
@@ -77,9 +79,11 @@ export const SlashCommand = Extension.create<Record<string, never>, SlashCommand
             },
             onKeyDown: ({ event }) => store.handleKeyDown(event),
             onExit: () => {
+              const { element } = store.getSnapshot()
               store.close()
               unmount?.()
               unmount = undefined
+              element?.remove()
             },
           }
         },

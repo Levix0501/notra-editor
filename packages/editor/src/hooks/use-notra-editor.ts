@@ -2,9 +2,14 @@ import type { AnyExtension, Content, Editor, FocusPosition } from "@tiptap/core"
 import { useEditor } from "@tiptap/react"
 import { type DependencyList, useEffect, useLayoutEffect, useMemo, useRef } from "react"
 
+import type { NotraFeatures } from "#extensions/features.ts"
+import type { ResolveImageUrl } from "#extensions/image.ts"
 import { createNotraExtensions } from "#extensions/kit.ts"
+import type { LinkClickHandler } from "#extensions/link-click.ts"
+import type { NotraMarkdownOptions } from "#extensions/markdown/index.ts"
 import {
   getNotraStorage,
+  type RawBlockRenderer,
   type SlashCommandsResolver,
   type UploadImageHandler,
   updateNotraStorage,
@@ -36,13 +41,42 @@ export interface UseNotraEditorOptions {
   placeholder?: string
   /** UI strings. Pass a complete locale (e.g. `zhCN`) or override single entries. */
   dictionary?: PartialNotraDictionary
+  /**
+   * Editing features to enable, disable or configure; all are enabled by
+   * default. The menus only offer enabled features. Only read when the editor
+   * is created. Use `markdownFeatures` for documents stored as Markdown.
+   */
+  features?: NotraFeatures
+  /**
+   * Markdown options, for example `{ preserveSource: true }` to write
+   * unchanged blocks back verbatim. Only read when the editor is created.
+   */
+  markdown?: NotraMarkdownOptions
   /** Additional Tiptap extensions. Only read when the editor is created. */
   extensions?: AnyExtension[]
   /**
-   * Uploads pasted, dropped or picked image files and resolves with their URL.
-   * Images are embedded as data URLs when no handler is provided.
+   * Uploads pasted, dropped or picked image files and resolves with the `src`
+   * to store. Images are embedded as data URLs when no handler is provided.
    */
   uploadImage?: UploadImageHandler
+  /**
+   * Turns the stored `src` of images into a URL that can be displayed, for
+   * example a signed URL or a URL for a path relative to the edited file.
+   * The document keeps the stored `src`.
+   */
+  resolveImageUrl?: ResolveImageUrl
+  /**
+   * Opens links: clicks on links of read-only content and the "open link"
+   * buttons. Return `true` when the link was handled; otherwise the browser
+   * opens it.
+   */
+  onLinkClick?: LinkClickHandler
+  /**
+   * Displays source blocks (front matter, HTML…) differently, for example
+   * front matter as a property list. Return `null` to show the source. Read
+   * when a block is rendered.
+   */
+  renderRawBlock?: RawBlockRenderer
   /** Customizes the items of the `/` command menu. */
   slashCommands?: SlashCommandsResolver
   /**
@@ -76,8 +110,13 @@ export function useNotraEditor(options: UseNotraEditorOptions = {}, deps: Depend
     editable = true,
     autofocus = false,
     placeholder,
+    features,
+    markdown,
     extensions,
     uploadImage,
+    resolveImageUrl,
+    onLinkClick,
+    renderRawBlock,
     slashCommands,
     immediatelyRender,
     onCreate,
@@ -105,7 +144,17 @@ export function useNotraEditor(options: UseNotraEditorOptions = {}, deps: Depend
       contentType,
       autofocus,
       extensions: [
-        ...createNotraExtensions({ dictionary, placeholder, uploadImage, slashCommands }),
+        ...createNotraExtensions({
+          dictionary,
+          placeholder,
+          uploadImage,
+          slashCommands,
+          resolveImageUrl,
+          onLinkClick,
+          renderRawBlock,
+          features,
+          markdown,
+        }),
         ...(extensions ?? []),
       ],
     }),
@@ -143,10 +192,13 @@ export function useNotraEditor(options: UseNotraEditorOptions = {}, deps: Depend
     // Callbacks are not rendered, so they do not need a refresh transaction.
     storage.uploadImage = uploadImage
     storage.slashCommands = slashCommands
+    storage.resolveImageUrl = resolveImageUrl
+    storage.onLinkClick = onLinkClick
+    storage.renderRawBlock = renderRawBlock
     if (storage.dictionary !== dictionary || storage.placeholder !== placeholder) {
       updateNotraStorage(editor, { dictionary, placeholder })
     }
-  }, [editor, dictionary, placeholder, uploadImage, slashCommands])
+  }, [editor, dictionary, placeholder, uploadImage, slashCommands, resolveImageUrl, onLinkClick, renderRawBlock])
 
   return editor
 }

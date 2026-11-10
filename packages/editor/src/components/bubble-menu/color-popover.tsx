@@ -67,9 +67,13 @@ interface ColorPopoverProps {
   editor: Editor
   textColor: string | undefined
   highlightColor: string | undefined
+  /** Whether text colors can be applied (the `textColor` feature). */
+  showTextColor: boolean
+  /** Whether highlights can be applied (the `highlight` feature). */
+  showHighlight: boolean
 }
 
-export function ColorPopover({ editor, textColor, highlightColor }: ColorPopoverProps) {
+export function ColorPopover({ editor, textColor, highlightColor, showTextColor, showHighlight }: ColorPopoverProps) {
   const dictionary = useDictionary()
   const [open, setOpen] = useState(false)
 
@@ -109,25 +113,29 @@ export function ColorPopover({ editor, textColor, highlightColor }: ColorPopover
         finalFocus={false}
         className="nt:w-auto nt:gap-3"
       >
-        <ColorGroup
-          title={dictionary.colors.text}
-          palette={TEXT_COLORS}
-          value={textColor}
-          onChange={applyTextColor}
-          renderSwatch={(color) => <BaselineIcon style={{ color }} />}
-        />
-        <ColorGroup
-          title={dictionary.colors.highlight}
-          palette={HIGHLIGHT_COLORS}
-          value={highlightColor}
-          onChange={applyHighlightColor}
-          renderSwatch={(color) => (
-            <span
-              className="nt:size-4 nt:rounded-sm nt:border nt:border-foreground/15"
-              style={{ backgroundColor: color }}
-            />
-          )}
-        />
+        {showTextColor ? (
+          <ColorGroup
+            title={dictionary.colors.text}
+            palette={TEXT_COLORS}
+            value={textColor}
+            onChange={applyTextColor}
+            renderSwatch={(color) => <BaselineIcon style={{ color }} />}
+          />
+        ) : null}
+        {showHighlight ? (
+          <ColorGroup
+            title={dictionary.colors.highlight}
+            palette={HIGHLIGHT_COLORS}
+            value={highlightColor}
+            onChange={applyHighlightColor}
+            renderSwatch={(color) => (
+              <span
+                className="nt:size-4 nt:rounded-sm nt:border nt:border-foreground/15"
+                style={{ backgroundColor: color }}
+              />
+            )}
+          />
+        ) : null}
       </PopoverContent>
     </Popover>
   )
