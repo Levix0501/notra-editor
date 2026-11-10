@@ -41,3 +41,5 @@ Run from this directory (requires pnpm 12):
   `preventFocusLoss` on buttons and refocus the editor in commands (`editor.chain().focus()`).
 - Code, comments, commit messages and docs are in English.
 - Add a changeset (`pnpm changeset`) for user-facing changes to `notra-editor`.
+- Releases are automated (`.github/workflows/release.yml`): merging the release pull request that
+  the workflow opens publishes to npm with trusted publishing.

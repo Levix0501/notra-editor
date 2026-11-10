@@ -77,9 +77,23 @@ built `dist` output, exactly like an application installing the package from npm
 
 ## Releasing
 
+Releases are automated with Changesets and the [Release workflow](./.github/workflows/release.yml):
+
 1. Add a changeset to every pull request that changes the package: `pnpm changeset`.
-2. Version the package and update the changelog: `pnpm version-packages`.
-3. Build and publish to npm: `pnpm release`.
+2. When changesets reach `main`, the workflow opens or updates the release pull request
+   (`chore: release notra-editor`), which bumps the version and updates the changelog.
+3. Merging the release pull request runs `pnpm check` and publishes the package to npm with
+   [trusted publishing](https://docs.npmjs.com/trusted-publishers) and provenance. The workflow
+   also pushes the git tag and creates the GitHub release.
+
+While `.changeset/pre.json` exists (Changesets pre mode), releases are prereleases such as
+`3.0.0-canary.1` and are published under the pre mode tag (`canary`). Until the first stable
+release, the workflow also points `latest` to the new prerelease. Run `pnpm changeset pre exit` in
+a pull request to release a stable version.
+
+The npm package trusts the `release.yml` workflow of this repository to publish and to manage
+dist-tags, so renaming the file requires updating the trusted publisher in the package settings
+on npm.
 
 ## License
 
