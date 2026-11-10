@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/dist", "!**/.turbo", "!**/pnpm-lock.yaml", "!**/.changeset/*.md", "!**/CHANGELOG.md"]
+    "includes": ["**", "!**/dist", "!**/.turbo", "!**/pnpm-lock.yaml", "!**/.changeset/**/*.md", "!**/CHANGELOG.md"]
   },
   "formatter": {
     "enabled": true,
