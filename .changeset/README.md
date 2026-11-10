@@ -9,5 +9,6 @@ include a changeset describing the change for the changelog:
 pnpm changeset
 ```
 
-On release, `pnpm version-packages` consumes the changesets, bumps versions and
-updates `CHANGELOG.md`; `pnpm release` builds and publishes to npm.
+When changesets reach `main`, the Release workflow opens a release pull request
+that consumes them, bumps the version and updates `CHANGELOG.md`. Merging that
+pull request publishes the package to npm.
