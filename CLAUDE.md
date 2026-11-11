@@ -28,9 +28,14 @@ Run from this directory (requires pnpm 12):
   toggles back verbatim. Some of it replaces internals of `@tiptap/markdown`
   (`encodeTextForMarkdown`, `getMarkOpening`, `getMarkClosing`, `applyMarkToContent`,
   `renderNodesWithMarkBoundaries`, `getMarksToOpenForSerialization`); `test/markdown*.test.ts`
-  covers them, so run it after upgrading Tiptap.
+  covers them. This is why the `@tiptap/*` dependencies allow a single minor version
+  (`~3.33.0`): upgrade them together and run the tests before widening the range.
 - Line breaks in the text of paragraphs are Markdown soft line breaks: `soft-breaks.ts` keeps
-  ProseMirror from turning them into hard breaks when text blocks are joined.
+  ProseMirror from turning them into hard breaks when text blocks are joined, and turns them into
+  spaces in headings, which are a single line.
+- `update-content.ts` compares documents node by node and only replaces complete nodes or text
+  inside of a text block: ProseMirror does not fit open content into isolating nodes (source
+  blocks, table cells, toggles), which split or got a new node for the end of a changed range.
 - `markdownFeatures` turns off what Markdown cannot store; `table.ts` holds the text-only table
   cells it uses (`blocksInCells: false`).
 - `packages/editor/src/components/`: React UI (bubble menu, slash menu, block handle,

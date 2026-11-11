@@ -1,6 +1,7 @@
 import { Extension, type JSONContent, type MarkdownParseHelpers, type MarkdownToken } from "@tiptap/core"
 
 import type { NotraMarkdownContext } from "./context"
+import { EMPTY_ITEM_TEXT } from "./list-markers"
 import { trimTrailingLines } from "./raw-block"
 
 interface ListSyntaxOptions {
@@ -13,19 +14,48 @@ function createSource(token: MarkdownToken, helpers: MarkdownParseHelpers): JSON
   return source ? [helpers.createNode("rawBlock", { kind: "markdown" }, [helpers.createTextNode(source)])] : []
 }
 
+/** The first block of a list item, without its checkbox. */
+function getFirstBlock(item: MarkdownToken): MarkdownToken | undefined {
+  return ((item.tokens ?? []) as MarkdownToken[]).find((token) => token.type !== "space" && token.type !== "checkbox")
+}
+
+/**
+ * Whether the checkbox of a task without text (`- [ ]`, `- [x]`) is checked,
+ * or `null` for other items. Like GitHub, marked only reads a task when text
+ * follows the checkbox, and gives the checkbox as text. Such items are read
+ * as empty tasks, like Tiptap does and the editor writes them.
+ */
+function getEmptyTask(item: MarkdownToken): boolean | null {
+  const first = getFirstBlock(item)
+  if (first?.type !== "text" && first?.type !== "paragraph") {
+    return null
+  }
+  const inline = (first.tokens ?? []) as MarkdownToken[]
+  const checkbox = /^\[([ xX])\]$/.exec(String(first.text ?? "").trim())
+  // `[x]` is a link where a definition defines it.
+  return checkbox && inline.length === 1 && inline[0]?.type === "text" ? checkbox[1] !== " " : null
+}
+
 /**
  * Reads the blocks of a list item. In tight lists, marked gives paragraphs as
  * `text` tokens (every paragraph, not only the first one: text after a code
- * block is one too), and the checkbox of a task as a token of its own.
+ * block is one too), and the checkbox of a task as a token of its own. With
+ * `emptyText`, the first paragraph is empty: its text is the checkbox of an
+ * empty task. The text of empty nested items (`&nbsp;`) is not kept either.
  */
-function parseItem(item: MarkdownToken, helpers: MarkdownParseHelpers): JSONContent[] {
+function parseItem(item: MarkdownToken, helpers: MarkdownParseHelpers, emptyText = false): JSONContent[] {
   const blocks: JSONContent[] = []
+  const first = getFirstBlock(item)
   for (const token of (item.tokens ?? []) as MarkdownToken[]) {
     if (token.type === "space" || token.type === "checkbox") {
       continue
     }
     if (token.type !== "text" && token.type !== "paragraph") {
       blocks.push(...helpers.parseChildren([token]))
+      continue
+    }
+    if (token === first && (emptyText || String(token.raw ?? "").trim() === EMPTY_ITEM_TEXT)) {
+      blocks.push(helpers.createNode("paragraph", undefined, []))
       continue
     }
     const inline = ((token.tokens ?? []) as MarkdownToken[]).filter((child) => child.type !== "checkbox")
@@ -86,12 +116,14 @@ export const ListSyntax = Extension.create<ListSyntaxOptions>({
 
     const lists: JSONContent[] = []
     for (const item of items) {
-      const [listType, itemType] = item.task ? ["taskList", "taskItem"] : ["bulletList", "listItem"]
+      const emptyTask = item.task ? null : getEmptyTask(item)
+      const isTask = Boolean(item.task) || emptyTask !== null
+      const [listType, itemType] = isTask ? ["taskList", "taskItem"] : ["bulletList", "listItem"]
       if (!nodes[listType] || !nodes[itemType]) {
         return createSource(token, helpers)
       }
-      const attrs = item.task ? { checked: Boolean(item.checked) } : undefined
-      const node = helpers.createNode(itemType, attrs, parseItem(item, helpers))
+      const attrs = isTask ? { checked: emptyTask ?? Boolean(item.checked) } : undefined
+      const node = helpers.createNode(itemType, attrs, parseItem(item, helpers, emptyTask !== null))
       const last = lists.at(-1)
       if (last?.type === listType) {
         last.content = [...(last.content ?? []), node]

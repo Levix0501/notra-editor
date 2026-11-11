@@ -75,6 +75,23 @@ export function escapeText(text: string): string {
   })
 }
 
+/**
+ * The characters that make text a link without brackets in GitHub Flavored
+ * Markdown (autolink literals): the colon of `https://`, `http://` and
+ * `ftp://`, the dot after `www`, and the `@` of email addresses. marked
+ * also reads them inside of words.
+ */
+const AUTOLINK_LITERAL = /(?<=(?:https?|ftp)):(?=\/\/)|(?<=www)\.(?=[\p{L}\p{N}_-])|(?<=[\w.+-])@(?=[\w-]+\.[\w-])/giu
+
+/**
+ * Escapes text that would be read as a link (`https\://example.com`): the
+ * text of a URL that is not a link, after a link was removed or code became
+ * text, would become a link again.
+ */
+export function escapeAutolinks(text: string): string {
+  return text.replace(AUTOLINK_LITERAL, "\\$&")
+}
+
 /** Characters that Tiptap escapes in text. */
 const ESCAPED_CHARACTERS = /[\\`*_~[\]<>&]/
 
@@ -152,7 +169,11 @@ export const MarkdownEscaping = Extension.create<MarkdownEscapingOptions>({
       if (isCode) {
         return text
       }
-      const escaped = context.escaping === "minimal" ? escapeText(text) : encode(text, node, parentNode)
+      let escaped = context.escaping === "minimal" ? escapeText(text) : encode(text, node, parentNode)
+      // Text inside of a link is not read as another link.
+      if (!(node.marks ?? []).some((mark) => mark.type === "link")) {
+        escaped = escapeAutolinks(escaped)
+      }
       // A non-breaking space looks like a space: unless the source has them as characters, it is written as a reference.
       return context.nonBreakingSpace === "reference" ? escaped.replace(/\u00A0/g, "&nbsp;") : escaped
     }

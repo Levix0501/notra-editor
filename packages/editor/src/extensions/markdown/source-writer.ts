@@ -3,9 +3,15 @@ import type { MarkdownManager } from "@tiptap/markdown"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 
 import type { NotraMarkdownContext } from "./context"
-import { getListKind, getOtherMarker, interruptsParagraph, LIST_MARKER, separateLists } from "./list-markers"
+import {
+  EMPTY_ITEM_TEXT,
+  getListKind,
+  getOtherMarker,
+  interruptsParagraph,
+  LIST_MARKER,
+  separateLists,
+} from "./list-markers"
 import { splitDetails } from "./marked"
-import { escapeBlockSyntax } from "./paragraph"
 import {
   createSnapshot,
   getChildren,
@@ -494,12 +500,24 @@ export class SourceWriter {
    * of the source are kept where the item reads back the same with them.
    * Returns `null` when the item cannot be matched with its source.
    */
-  private writeItem(item: SourceChild, node: ProseMirrorNode): string | null {
+  private writeItem(item: SourceChild, node: ProseMirrorNode, nested: boolean): string | null {
     const described = this.describeItem(item)
     if (!described || item.node.type !== node.type) {
       return null
     }
     const { prefix, indent, loose, children: originals } = described
+    // The start of the first line: the marker of the source, and the checkbox of a task as it is now.
+    let head = this.slice(prefix)
+    if (node.type.name === "taskItem") {
+      const checked = Boolean(node.attrs.checked)
+      const checkbox = /\[([ xX])\]/
+      // The checkbox of a task without text is its text in the source (see `ListSyntax`).
+      head = checkbox.test(head)
+        ? head.replace(checkbox, (source, mark: string) =>
+            (mark !== " ") === checked ? source : checked ? "[x]" : "[ ]",
+          )
+        : `${head}${checked ? "[x]" : "[ ]"} `
+    }
     const nodes = getChildren(node)
     const matches = nodes.map((child) => {
       const index = originals.findIndex((original) => original.node === child)
@@ -541,23 +559,33 @@ export class SourceWriter {
       /^ */.exec(this.snapshot.source.slice(original.line, original.end))?.[0] ?? ""
 
     const verbatim = nodes.map((_, index) => matches[index] !== null && originalOf(index) !== undefined)
-    // Text of the source whose lines after the first are not indented (lazy continuation lines) is written so again.
+    // Text of the source whose lines after the first are indented less than the
+    // content of the item (lazy continuation lines), all alike, is written so again.
     const first = originalOf(0)
     const lazyLines = this.snapshot.source
       .slice(first?.start ?? 0, first?.end ?? 0)
       .split("\n")
       .slice(1)
+    const lazyIndent = /^ */.exec(lazyLines[0] ?? "")?.[0] ?? ""
     const lazy =
       !verbatim[0] &&
       nodes[0]?.type.name === "paragraph" &&
       lazyLines.length > 0 &&
-      lazyLines.every((line) => /^\S/.test(line))
-    const writeFirst = (lazily: boolean) =>
-      lazily
+      lazyIndent.length < indent.length &&
+      lazyLines.every((line) => line.startsWith(lazyIndent) && /^\S/.test(line.slice(lazyIndent.length)))
+    const writeFirst = (lazily: boolean) => {
+      const text = lazily
         ? this.lines(
-            this.manager.renderNodeToMarkdown(itemJSON.content?.[0] ?? {}, itemJSON, 0, 1).replace(/^\n+|\n+$/g, ""),
+            indentLines(
+              this.manager.renderNodeToMarkdown(itemJSON.content?.[0] ?? {}, itemJSON, 0, 1).replace(/^\n+|\n+$/g, ""),
+              lazyIndent,
+              1,
+            ),
           )
         : writeBlock(0)
+      // An empty nested item has a text, see `renderListItem`.
+      return text || (nested && node.type.name !== "taskItem" ? EMPTY_ITEM_TEXT : "")
+    }
     const texts = nodes.map((child, index) => {
       const original = originalOf(index)
       if (verbatim[index] && original) {
@@ -566,8 +594,22 @@ export class SourceWriter {
       if (index > 0 && original?.list && LISTS.has(child.type.name)) {
         return this.writeList(original.list, child, listIndent(original))
       }
+      if (index > 0 && original?.node.type === child.type) {
+        // In the style of the source (code fences, setext headings), without the indentation of the item.
+        const source = this.snapshot.source
+          .slice(original.start, original.end)
+          .split("\n")
+          .map((line, lineIndex) => (lineIndex > 0 && line.startsWith(indent) ? line.slice(indent.length) : line))
+          .join("\n")
+        const markdown = this.writeInStyle(source, child)
+        if (markdown !== null) return this.lines(indentLines(markdown, indent, 0))
+      }
       return index === 0 ? writeFirst(lazy) : writeBlock(index)
     })
+    // Without text, the line ends after the marker (`-`, `- [ ]`), see `renderListItem`.
+    if (!texts[0]) {
+      head = head.trimEnd()
+    }
     separateWrittenLists(nodes, texts, (index, marker) => {
       const original = originalOf(index)
       verbatim[index] = false
@@ -580,7 +622,7 @@ export class SourceWriter {
 
     // Line breaks of the source between changed blocks (without a blank line) are kept when the item reads back the same.
     const assemble = (keepLineBreaks: boolean) => {
-      let output = this.slice(prefix)
+      let output = head
       let kept = false
       nodes.forEach((child, index) => {
         if (index > 0) {
@@ -620,6 +662,8 @@ export class SourceWriter {
    */
   writeList(block: SourceBlock, node: ProseMirrorNode, indent = "", marker?: string): string {
     const { children = [], list } = block
+    // Only nested lists are indented: they are inside of an item.
+    const nested = indent !== ""
     // Items are numbered from the start of the list, in the style of the source: `1.` for every item, or counting.
     const numbers = list?.numbers ?? []
     const repeated = numbers.length > 1 && numbers.every((number) => number === numbers[0])
@@ -644,12 +688,15 @@ export class SourceWriter {
       let text = original !== null && children[original] ? this.slice(children[original]) : null
       const replacedItem = position === null ? undefined : children[position]
       if (text === null && replacedItem) {
-        text = this.writeItem(replacedItem, item)
+        text = this.writeItem(replacedItem, item, nested)
       }
       if (text === null) {
         // Keep the markers of the list: `*` or `+` bullets, `1)` delimiters.
         const listMarker = list?.bullet ?? list?.delimiter
-        const markdown = serialize(this.manager, wrap(item))
+        // The items of nested lists are written as nested items (an empty one has a text).
+        const markdown = nested
+          ? this.manager.renderNodeToMarkdown(wrap(item)[0] as JSONContent, undefined, 0, 1).replace(/^\n+|\n+$/g, "")
+          : serialize(this.manager, wrap(item))
         text = this.lines(indentLines(listMarker ? setItemMarker(markdown, listMarker) : markdown, indent, 0))
       }
       if (marker) {
@@ -729,40 +776,41 @@ export class SourceWriter {
 
   /**
    * Writes a changed heading in the place of a setext heading (`Title` over
-   * `=====`) in the same style, with the underline of the source, when the
-   * result reads back as the heading.
+   * `=====`), the Markdown `source`, in the same style, with the underline of
+   * the source, when the result reads back as the heading. Its text is
+   * written like a paragraph: it can have several lines.
    */
-  private writeSetextHeading(block: SourceBlock, node: ProseMirrorNode): string | null {
-    const { source, definitions } = this.snapshot
-    const underline = /\n {0,3}(=+|-+)[ \t]*$/.exec(source.slice(block.start, block.end))
+  private writeSetextHeading(source: string, node: ProseMirrorNode): string | null {
+    const underline = /\n {0,3}(=+|-+)[ \t]*$/.exec(source)
     const level = underline?.[1]?.startsWith("=") ? 1 : 2
     const schema = this.context.schema
-    if (!underline || !schema || node.type.name !== "heading" || node.attrs.level !== level) {
+    const paragraph = schema?.nodes.paragraph
+    if (!underline || !schema || !paragraph || node.type.name !== "heading" || node.attrs.level !== level) {
       return null
     }
-    const text = escapeBlockSyntax(this.toMarkdown(node).replace(/^#{1,6}(?:[ \t]+|$)/, ""))
+    const text = this.toMarkdown(paragraph.create(null, node.content))
+    const markdown = `${text}${underline[0]}`
     try {
-      const [heading, ...rest] = parseBlock(this.manager, this.context, `${text}${underline[0]}`, definitions)
+      const [heading, ...rest] = parseBlock(this.manager, this.context, markdown, this.snapshot.definitions)
       if (!text.trim() || rest.length > 0 || !heading || !schema.nodeFromJSON(heading).eq(node)) {
         return null
       }
     } catch {
       return null
     }
-    return this.lines(text) + this.text(block.start + underline.index, block.end)
+    return markdown
   }
 
   /**
-   * Writes changed code in the place of a code block in the style of its
-   * source: between its fences (`~~~`, a longer fence than needed, the info
-   * string) or indented, when the code allows it and the result reads back
-   * as the block.
+   * Writes changed code in the place of a code block, the Markdown `source`,
+   * in the style of the source: between its fences (`~~~`, a longer fence
+   * than needed, the info string) or indented, when the code allows it and
+   * the result reads back as the block.
    */
-  private writeCodeBlock(block: SourceBlock, node: ProseMirrorNode): string | null {
+  private writeCodeBlock(source: string, node: ProseMirrorNode): string | null {
     if (node.type.name !== "codeBlock") {
       return null
     }
-    const source = this.snapshot.source.slice(block.start, block.end)
     const code = node.textContent
     const lines = code.split("\n")
     const language = String(node.attrs.language ?? "")
@@ -789,7 +837,16 @@ export class SourceWriter {
       // Indented code: blank lines at its start and end would not be read.
       markdown = lines.map((line) => (line ? `    ${line}` : line)).join("\n")
     }
-    return markdown !== null && this.readsBack([node], markdown) ? this.lines(markdown) : null
+    return markdown !== null && this.readsBack([node], markdown) ? markdown : null
+  }
+
+  /**
+   * Writes a changed heading or code block in the style of the Markdown
+   * `source` of the block it replaces (see above), with line breaks of `\n`.
+   * Blocks of list items are written so too, without their indentation.
+   */
+  private writeInStyle(source: string, node: ProseMirrorNode): string | null {
+    return this.writeSetextHeading(source, node) ?? this.writeCodeBlock(source, node)
   }
 
   /**
@@ -830,12 +887,11 @@ export class SourceWriter {
 
   /** Writes a changed node in the place of a block of the same type, in the way of the block. */
   private writeReplaced(block: SourceBlock, node: ProseMirrorNode): string | null {
-    return (
-      this.writeParts(block, node) ??
-      this.writeSetextHeading(block, node) ??
-      this.writeCodeBlock(block, node) ??
-      this.writeDetails(block, node)
-    )
+    const writeInStyle = () => {
+      const markdown = this.writeInStyle(this.snapshot.source.slice(block.start, block.end), node)
+      return markdown === null ? null : this.lines(markdown)
+    }
+    return this.writeParts(block, node) ?? writeInStyle() ?? this.writeDetails(block, node)
   }
 
   write(doc: ProseMirrorNode): string {

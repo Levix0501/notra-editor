@@ -65,6 +65,47 @@ describe("updateContent", () => {
     expect(editor.getText()).toBe("Synced")
   })
 
+  it("keeps the blocks between separate changes, also when blocks are added", () => {
+    editor = createTestEditor(INITIAL)
+    const [, first, second] = editor.state.doc.content.content
+    editor.commands.setTextSelection(findTextEnd(editor, "Second"))
+    editor.commands.updateContent(
+      "<h1>New title</h1><p>First paragraph</p><p>Second paragraph</p><p>Added</p><p>Third paragraph, edited</p>",
+    )
+
+    const nodes = editor.state.doc.content.content
+    expect(editor.getText({ blockSeparator: "|" })).toBe(
+      "New title|First paragraph|Second paragraph|Added|Third paragraph, edited",
+    )
+    expect(nodes[1]).toBe(first)
+    expect(nodes[2]).toBe(second)
+    const { from } = editor.state.selection
+    expect(editor.state.doc.textBetween(from - 6, from)).toBe("Second")
+  })
+
+  it("changes the content of blocks that are not joined with other blocks", () => {
+    // A change from such a block to the next one used to create a new block or split a table.
+    const changes: [string, (markdown: string) => string][] = [
+      ["---\nkind: patch\n---\n\nBody text here.\n", (source) => source.replace("patch", "minor")],
+      [
+        '<div align="center">\n<img src="a.png">\n</div>\n\nBody text here.\n',
+        (source) => source.replace("a.png", "b.png"),
+      ],
+      [
+        "<details>\n<summary>More</summary>\n\nHidden text\n\n</details>\n\nBody text here.\n",
+        (source) => source.replace("Hidden", "Secret"),
+      ],
+      ["| a | b |\n| - | - |\n| 1 | 2 |\n\nBody text here.\n", (source) => source.replace("| 2 |", "| 3 |")],
+    ]
+    for (const [markdown, change] of changes) {
+      const instance = createTestEditor(markdown, "markdown", { markdown: { preserveSource: true } })
+      const next = change(markdown).replace("here", "there")
+      instance.commands.updateContent(next, { contentType: "markdown" })
+      expect(instance.getMarkdown()).toBe(next)
+      instance.destroy()
+    }
+  })
+
   it("reads Markdown", () => {
     editor = createTestEditor("# Title\n\nText", "markdown")
     const title = editor.state.doc.firstChild

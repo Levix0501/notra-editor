@@ -6,6 +6,14 @@ import { Extension, type JSONContent } from "@tiptap/core"
  */
 export const LIST_MARKER = "notraMarker"
 
+/**
+ * Text of empty nested items, like Tiptap: below the text of its parent,
+ * `-` alone would be read as the underline of a setext heading, and `1.` as
+ * text of the parent (an empty item cannot interrupt a paragraph). Items
+ * with only this text are read as empty items (see `ListSyntax`).
+ */
+export const EMPTY_ITEM_TEXT = "&nbsp;"
+
 type ListKind = "bullet" | "ordered"
 
 /** The marker a kind of list is written with, and the one of a list that follows a list with it. */

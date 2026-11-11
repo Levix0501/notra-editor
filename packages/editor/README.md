@@ -26,6 +26,10 @@ pnpm add notra-editor
 
 `react` and `react-dom` 19 or newer are required as peer dependencies.
 
+notra-editor depends on Tiptap 3.33 (`~3.33.0`): its Markdown support replaces internals of
+Tiptap's Markdown extension, which a newer Tiptap version can change. Applications that use Tiptap
+packages themselves should use the same version, so that a single copy of Tiptap is installed.
+
 ## Quick start
 
 ```tsx
@@ -77,7 +81,8 @@ Markdown, see [Markdown files](#markdown-files).
 
 `editor.commands.setContent(content, options)` replaces the whole document. To apply changes made
 outside of the editor (synchronization, another window, AI edits), use `updateContent`: it only
-replaces the blocks that differ and keeps the selection and the scroll position.
+changes what differs (the changed blocks, or the changed text inside of a block, also in front
+matter, source blocks, tables and toggles) and keeps the selection and the scroll position.
 
 ```ts
 editor.commands.updateContent(markdown, { contentType: "markdown" })
@@ -140,7 +145,10 @@ with these additions:
   tasks (`1. [x] Done`) are kept as source blocks. A list that follows a list of its kind is written
   with the other marker (`*` after `-`, `1)` after `1.`), so that Markdown does not read the two
   lists as one, and blocks of list items are written so that they stay in the item (`-` and a
-  divider on the next line, a blank line before blocks that cannot follow text directly).
+  divider on the next line, a blank line before blocks that cannot follow text directly, no spaces
+  at the start of the text of an item). Items without text are written as `-` or `- [ ]`, nested
+  ones as `- &nbsp;` (like Tiptap), and read back as empty items: tasks without text are empty
+  tasks, as in Tiptap, while GitHub shows them as text.
 - Written Markdown follows the style of the Markdown that was read: emphasis with `_` or `*`
   (`__` or `**`), hard breaks as two spaces, a backslash or `<br>`, and links whose text is their URL
   as the URL or between `<` and `>`. Emphasis that CommonMark would not read with delimiters, next to
@@ -152,13 +160,16 @@ with these additions:
   (named references are looked up in the DOM, so they stay as written without one). Non-breaking
   spaces are written as `&nbsp;`, or as characters in Markdown that writes them so.
 - Line breaks inside of paragraphs (soft line breaks) stay line breaks when paragraphs are joined.
+  Headings are a single line: when a paragraph becomes a heading or is joined with one, its line
+  breaks become spaces, which is how Markdown shows them.
 - Resized images are written as `<img>` tags, so that their size is kept.
 - Code blocks get a fence longer than the backtick runs of their code, so that code that contains a
   fence (a Markdown sample, for example) is not cut off.
 - Text is only escaped where it would read as Markdown syntax: `snake_case`, `[note]`, `a -> b`,
   `Record<string, number>` and `R&D` stay as they are, while text that starts like a block (`1.`,
-  `#`, `-`, `>`, four spaces, `[x]` in a list item) or ends a heading with `#` is escaped. Empty
-  headings are kept.
+  `#`, `-`, `>`, four spaces, `[x]` in a list item) or ends a heading with `#` is escaped, and so
+  are URLs and email addresses in text that is not a link (`https\://…`), which would become
+  links. Empty headings are kept.
 
 ### Markdown files
 
@@ -168,7 +179,8 @@ written back exactly as they were read, with their line endings, blank lines and
 file; only edited blocks are written again, between the original blank lines (or line breaks,
 where the blocks read back the same with them). Edited setext headings (`Title` over `=====`) keep
 their style, edited code blocks their fences (`~~~`, a longer fence, the info string) or
-indentation, and edited links their form (`[text][id]` when the document defines the link).
+indentation, also in list items, and edited links their form (`[text][id]` when the document
+defines the link).
 Toggles are written part by part: their summary while it is unchanged, and their content block by
 block. Lists that become neighbors (by deleting the block between them) stay two lists, and blocks
 that refer to a link definition that was added or deleted are written again.
@@ -363,7 +375,9 @@ the shadcn/ui code block.
 
 The root element accepts a `className`; utility classes from your own Tailwind CSS setup can
 override its defaults (for example `bg-transparent` or `min-h-96`). The editable area has the
-class `notra-content` and reserves space on the left for the block handle.
+class `notra-content` and reserves space on the left for the block handle. The empty block that
+shows a placeholder has the classes and attribute of Tiptap's placeholder: `is-empty`,
+`is-editor-empty` when the document is empty, and `data-placeholder`.
 
 Menus, popovers and tooltips are rendered into `document.body`. Inside a dialog with a focus trap,
 a shadow root or a fullscreen element, pass the element to render them into as `portalContainer`.

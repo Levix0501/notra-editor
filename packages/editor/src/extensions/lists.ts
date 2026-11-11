@@ -1,10 +1,7 @@
 import type { JSONContent, MarkdownRendererHelpers, RenderContext } from "@tiptap/core"
 import { ListItem, OrderedList, TaskItem, TaskList } from "@tiptap/extension-list"
 
-import { interruptsParagraph, LIST_MARKER } from "./markdown/list-markers"
-
-/** Text of empty nested items, which Markdown would not keep otherwise (like Tiptap). */
-const EMPTY_ITEM_TEXT = "&nbsp;"
+import { EMPTY_ITEM_TEXT, interruptsParagraph, LIST_MARKER } from "./markdown/list-markers"
 
 /**
  * Whether a block can be written on the line of the marker, in an item that
@@ -58,8 +55,9 @@ function renderListItem(
   if (!main && !checkbox && context.level > 1) {
     main = EMPTY_ITEM_TEXT
   }
-  // Without text, the next block starts on the next line: `-` and the block, indented.
-  let output = main || checkbox || from > 1 ? `${marker}${checkbox}${indentLines(main, 1)}` : marker.trimEnd()
+  // Without text, the line ends after the marker (`-`, `- [ ]`), and the next block starts on the next line.
+  const start = `${marker}${checkbox}`
+  let output = main ? `${start}${indentLines(main, 1)}` : start.trimEnd()
   rest.slice(from - 1).forEach((child, index) => {
     const content = render(child, index + from)
     const follows = output === marker.trimEnd() || (child.type !== "paragraph" && interruptsParagraph(child))

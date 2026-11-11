@@ -307,6 +307,13 @@ describe("markdown source of edited blocks", () => {
     expect(edit("Text\n\n    indented\n    code\n", ["indented"])).toBe("Text\n\n    indented!\n    code\n")
     // Code that would close the fence of the source gets a longer fence.
     expect(edit("```\ncode\n```\n", ["code"], "\n```")).toBe("````\ncode\n```\n````\n")
+    // Code in list items too.
+    expect(edit("- item\n\n  ~~~~js\n  code\n\n    more\n  ~~~~\n", ["code"])).toBe(
+      "- item\n\n  ~~~~js\n  code!\n\n    more\n  ~~~~\n",
+    )
+    expect(edit("- top\n  - item\n    ````\n    code\n    ````\n", ["code"])).toBe(
+      "- top\n  - item\n    ````\n    code!\n    ````\n",
+    )
   })
 
   it("writes emphasis with the delimiters of the document", () => {
@@ -335,6 +342,56 @@ describe("markdown source of edited blocks", () => {
   it("keeps the style of edited setext headings", () => {
     expect(edit("Title\n=====\n\nText\n", ["Title"])).toBe("Title!\n=====\n\nText\n")
     expect(edit("Line one\nline two\n---\n", ["two"])).toBe("Line one\nline two!\n---\n")
+    expect(edit("Line one\nline two\n---\n", ["one"])).toBe("Line one!\nline two\n---\n")
+  })
+
+  it("writes the checkbox of tasks as it is now", () => {
+    const check = (checked: boolean) => (instance: Editor) => {
+      let position = -1
+      instance.state.doc.descendants((node, pos) => {
+        if (position === -1 && node.type.name === "taskItem") position = pos
+      })
+      instance.view.dispatch(instance.state.tr.setNodeAttribute(position, "checked", checked))
+    }
+    expect(change("- [ ] one\n- [ ] two\n", check(true))).toBe("- [x] one\n- [ ] two\n")
+    expect(change("- [X] one\n  more\n- [ ] two\n", check(false))).toBe("- [ ] one\n  more\n- [ ] two\n")
+    // Unchanged checkboxes keep their form.
+    expect(edit("- [X] one\n- [ ] two\n", ["one"])).toBe("- [X] one!\n- [ ] two\n")
+  })
+
+  it("writes items whose text was deleted so that they read back as empty items", () => {
+    const deleteText = (text: string) => (instance: Editor) => {
+      const end = findTextEnd(instance, text)
+      instance.commands.deleteRange({ from: end - text.length, to: end })
+    }
+    expect(change("Intro\n\n1. only\n", deleteText("only"))).toBe("Intro\n\n1.\n")
+    expect(change("- [ ] one\n- [ ] two\n", deleteText("two"))).toBe("- [ ] one\n- [ ]\n")
+    // Below the text of its parent, `-` alone would be the underline of a heading.
+    expect(change("- one\n  - two\n- three\n", deleteText("two"))).toBe("- one\n  - &nbsp;\n- three\n")
+    for (const markdown of ["- [ ] one\n- [ ]\n", "- one\n  - &nbsp;\n"]) {
+      expect(change(markdown, (instance) => insertAfter(instance, "one", "!"))).toBe(markdown.replace("one", "one!"))
+    }
+  })
+
+  it("writes text typed into tasks without text as tasks", () => {
+    const type = (instance: Editor) => {
+      let position = -1
+      instance.state.doc.descendants((node, pos) => {
+        if (position === -1 && node.type.name === "taskItem" && !node.textContent) position = pos
+      })
+      instance.commands.insertContentAt(position + 2, "new")
+    }
+    expect(change("- [ ] one\n- [ ]\n- [x]\n", type)).toBe("- [ ] one\n- [ ] new\n- [x]\n")
+  })
+
+  it("does not write the spaces at the start of the text of an item", () => {
+    // Enter before a space: the text of the new item starts with it.
+    const split = (after: string) => (instance: Editor) => {
+      instance.chain().setTextSelection(findTextEnd(instance, after)).splitListItem("listItem").run()
+    }
+    expect(change("- hoot `pnpm check`:\n  - nested\n- next\n", split("hoot"))).toBe(
+      "- hoot\n- `pnpm check`:\n  - nested\n- next\n",
+    )
   })
 
   it("writes edited text with as few escapes as possible", () => {
@@ -346,6 +403,8 @@ describe("markdown source of edited blocks", () => {
     expect(edit("- one\n  two\n- three\n", ["one"])).toBe("- one!\n  two\n- three\n")
     // Lines that continue the text without indentation (lazy continuation lines).
     expect(edit("1. one\ntwo\n2. three\n", ["two"])).toBe("1. one\ntwo!\n2. three\n")
+    // Lazy continuation lines of a nested item, indented to the text of its parent.
+    expect(edit("- top\n    - one\n  two\n- other\n", ["one"])).toBe("- top\n    - one!\n  two\n- other\n")
     expect(edit("-   one\n    two\n-   three\n", ["one"])).toBe("-   one!\n    two\n-   three\n")
     expect(edit("* one\n* two\n", ["two"])).toBe("* one\n* two!\n")
   })

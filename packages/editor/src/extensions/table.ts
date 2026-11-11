@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core"
 import { TableCell, TableHeader } from "@tiptap/extension-table"
+import { isHistoryTransaction } from "@tiptap/pm/history"
 import { Fragment, type Node as ProseMirrorNode, type ResolvedPos, type Schema, Slice } from "@tiptap/pm/model"
 import { Plugin, PluginKey, type Selection, type Transaction } from "@tiptap/pm/state"
 import { ReplaceAroundStep, ReplaceStep } from "@tiptap/pm/transform"
@@ -35,11 +36,13 @@ export function getBlockInsertPosition(doc: ProseMirrorNode, pos: number): numbe
 }
 
 /**
- * Whether a step of the transaction replaces content inside of a cell that
- * only holds text with blocks. Content that does not fit into a cell is
- * placed by closing the cell, its row and its table, which splits the table.
+ * Whether a step of the transaction inserts blocks into a cell that only
+ * holds text, which splits its table: content that does not fit into a cell
+ * is placed by closing the cell, its row and its table, and opening them
+ * again after it. Content that only closes the cell or the row stays in the
+ * table, such as the rows that undoing a deletion across cells puts back.
  */
-function splitsTextCell(tr: Transaction): boolean {
+function splitsTable(tr: Transaction): boolean {
   return tr.steps.some((step, index) => {
     if (!(step instanceof ReplaceStep || step instanceof ReplaceAroundStep)) {
       return false
@@ -50,8 +53,10 @@ function splitsTextCell(tr: Transaction): boolean {
     if (depth === -1 || step.to > $from.end(depth)) {
       return false
     }
+    // Cells are inside of rows, which are inside of the table.
+    const table = depth - 2
     const $to = doc.resolve(step.to)
-    return step.slice.openStart > $from.depth - depth || step.slice.openEnd > $to.depth - depth
+    return step.slice.openStart > $from.depth - table || step.slice.openEnd > $to.depth - table
   })
 }
 
@@ -114,7 +119,8 @@ export const TextTableCell = TableCell.extend({
     return [
       new Plugin({
         key: new PluginKey("notraTextCells"),
-        filterTransaction: (tr) => !tr.docChanged || !splitsTextCell(tr),
+        // Undo and redo go back to documents that were accepted: dropping them would keep them from going further back.
+        filterTransaction: (tr) => !tr.docChanged || isHistoryTransaction(tr) || !splitsTable(tr),
         props: {
           transformPasted: (slice, view) =>
             isInTextCell(view.state.selection) ? toCellContent(slice, view.state.schema) : slice,

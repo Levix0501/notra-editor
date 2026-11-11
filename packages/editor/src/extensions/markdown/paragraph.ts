@@ -24,15 +24,21 @@ function columns(indentation: string): number {
 }
 
 export interface BlockSyntaxOptions {
-  /** The text is the text of a list item, after its marker. */
-  listItem?: boolean
+  /**
+   * The text follows the marker of a list item (`marker`) or the checkbox of
+   * a task (`checkbox`) on its line.
+   */
+  after?: "marker" | "checkbox"
 }
 
 /**
  * Escapes block syntax at the start of the lines of a paragraph, and text
  * indented by four columns or more, which would be read as code: its first
- * space or tab is written as a character reference. In a list item, the text
- * cannot start with the marker of a task either.
+ * space or tab is written as a character reference. After the marker of a
+ * list item, the text cannot start like a task, and less indentation is not
+ * written: the content of an item starts after the spaces that follow its
+ * marker, so that its other blocks would no longer be indented enough to
+ * belong to it. Markdown does not keep these spaces anyway.
  */
 export function escapeBlockSyntax(markdown: string, options: BlockSyntaxOptions = {}): string {
   const escaped = markdown
@@ -45,10 +51,11 @@ export function escapeBlockSyntax(markdown: string, options: BlockSyntaxOptions 
         return `${indent}\\>`
       },
     )
-    .replace(/^[ \t]+/, (indentation) =>
-      columns(indentation) < 4 ? indentation : `&#${indentation.charCodeAt(0)};${indentation.slice(1)}`,
-    )
-  return options.listItem ? escaped.replace(TASK_MARKER, "$1\\[$2]") : escaped
+    .replace(/^[ \t]+/, (indentation) => {
+      if (columns(indentation) >= 4) return `&#${indentation.charCodeAt(0)};${indentation.slice(1)}`
+      return options.after ? "" : indentation
+    })
+  return options.after === "marker" ? escaped.replace(TASK_MARKER, "$1\\[$2]") : escaped
 }
 
 export interface NotraParagraphOptions extends ParagraphOptions {
@@ -90,6 +97,14 @@ export const NotraParagraph = Paragraph.extend<NotraParagraphOptions>({
     if (inTable) {
       return markdown
     }
-    return escapeBlockSyntax(markdown, { listItem: context.parentType === "listItem" && context.index === 0 })
+    // The first paragraph of a list item is on the line of its marker.
+    const first = context.index === 0
+    const after =
+      first && context.parentType === "listItem"
+        ? "marker"
+        : first && context.parentType === "taskItem"
+          ? "checkbox"
+          : undefined
+    return escapeBlockSyntax(markdown, { after })
   },
 })

@@ -3,7 +3,7 @@ import { marked } from "marked"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { createRawSyntax } from "../src/extensions/markdown/raw-syntax"
-import { createTestEditor, findTextEnd, typeText } from "./utils"
+import { createTestEditor, findTextEnd, pressKey, typeText } from "./utils"
 
 let editor: Editor | undefined
 
@@ -61,6 +61,36 @@ describe("headings", () => {
     const instance = load("#### Four\n\n###### Six")
     expect(topLevel(instance).map((node) => node.attrs?.level)).toEqual([4, 6])
     expect(instance.getHTML()).toContain("<h4>Four</h4>")
+  })
+
+  it("writes the line breaks of the text of headings as spaces", () => {
+    const content = [{ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "line one\nline two" }] }]
+    expect(createTestEditor({ type: "doc", content }).getMarkdown()).toBe("## line one line two")
+  })
+
+  it("turns the line breaks of paragraphs that become headings into spaces", () => {
+    const headingText = (instance: Editor) => topLevel(instance).find((node) => node.type === "heading")?.content
+    const startOf = (instance: Editor, text: string) => findTextEnd(instance, text) - text.length
+
+    const turned = load("Intro\n\nline one\nline two")
+    turned.chain().setTextSelection(findTextEnd(turned, "line one")).toggleHeading({ level: 2 }).run()
+    expect(headingText(turned)).toEqual([{ type: "text", text: "line one line two" }])
+
+    const typed = load("Intro\n\nline one\nline two")
+    typed.commands.setTextSelection(startOf(typed, "line one"))
+    typeText(typed, "## ")
+    expect(headingText(typed)).toEqual([{ type: "text", text: "line one line two" }])
+
+    const joined = load("## Title\n\nline one\nline two")
+    joined.commands.setTextSelection(startOf(joined, "line one"))
+    pressKey(joined, "Backspace")
+    expect(headingText(joined)).toEqual([{ type: "text", text: "Titleline one line two" }])
+
+    // Paragraphs keep them.
+    const paragraphs = load("one\ntwo\n\nthree\nfour")
+    paragraphs.commands.setTextSelection(startOf(paragraphs, "three"))
+    pressKey(paragraphs, "Backspace")
+    expect(paragraphs.getMarkdown()).toBe("one\ntwothree\nfour")
   })
 
   it("only creates the heading levels offered by the menus", () => {
@@ -440,6 +470,62 @@ describe("lists", () => {
     expect(markdown).toBe("- x\n\n  3. three")
     expect(topLevel(load(markdown))).toEqual(createTestEditor({ type: "doc", content }).getJSON().content)
   })
+
+  const empty: JSONContent = { type: "paragraph" }
+  const task = (checked: boolean, ...content: JSONContent[]): JSONContent => ({
+    type: "taskItem",
+    attrs: { checked },
+    content,
+  })
+
+  it("writes items without text so that they read back as empty items", () => {
+    const content: JSONContent[] = [
+      {
+        type: "bulletList",
+        content: [item(text("one"), { type: "orderedList", content: [item(empty)] }), item(empty)],
+      },
+      text("Tasks"),
+      { type: "taskList", content: [task(false, text("a")), task(true, empty)] },
+    ]
+    const markdown = createTestEditor({ type: "doc", content }).getMarkdown()
+    // Below the text of its parent, `1.` alone would be text of the parent.
+    expect(markdown).toBe("- one\n  1. &nbsp;\n-\n\nTasks\n\n- [ ] a\n- [x]")
+    expect(topLevel(load(markdown))).toEqual(createTestEditor({ type: "doc", content }).getJSON().content)
+  })
+
+  it("reads tasks without text as empty tasks", () => {
+    expect(topLevel(load("- [ ] one\n- [ ]\n- [x]\n  - nested"))[0]).toEqual({
+      type: "taskList",
+      content: [
+        task(false, text("one")),
+        task(false, empty),
+        task(true, empty, { type: "bulletList", content: [item(text("nested"))] }),
+      ],
+    })
+    // Like other ordered tasks, and unlike links.
+    expect(topLevel(load("1. [ ]"))[0]).toMatchObject({ type: "orderedList", content: [item(text("[ ]"))] })
+    expect(topLevel(load("- [x]\n\n[x]: https://example.com"))[0]).toMatchObject({ type: "bulletList" })
+  })
+
+  it("writes the text of items without the spaces at its start", () => {
+    const code = { type: "text", text: "pnpm check", marks: [{ type: "code" }] }
+    const content: JSONContent[] = [
+      {
+        type: "bulletList",
+        content: [
+          item(
+            { type: "paragraph", content: [{ type: "text", text: " " }, code] },
+            { type: "bulletList", content: [item(text("nested"))] },
+          ),
+        ],
+      },
+      { type: "orderedList", content: [item(text("  two spaces"), text("More."))] },
+    ]
+    // The spaces would move the content of the item: the nested list and the paragraph would leave it.
+    expect(createTestEditor({ type: "doc", content }).getMarkdown()).toBe(
+      "- `pnpm check`\n  - nested\n\n1. two spaces\n\n   More.",
+    )
+  })
 })
 
 describe("text escaping", () => {
@@ -454,6 +540,15 @@ describe("text escaping", () => {
   it("only escapes text where it would read as syntax", () => {
     const instance = loadHtml("<p>a_b, 2 * 3, x < y, a -> b, R&amp;D, [note] and &lt;b&gt;</p>")
     expect(instance.getMarkdown()).toBe("a_b, 2 * 3, x < y, a -> b, R&D, [note] and \\<b>")
+  })
+
+  it("escapes URLs and email addresses that are not links", () => {
+    const content = [
+      { type: "paragraph", content: [{ type: "text", text: "See https://example.com/a, www.example.com and a@b.co" }] },
+    ]
+    const markdown = createTestEditor({ type: "doc", content }).getMarkdown()
+    expect(markdown).toBe("See https\\://example.com/a, www\\.example.com and a\\@b.co")
+    expect(topLevel(load(markdown))).toEqual(content)
   })
 
   it("escapes text in brackets that the document defines as a link", () => {

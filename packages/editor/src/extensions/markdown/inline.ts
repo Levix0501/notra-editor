@@ -199,6 +199,9 @@ function prepareLink(
  *   the end of a line makes a blank line, which splits the paragraph, or
  *   nothing; in blocks that are a single line (`isLine`: headings and the
  *   cells of tables) it ends the block. Such hard breaks are written as `<br>`.
+ * - A line break in the text (a soft line break of the source) is written as
+ *   a space in blocks that are a single line, which is how Markdown shows it:
+ *   a heading would end there and its next line become a paragraph.
  * - Code next to code with other marks (`` **`a`**`b` ``) would be written as
  *   one code span with the marks inside of it (`` `**a**b` ``). Each part is
  *   written as a code span of its own instead, by giving the code marks of
@@ -217,10 +220,17 @@ function prepareLink(
  * definition of the document defines as references to it (`[text][id]`).
  */
 export function prepareInlineContent(
-  content: JSONContent[],
+  inline: JSONContent[],
   isLine: boolean,
   context?: NotraMarkdownContext | null,
 ): JSONContent[] {
+  const content = isLine
+    ? inline.map((node) =>
+        node.type === "text" && node.text?.includes("\n")
+          ? { ...node, text: node.text.replace(/[ \t]*\r?\n[ \t]*/g, " ") }
+          : node,
+      )
+    : inline
   const hardBreak = context?.hardBreak ?? "spaces"
   const sourceForms = context?.escaping === "minimal"
   const prepared = content.map((node, index): JSONContent => {

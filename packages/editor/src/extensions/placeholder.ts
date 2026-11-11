@@ -1,4 +1,4 @@
-import { type Editor, Extension } from "@tiptap/core"
+import { type Editor, Extension, isNodeEmpty } from "@tiptap/core"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
@@ -40,7 +40,9 @@ function getPlaceholder(editor: Editor, node: ProseMirrorNode, parent: ProseMirr
  * block that contains it is read from the state that is drawn. Tiptap's
  * placeholder extension computes its decorations while a transaction is
  * applied, when `editor.state` is still the previous state: positions of the
- * new document looked up in it are wrong, or out of range after undo.
+ * new document looked up in it are wrong, or out of range after undo. The
+ * block has the classes and attribute of Tiptap's extension: `is-empty`,
+ * `is-editor-empty` when the document is empty, and `data-placeholder`.
  */
 export const NotraPlaceholder = Extension.create({
   name: "notraPlaceholder",
@@ -62,8 +64,10 @@ export const NotraPlaceholder = Extension.create({
               return null
             }
             const pos = $anchor.before()
+            // The classes of Tiptap's placeholder extension, which styles may use.
+            const classes = isNodeEmpty(state.doc) ? "is-empty is-editor-empty" : "is-empty"
             return DecorationSet.create(state.doc, [
-              Decoration.node(pos, pos + node.nodeSize, { class: "is-empty", "data-placeholder": placeholder }),
+              Decoration.node(pos, pos + node.nodeSize, { class: classes, "data-placeholder": placeholder }),
             ])
           },
         },

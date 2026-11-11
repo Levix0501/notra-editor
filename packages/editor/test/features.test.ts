@@ -128,6 +128,23 @@ describe("features", () => {
     expect(instance.getJSON().content?.map((node) => node.type)).toEqual(["table", "image", "paragraph"])
   })
 
+  it("can undo deleting text across the cells of such tables", () => {
+    const markdown = "| a | b |\n|---|---|\n| one | two |\n| three | four |\n\nAfter"
+    editor = createTestEditor(markdown, "markdown", { features: { table: { blocksInCells: false } } })
+    const instance = editor
+    instance.commands.insertContentAt(findTextEnd(instance, "After"), "!")
+    const typed = instance.getMarkdown()
+    // A selection from the text of a cell to the text of a cell in another row.
+    instance.commands.setTextSelection({ from: findTextEnd(instance, "on"), to: findTextEnd(instance, "fo") })
+    instance.commands.deleteSelection()
+    expect(instance.getMarkdown()).toContain("| onur |")
+    // Undoing puts the rows back, and earlier changes can be undone after it.
+    instance.commands.undo()
+    expect(instance.getMarkdown()).toBe(typed)
+    instance.commands.undo()
+    expect(instance.getText()).not.toContain("!")
+  })
+
   it("does not escape block syntax in table cells", () => {
     editor = createTestEditor("| a |\n|---|\n| x |", "markdown")
     editor.chain().setTextSelection(findTextEnd(editor, "x")).insertContent(" - # ---").run()

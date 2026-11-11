@@ -132,6 +132,15 @@ describe("editing", () => {
     expect(placeholder).toBe(createDictionary().placeholder.listItem)
   })
 
+  it("gives the placeholder the classes of Tiptap's placeholder", () => {
+    const instance = createTestEditor("")
+    editor = instance
+    expect(instance.view.dom.querySelector(".is-empty")?.className).toContain("is-editor-empty")
+    instance.commands.insertContent("Text")
+    instance.commands.splitBlock()
+    expect(instance.view.dom.querySelector(".is-empty")?.className).not.toContain("is-editor-empty")
+  })
+
   it("keeps front matter at the start of the document", () => {
     const instance = createMarkdownEditor("---\ntitle: x\n---\n\nText")
     editor = instance
