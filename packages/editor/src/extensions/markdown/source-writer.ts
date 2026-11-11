@@ -3,8 +3,11 @@ import type { MarkdownManager } from "@tiptap/markdown"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 
 import type { NotraMarkdownContext } from "./context"
+import { getListKind, getOtherMarker, interruptsParagraph, LIST_MARKER, separateLists } from "./list-markers"
+import { splitDetails } from "./marked"
 import { escapeBlockSyntax } from "./paragraph"
 import {
+  createSnapshot,
   getChildren,
   getListMarkers,
   type ItemBlock,
@@ -18,18 +21,81 @@ import {
   trimLineBreaks,
 } from "./source-snapshot"
 
-/**
- * Blocks that can be rewritten between their original neighbors without the
- * blank line Markdown otherwise needs between blocks. Other blocks could
- * take in the line that follows them (a lazy continuation line, for example).
- */
-const LINE_BLOCKS = new Set(["paragraph", "heading", "codeBlock"])
-
 const LISTS = new Set(["bulletList", "orderedList", "taskList"])
 
 /** Writes nodes to Markdown on their own, without surrounding blank lines. */
 function serialize(manager: MarkdownManager, content: JSONContent[]): string {
   return manager.serialize({ type: "doc", content }).replace(/^\n+|\n+$/g, "")
+}
+
+const BLANK_LINE = /\n[ \t]*\n/
+
+/** The bullet or delimiter of the first item of a list written as `text`. */
+function getFirstMarker(text: string): string | null {
+  const match = /^[ \t]*(?:([-*+])|\d{1,9}([.)]))(?=[ \t\r\n]|$)/.exec(text)
+  return match?.[1] ?? match?.[2] ?? null
+}
+
+/** Gives the item written as `text` another bullet or delimiter. */
+function setItemMarker(text: string, marker: string): string {
+  return marker === "." || marker === ")"
+    ? text.replace(/^( *\d{1,9})[.)]/, `$1${marker}`)
+    : text.replace(/^( *)[-*+](?=[ \t\r\n]|$)/, `$1${marker}`)
+}
+
+/**
+ * Gives each list that follows a list of its kind with the same marker
+ * another marker, see `separateLists`: lists that became neighbors (the
+ * block between them was deleted) or new lists after a list. `texts` are the
+ * written blocks, `rewrite` writes the list at an index with a marker.
+ */
+function separateWrittenLists(
+  nodes: ProseMirrorNode[],
+  texts: string[],
+  rewrite: (index: number, marker: string) => string,
+): void {
+  let previous: { kind: string; marker: string } | null = null
+  nodes.forEach((node, index) => {
+    const kind = getListKind(node.type.name)
+    if (!kind) {
+      if (!isEmptyParagraph(node)) previous = null
+      return
+    }
+    let marker = getFirstMarker(texts[index] ?? "")
+    if (previous?.kind === kind && marker !== null && marker === previous.marker) {
+      marker = getOtherMarker(marker)
+      texts[index] = rewrite(index, marker)
+    }
+    previous = marker === null ? null : { kind, marker }
+  })
+}
+
+const INDENTED_CODE = /^(?: {4}|\t)/
+
+/**
+ * Indented code that follows a list or other indented code (with only
+ * blank lines between them) would continue the last item of the list or the
+ * code: `rewrite` writes it with a fence instead.
+ */
+function separateIndentedCode(nodes: ProseMirrorNode[], texts: string[], rewrite: (index: number) => string): void {
+  let absorbs = false
+  nodes.forEach((node, index) => {
+    if (isEmptyParagraph(node)) return
+    const isCode = node.type.name === "codeBlock"
+    if (isCode && absorbs && INDENTED_CODE.test(texts[index] ?? "")) {
+      texts[index] = rewrite(index)
+    }
+    absorbs = getListKind(node.type.name) !== null || (isCode && INDENTED_CODE.test(texts[index] ?? ""))
+  })
+}
+
+/** The normalized labels of link reference definitions. */
+function getLabels(definitions: string): Set<string> {
+  return new Set(
+    Array.from(definitions.matchAll(/^ {0,3}\[((?:\\.|[^\\[\]])+)\]:/gm), (match) =>
+      (match[1] as string).trim().replace(/\s+/g, " ").toLowerCase(),
+    ),
+  )
 }
 
 /**
@@ -379,12 +445,54 @@ export class SourceWriter {
     return items.get(item) ?? null
   }
 
+  /** Whether `markdown` reads back as `nodes`, with the link definitions of the document. */
+  private readsBack(nodes: ProseMirrorNode[], markdown: string): boolean {
+    const schema = this.context.schema
+    if (!schema) {
+      return false
+    }
+    try {
+      const parsed = parseBlock(this.manager, this.context, markdown.replace(/\r\n/g, "\n"), this.snapshot.definitions)
+      return (
+        parsed.length === nodes.length &&
+        parsed.every((json, index) => schema.nodeFromJSON(json).eq(nodes[index] as ProseMirrorNode))
+      )
+    } catch {
+      return false
+    }
+  }
+
+  /** Whether the list item written as `text` (indented or not) reads back as `node`. */
+  private readsBackAsItem(text: string, node: ProseMirrorNode): boolean {
+    const lines = text.replace(/\r\n/g, "\n").split("\n")
+    const base = /^ */.exec(lines[0] ?? "")?.[0] ?? ""
+    const unindented = lines.map((line) => (line.startsWith(base) ? line.slice(base.length) : line)).join("\n")
+    const schema = this.context.schema
+    if (!schema) {
+      return false
+    }
+    try {
+      const [list, ...rest] = parseBlock(this.manager, this.context, unindented, this.snapshot.definitions)
+      const parsed = list && rest.length === 0 ? schema.nodeFromJSON(list) : null
+      return parsed?.childCount === 1 && Boolean(parsed.firstChild?.eq(node))
+    } catch {
+      return false
+    }
+  }
+
+  /** Writes a list without source with a bullet or delimiter (`*`, `)`). */
+  private writeListWith(node: ProseMirrorNode, marker: string): string {
+    const json = node.toJSON() as JSONContent
+    return serialize(this.manager, [{ ...json, attrs: { ...json.attrs, [LIST_MARKER]: marker } }])
+  }
+
   /**
    * Writes a changed list item in the place of `item`: with the marker of
    * `item` and the source of the blocks that did not change, so that editing
    * the text of an item keeps its code blocks and nested lists, and editing a
-   * nested item only rewrites that item. Returns `null` when the item cannot
-   * be matched with its source.
+   * nested item only rewrites that item. The line breaks between the blocks
+   * of the source are kept where the item reads back the same with them.
+   * Returns `null` when the item cannot be matched with its source.
    */
   private writeItem(item: SourceChild, node: ProseMirrorNode): string | null {
     const described = this.describeItem(item)
@@ -412,55 +520,105 @@ export class SourceWriter {
       originals.length,
       (index, original) => originals[original]?.node.type === nodes[index]?.type,
     )
+    const positions = nodes.map((_, index) => matches[index] ?? replaced[index] ?? null)
+    const originalOf = (index: number) => {
+      const position = positions[index]
+      return position === null || position === undefined ? undefined : originals[position]
+    }
 
     // Blocks are written as children of the item: its first paragraph cannot start like a task, for example.
-    const itemJSON = node.toJSON()
-    const writeBlock = (child: ProseMirrorNode, index: number) =>
-      this.manager.renderNodeToMarkdown(child.toJSON(), itemJSON, index, 1).replace(/^\n+|\n+$/g, "")
+    const itemJSON = separateLists(node.toJSON())
+    const writeBlock = (index: number, json = itemJSON.content?.[index] ?? {}) =>
+      this.lines(
+        indentLines(
+          this.manager.renderNodeToMarkdown(json, itemJSON, index, 1).replace(/^\n+|\n+$/g, ""),
+          indent,
+          index === 0 ? 1 : 0,
+        ),
+      )
+    // New items of nested lists are indented like the first item of the list.
+    const listIndent = (original: ItemBlock) =>
+      /^ */.exec(this.snapshot.source.slice(original.line, original.end))?.[0] ?? ""
 
-    let output = this.slice(prefix)
-    let last: number | null = null
-    nodes.forEach((child, index) => {
-      const position = matches[index] ?? replaced[index] ?? null
-      const original = position === null ? undefined : originals[position]
-      const isMatched = matches[index] !== null
-
-      if (index === 0) {
-        output +=
-          isMatched && original ? this.slice(original) : this.lines(indentLines(writeBlock(child, index), indent, 1))
-      } else {
-        const previous = last === null ? undefined : originals[last]
-        let separator: string | null = null
-        if (previous && original && position === (last as number) + 1) {
-          const rewritten = [...(replaced[index - 1] !== null ? [nodes[index - 1]] : []), ...(isMatched ? [] : [child])]
-          const between = this.snapshot.source.slice(previous.end, original.line)
-          if (/\n[ \t]*\n/.test(between) || rewritten.every((block) => block && LINE_BLOCKS.has(block.type.name))) {
-            separator = this.text(previous.end, original.line)
-          }
-        }
-        output += separator ?? this.lines(loose || child.type.name === "paragraph" ? "\n\n" : "\n")
-
-        if (isMatched && original) {
-          output += this.text(original.line, original.end)
-        } else if (original?.list && LISTS.has(child.type.name)) {
-          // New items are indented like the first item of the list.
-          const listIndent = /^ */.exec(this.snapshot.source.slice(original.line, original.end))?.[0] ?? ""
-          output += this.writeList(original.list, child, listIndent)
-        } else {
-          output += this.lines(indentLines(writeBlock(child, index), indent, 0))
-        }
+    const verbatim = nodes.map((_, index) => matches[index] !== null && originalOf(index) !== undefined)
+    // Text of the source whose lines after the first are not indented (lazy continuation lines) is written so again.
+    const first = originalOf(0)
+    const lazyLines = this.snapshot.source
+      .slice(first?.start ?? 0, first?.end ?? 0)
+      .split("\n")
+      .slice(1)
+    const lazy =
+      !verbatim[0] &&
+      nodes[0]?.type.name === "paragraph" &&
+      lazyLines.length > 0 &&
+      lazyLines.every((line) => /^\S/.test(line))
+    const writeFirst = (lazily: boolean) =>
+      lazily
+        ? this.lines(
+            this.manager.renderNodeToMarkdown(itemJSON.content?.[0] ?? {}, itemJSON, 0, 1).replace(/^\n+|\n+$/g, ""),
+          )
+        : writeBlock(0)
+    const texts = nodes.map((child, index) => {
+      const original = originalOf(index)
+      if (verbatim[index] && original) {
+        return index === 0 ? this.slice(original) : this.text(original.line, original.end)
       }
-      last = position
+      if (index > 0 && original?.list && LISTS.has(child.type.name)) {
+        return this.writeList(original.list, child, listIndent(original))
+      }
+      return index === 0 ? writeFirst(lazy) : writeBlock(index)
     })
-    return output
+    separateWrittenLists(nodes, texts, (index, marker) => {
+      const original = originalOf(index)
+      verbatim[index] = false
+      if (original?.list) {
+        return this.writeList(original.list, nodes[index] as ProseMirrorNode, listIndent(original), marker)
+      }
+      const json = itemJSON.content?.[index] ?? {}
+      return writeBlock(index, { ...json, attrs: { ...json.attrs, [LIST_MARKER]: marker } })
+    })
+
+    // Line breaks of the source between changed blocks (without a blank line) are kept when the item reads back the same.
+    const assemble = (keepLineBreaks: boolean) => {
+      let output = this.slice(prefix)
+      let kept = false
+      nodes.forEach((child, index) => {
+        if (index > 0) {
+          const original = originalOf(index)
+          const previous = originalOf(index - 1)
+          let separator: string | null = null
+          if (previous && original && positions[index] === (positions[index - 1] as number) + 1) {
+            const between = this.snapshot.source.slice(previous.end, original.line)
+            const unchanged = verbatim[index - 1] && verbatim[index]
+            if (BLANK_LINE.test(between) || unchanged || keepLineBreaks) {
+              separator = this.text(previous.end, original.line)
+              kept ||= !BLANK_LINE.test(between) && !unchanged
+            }
+          }
+          const follows = !loose && child.type.name !== "paragraph" && interruptsParagraph(child.toJSON())
+          output += separator ?? this.lines(follows ? "\n" : "\n\n")
+        }
+        output += texts[index]
+      })
+      return { output, kept }
+    }
+    const attempt = assemble(true)
+    if ((!attempt.kept && !lazy) || this.readsBackAsItem(attempt.output, node)) {
+      return attempt.output
+    }
+    if (lazy) {
+      texts[0] = writeFirst(false)
+    }
+    return assemble(false).output
   }
 
   /**
    * Writes the items of a list, reusing the source of unchanged items. Items
    * start at the start of their first line; `indent` is the indentation of
-   * nested lists, added to the lines of items that are written.
+   * nested lists, added to the lines of items that are written. With
+   * `marker`, every item gets that bullet or delimiter.
    */
-  writeList(block: SourceBlock, node: ProseMirrorNode, indent = ""): string {
+  writeList(block: SourceBlock, node: ProseMirrorNode, indent = "", marker?: string): string {
     const { children = [], list } = block
     // Items are numbered from the start of the list, in the style of the source: `1.` for every item, or counting.
     const numbers = list?.numbers ?? []
@@ -489,15 +647,13 @@ export class SourceWriter {
         text = this.writeItem(replacedItem, item)
       }
       if (text === null) {
-        let markdown = serialize(this.manager, wrap(item))
         // Keep the markers of the list: `*` or `+` bullets, `1)` delimiters.
-        if (list?.bullet) {
-          markdown = markdown.replace(/^(\s*)[-*+](?=\s|$)/, `$1${list.bullet}`)
-        }
-        if (list?.delimiter) {
-          markdown = markdown.replace(/^(\s*\d{1,9})[.)]/, `$1${list.delimiter}`)
-        }
-        text = this.lines(indentLines(markdown, indent, 0))
+        const listMarker = list?.bullet ?? list?.delimiter
+        const markdown = serialize(this.manager, wrap(item))
+        text = this.lines(indentLines(listMarker ? setItemMarker(markdown, listMarker) : markdown, indent, 0))
+      }
+      if (marker) {
+        text = setItemMarker(text, marker)
       }
       if (node.type.name === "orderedList") {
         text = renumberItem(text, numberOf(index))
@@ -596,9 +752,90 @@ export class SourceWriter {
     return this.lines(text) + this.text(block.start + underline.index, block.end)
   }
 
+  /**
+   * Writes changed code in the place of a code block in the style of its
+   * source: between its fences (`~~~`, a longer fence than needed, the info
+   * string) or indented, when the code allows it and the result reads back
+   * as the block.
+   */
+  private writeCodeBlock(block: SourceBlock, node: ProseMirrorNode): string | null {
+    if (node.type.name !== "codeBlock") {
+      return null
+    }
+    const source = this.snapshot.source.slice(block.start, block.end)
+    const code = node.textContent
+    const lines = code.split("\n")
+    const language = String(node.attrs.language ?? "")
+    let markdown: string | null = null
+
+    const fence = /^( {0,3})(`{3,}|~{3,})(.*)\n/.exec(source)
+    if (fence) {
+      const [opening = "", indent = "", marker = "", info = ""] = fence
+      const character = marker[0] === "`" ? "`" : "~"
+      const closing = new RegExp(`\\n( {0,3}${character}{${marker.length},}[ \\t]*)$`).exec(source)?.[1]
+      const closes = new RegExp(`^ {0,3}${character}{${marker.length},}[ \\t]*$`)
+      if (closing !== undefined && !lines.some((line) => closes.test(line))) {
+        // The info string of the source is kept while the language is the same.
+        const start = language === info.trim() ? opening.slice(0, -1) : `${indent}${marker}${language}`
+        const content = lines.map((line) => (line ? indent + line : line)).join("\n")
+        markdown = `${start}\n${code ? `${content}\n` : ""}${closing}`
+      }
+    } else if (
+      !language &&
+      /\S/.test(lines[0] ?? "") &&
+      /\S/.test(lines.at(-1) ?? "") &&
+      source.split("\n").every((line) => !line.trim() || /^(?: {4}|\t)/.test(line))
+    ) {
+      // Indented code: blank lines at its start and end would not be read.
+      markdown = lines.map((line) => (line ? `    ${line}` : line)).join("\n")
+    }
+    return markdown !== null && this.readsBack([node], markdown) ? this.lines(markdown) : null
+  }
+
+  /**
+   * Writes a changed toggle in the place of a `<details>` block: with the
+   * source of its summary while the summary is unchanged (it can hold HTML
+   * the editor does not keep, such as `<a id="…">`), and its content block
+   * by block, like a document. The result must read back as the toggle.
+   */
+  private writeDetails(block: SourceBlock, node: ProseMirrorNode): string | null {
+    const [summary, content] = getChildren(node)
+    const [originalSummary, originalContent] = getChildren(block.node)
+    const source = this.snapshot.source.slice(block.start, block.end)
+    const parts = splitDetails(source)
+    if (node.type.name !== "details" || !summary || !content || !originalSummary || !originalContent || !parts) {
+      return null
+    }
+    // The blank lines around the content stay with the tags.
+    const bodyText = source.slice(parts.body.start, parts.body.end)
+    const bodyStart = parts.body.start + (/^(?:[ \t]*\n)*/.exec(bodyText)?.[0].length ?? 0)
+    const bodyEnd = Math.max(bodyStart, parts.body.end - (/(?:\n[ \t]*)*$/.exec(bodyText)?.[0].length ?? 0))
+    const at = (offset: number) => block.start + offset
+
+    let head = this.text(block.start, at(bodyStart))
+    if (!summary.eq(originalSummary)) {
+      if (!parts.summary) return null
+      const written = this.lines(serialize(this.manager, [summary.toJSON()]))
+      head = this.text(block.start, at(parts.summary.start)) + written + this.text(at(parts.summary.end), at(bodyStart))
+    }
+    let body = this.text(at(bodyStart), at(bodyEnd))
+    if (!content.eq(originalContent)) {
+      const snapshot = createSnapshot(this.manager, this.context, body, originalContent, this.snapshot.definitions)
+      if (!snapshot) return null
+      body = new SourceWriter(this.manager, this.context, snapshot).write(content)
+    }
+    const markdown = head + body + this.text(at(bodyEnd), block.end)
+    return this.readsBack([node], markdown) ? markdown : null
+  }
+
   /** Writes a changed node in the place of a block of the same type, in the way of the block. */
   private writeReplaced(block: SourceBlock, node: ProseMirrorNode): string | null {
-    return this.writeParts(block, node) ?? this.writeSetextHeading(block, node)
+    return (
+      this.writeParts(block, node) ??
+      this.writeSetextHeading(block, node) ??
+      this.writeCodeBlock(block, node) ??
+      this.writeDetails(block, node)
+    )
   }
 
   write(doc: ProseMirrorNode): string {
@@ -628,6 +865,16 @@ export class SourceWriter {
       texts.push(text)
       previous = block
     })
+    // Unchanged blocks whose text refers to a definition that was added or deleted read differently: they are written again.
+    const loaded = getLabels(this.snapshot.definitions)
+    const current = getLabels(this.context.definitions)
+    const changed = [...loaded, ...current].filter((label) => loaded.has(label) !== current.has(label))
+    if (changed.length > 0) {
+      texts.forEach((text, index) => {
+        const lower = text?.toLowerCase().replace(/\s+/g, " ")
+        if (lower && changed.some((label) => lower.includes(`[${label}]`))) texts[index] = null
+      })
+    }
     // Blocks read from the same source are only written back when all of them are unchanged, in order.
     for (const block of blocks) {
       if (!block.group || blocks[block.group.first] !== block) continue
@@ -649,35 +896,55 @@ export class SourceWriter {
       blocks.length,
       (index, block) => !blocks[block]?.group && blocks[block]?.node.type === nodes[index]?.type,
     )
+    const positions = nodes.map((_, index) => matches[index] ?? replaced[index] ?? null)
+    const blockOf = (index: number) => {
+      const position = positions[index]
+      return position === null || position === undefined ? undefined : blocks[position]
+    }
+
+    const written = nodes.map((node, index) => {
+      const block = blockOf(index)
+      const text = texts[index] ?? (block && matches[index] === null ? this.writeReplaced(block, node) : null)
+      return text ?? this.lines(this.writeNode(node, index))
+    })
+    separateWrittenLists(nodes, written, (index, marker) => {
+      const block = blockOf(index)
+      const node = nodes[index] as ProseMirrorNode
+      return block?.list ? this.writeList(block, node, "", marker) : this.lines(this.writeListWith(node, marker))
+    })
+    separateIndentedCode(nodes, written, (index) => this.lines(this.writeNode(nodes[index] as ProseMirrorNode, index)))
+    const verbatim = written.map((text, index) => {
+      const block = blockOf(index)
+      return block !== undefined && text === this.slice(block)
+    })
 
     let output = ""
-    let last: number | null = null
-    nodes.forEach((node, index) => {
-      const block = matches[index] ?? replaced[index] ?? null
-      const isReplaced = matches[index] === null && block !== null
+    nodes.forEach((_, index) => {
       if (index === 0) {
-        output += block === 0 ? this.text(0, (blocks[0] as SourceBlock).start) : ""
+        output += positions[0] === 0 ? this.text(0, (blocks[0] as SourceBlock).start) : ""
       } else {
+        // The source between two blocks that were neighbors is kept when it has a blank line, or when the blocks read back the same with it.
+        const last = positions[index - 1]
+        const block = positions[index]
         let separator: string | null = null
-        if (last !== null && block !== null && block === last + 1) {
-          const rewritten = [...(replaced[index - 1] !== null ? [nodes[index - 1]] : []), ...(isReplaced ? [node] : [])]
+        if (last !== null && last !== undefined && block === last + 1) {
           const start = (blocks[last] as SourceBlock).end
           const end = (blocks[block] as SourceBlock).start
+          const between = this.text(start, end)
           if (
-            /\n[ \t]*\n/.test(source.slice(start, end)) ||
-            rewritten.every((other) => other && LINE_BLOCKS.has(other.type.name))
+            BLANK_LINE.test(source.slice(start, end)) ||
+            (verbatim[index - 1] && verbatim[index]) ||
+            this.readsBack(nodes.slice(index - 1, index + 1), `${written[index - 1]}${between}${written[index]}`)
           ) {
-            separator = this.text(start, end)
+            separator = between
           }
         }
         output += separator ?? this.lines("\n\n")
       }
-      const text =
-        texts[index] ?? (isReplaced ? this.writeReplaced(blocks[block as number] as SourceBlock, node) : null)
-      output += text ?? this.lines(this.writeNode(node, index))
-      last = block
+      output += written[index]
     })
 
+    const last = positions.at(-1) ?? null
     const lastBlock = blocks.at(-1)
     if (lastBlock && last === blocks.length - 1) {
       output += this.text(lastBlock.end, source.length)

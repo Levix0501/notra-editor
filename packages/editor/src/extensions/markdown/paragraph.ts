@@ -2,7 +2,7 @@ import type { JSONContent, MarkdownToken } from "@tiptap/core"
 import { Paragraph, type ParagraphOptions } from "@tiptap/extension-paragraph"
 
 import type { NotraMarkdownContext } from "./context"
-import { prepareInlineContent, writeInline } from "./inline"
+import { getMarkDelimiters, prepareInlineContent, writeInline } from "./inline"
 import { RAW_INLINE_TOKEN } from "./marked"
 
 /**
@@ -81,9 +81,15 @@ export const NotraParagraph = Paragraph.extend<NotraParagraphOptions>({
   renderMarkdown(node, helpers, context) {
     const write = (content: JSONContent[]) => this.parent?.({ ...node, content }, helpers, context) ?? ""
     const content = node.content ?? []
+    const { context: markdownContext } = this.options
+    // The cells of tables (written by the table) are a single line, which only holds inline content.
+    const inTable = context.parentType === "table"
     const markdown = content.length
-      ? writeInline(prepareInlineContent(content, false, this.options.context?.hardBreak), write)
+      ? writeInline(prepareInlineContent(content, inTable, markdownContext), write, getMarkDelimiters(markdownContext))
       : write(content)
+    if (inTable) {
+      return markdown
+    }
     return escapeBlockSyntax(markdown, { listItem: context.parentType === "listItem" && context.index === 0 })
   },
 })

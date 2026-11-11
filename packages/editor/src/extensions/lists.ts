@@ -1,14 +1,32 @@
 import type { JSONContent, MarkdownRendererHelpers, RenderContext } from "@tiptap/core"
 import { ListItem, OrderedList, TaskItem, TaskList } from "@tiptap/extension-list"
 
+import { interruptsParagraph, LIST_MARKER } from "./markdown/list-markers"
+
 /** Text of empty nested items, which Markdown would not keep otherwise (like Tiptap). */
 const EMPTY_ITEM_TEXT = "&nbsp;"
+
+/**
+ * Whether a block can be written on the line of the marker, in an item that
+ * starts with it. `- ---` would be a divider instead of an item.
+ */
+function canStartItem(node: JSONContent): boolean {
+  return node.type === "orderedList" || interruptsParagraph(node)
+}
+
+/** The bullet or delimiter of the items of a list, see `separateLists`. */
+function getMarker(context: RenderContext, standard: string): string {
+  const marker = context.meta?.parentAttrs?.[LIST_MARKER]
+  return typeof marker === "string" ? marker : standard
+}
 
 /**
  * Writes a list item: the marker with the first paragraph, followed by the
  * other blocks of the item, indented to the content of the item. Unlike
  * Tiptap, the continuation lines of the first paragraph are indented too,
- * and blank lines inside of the item stay empty.
+ * and blank lines inside of the item stay empty. A block follows the block
+ * before it on the next line when Markdown reads it there (a nested list),
+ * and after a blank line otherwise.
  */
 function renderListItem(
   node: JSONContent,
@@ -25,24 +43,27 @@ function renderListItem(
       .join("\n")
 
   const [first, ...rest] = node.content ?? []
+  // Some blocks are written with line breaks around them (tables), which would be blank lines here.
   const render = (child: JSONContent, index: number) =>
-    helpers.renderChild?.(child, index) ?? helpers.renderChildren([child])
+    (helpers.renderChild?.(child, index) ?? helpers.renderChildren([child])).replace(/^\n+|\n+$/g, "")
   let main = first ? helpers.renderChildren([first]) : ""
   let from = 1
   // An item that starts with another block than text (`- > quote`, `- ```js`)
   // starts with an empty paragraph in the editor: the block follows the marker.
   const [second] = rest
-  if (!main && !checkbox && second && second.type !== "paragraph") {
+  if (!main && !checkbox && second && canStartItem(second)) {
     main = render(second, 1)
     from = 2
   }
   if (!main && !checkbox && context.level > 1) {
     main = EMPTY_ITEM_TEXT
   }
-  let output = `${marker}${checkbox}${indentLines(main, 1)}`
+  // Without text, the next block starts on the next line: `-` and the block, indented.
+  let output = main || checkbox || from > 1 ? `${marker}${checkbox}${indentLines(main, 1)}` : marker.trimEnd()
   rest.slice(from - 1).forEach((child, index) => {
     const content = render(child, index + from)
-    output += `${child.type === "paragraph" ? "\n\n" : "\n"}${indentLines(content, 0)}`
+    const follows = output === marker.trimEnd() || (child.type !== "paragraph" && interruptsParagraph(child))
+    output += `${follows ? "\n" : "\n\n"}${indentLines(content, 0)}`
   })
   return output
 }
@@ -75,15 +96,17 @@ export const NotraTaskList = TaskList.extend({
 export const NotraListItem = ListItem.extend({
   renderMarkdown(node, helpers, context) {
     if (context.parentType !== "orderedList") {
-      return renderListItem(node, helpers, context, "- ")
+      return renderListItem(node, helpers, context, `${getMarker(context, "-")} `)
     }
     const start = Number(context.meta?.parentAttrs?.start ?? 1)
-    return renderListItem(node, helpers, context, `${(Number.isFinite(start) ? start : 1) + context.index}. `)
+    const number = (Number.isFinite(start) ? start : 1) + context.index
+    return renderListItem(node, helpers, context, `${number}${getMarker(context, ".")} `)
   },
 })
 
 export const NotraTaskItem = TaskItem.extend({
   renderMarkdown(node, helpers, context) {
-    return renderListItem(node, helpers, context, "- ", node.attrs?.checked ? "[x] " : "[ ] ")
+    const checkbox = node.attrs?.checked ? "[x] " : "[ ] "
+    return renderListItem(node, helpers, context, `${getMarker(context, "-")} `, checkbox)
   },
 })

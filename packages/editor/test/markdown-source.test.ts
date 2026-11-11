@@ -111,9 +111,8 @@ describe("markdown source", () => {
   it("keeps the blank lines around an edited block", () => {
     const instance = load(DOCUMENT)
     insertAfter(instance, "A paragraph", "!")
-    // Reference links of rewritten blocks are written inline.
     expect(changedLines(DOCUMENT, instance.getMarkdown())).toEqual([
-      "A paragraph! with a [reference](https://example.com) and <kbd>K</kbd>.",
+      "A paragraph! with a [reference][1] and <kbd>K</kbd>.",
     ])
   })
 
@@ -183,10 +182,11 @@ describe("markdown source", () => {
   })
 
   it("stops preserving the source when other content is set", () => {
-    const instance = load("Some _text_\n")
-    instance.commands.setContent("<p>Some <em>text</em></p>")
+    const instance = load("Title\n=====\n\nSome _text_\n")
+    instance.commands.setContent("<h1>Title</h1><p>Some <em>text</em></p>")
     expect(isPreservingMarkdownSource(instance)).toBe(false)
-    expect(instance.getMarkdown()).toBe("Some *text*")
+    // Written again, in the style of the Markdown that was read.
+    expect(instance.getMarkdown()).toBe("# Title\n\nSome _text_")
   })
 
   it("starts from the Markdown features, unless features are enabled explicitly", () => {
@@ -199,9 +199,9 @@ describe("markdown source", () => {
   })
 
   it("is off by default", () => {
-    editor = createMarkdownEditor("Some _text_", { markdown: { preserveSource: false } })
+    editor = createMarkdownEditor("Title\n=====", { markdown: { preserveSource: false } })
     expect(isPreservingMarkdownSource(editor)).toBe(false)
-    expect(editor.getMarkdown()).toBe("Some *text*")
+    expect(editor.getMarkdown()).toBe("# Title")
   })
 
   it("handles large documents", () => {
@@ -276,6 +276,62 @@ describe("markdown source of edited blocks", () => {
     expect(edit("> quote\n\nText\n", ["quote"])).toBe("> quote!\n\nText\n")
   })
 
+  it("keeps the line breaks between edited blocks where they read back the same", () => {
+    expect(edit("# Title\n- one\n\nText\n", ["one"])).toBe("# Title\n- one!\n\nText\n")
+    expect(edit("- parent\n\n- other\n  text\n  - nested\n", ["nested"])).toBe(
+      "- parent\n\n- other\n  text\n  - nested!\n",
+    )
+    // Text over `---` would be a heading.
+    const paragraph = (instance: Editor) => {
+      instance.chain().setTextSelection(findTextEnd(instance, "Title")).setParagraph().run()
+    }
+    expect(change("# Title\n---\n\nText\n", paragraph)).toBe("Title\n\n---\n\nText\n")
+  })
+
+  it("keeps lists apart that become neighbors", () => {
+    const deleteBetween = (instance: Editor) => {
+      instance.state.doc.forEach((node, pos) => {
+        if (node.textContent === "between") instance.commands.deleteRange({ from: pos, to: pos + node.nodeSize })
+      })
+    }
+    expect(change("- a\n- b\n\nbetween\n\n- c\n- d\n", deleteBetween)).toBe("- a\n- b\n\n* c\n* d\n")
+    expect(change("* a\n\nbetween\n\n* c\n", deleteBetween)).toBe("* a\n\n- c\n")
+    expect(change("1. a\n\nbetween\n\n1. c\n", deleteBetween)).toBe("1. a\n\n1) c\n")
+    expect(change("- a\n\nbetween\n\n- [ ] c\n", deleteBetween)).toBe("- a\n\n* [ ] c\n")
+  })
+
+  it("keeps the fences of edited code blocks", () => {
+    expect(edit("~~~js\nconst a = 1\n~~~\n", ["const a = 1"], ";")).toBe("~~~js\nconst a = 1;\n~~~\n")
+    expect(edit("````\nplain\n````\n", ["plain"])).toBe("````\nplain!\n````\n")
+    expect(edit('```python title="x"\nprint(1)\n```\n', ["print(1)"])).toBe('```python title="x"\nprint(1)!\n```\n')
+    expect(edit("Text\n\n    indented\n    code\n", ["indented"])).toBe("Text\n\n    indented!\n    code\n")
+    // Code that would close the fence of the source gets a longer fence.
+    expect(edit("```\ncode\n```\n", ["code"], "\n```")).toBe("````\ncode\n```\n````\n")
+  })
+
+  it("writes emphasis with the delimiters of the document", () => {
+    expect(edit("Some _em_ and __strong__ text.\n", ["text"])).toBe("Some _em_ and __strong__ text!.\n")
+    // `_` does not work inside of a word: `*` does.
+    expect(edit("A _b_ c.\n\nfoo*bar*baz\n", ["baz"])).toBe("A _b_ c.\n\nfoo*bar*baz!\n")
+  })
+
+  it("keeps the links of edited blocks in the form of the source", () => {
+    const markdown =
+      'See [docs][d], [Ref] and https://example.com.\n\n[d]: https://d.example\n[ref]: <https://r.example> "R"\n'
+    expect(edit(markdown, ["See"])).toBe(markdown.replace("See", "See!"))
+    expect(edit("Mail <me@example.com>.\n", ["Mail"])).toBe("Mail! <me@example.com>.\n")
+    const collapsed = "See [docs][] and [API][].\n\n[docs]: https://d.example\n[api]: https://a.example\n"
+    expect(edit(collapsed, ["See"])).toBe(collapsed.replace("See", "See!"))
+  })
+
+  it("only rewrites the edited part of a toggle", () => {
+    const markdown =
+      '<details><summary><a id="c"></a>Comments</summary><br>\n\nComments begin with `#`.\n\n* one\n* two\n\n</details>\n\nAfter\n'
+    expect(edit(markdown, ["begin"])).toBe(markdown.replace("begin", "begin!"))
+    expect(edit(markdown, ["two"])).toBe(markdown.replace("two", "two!"))
+    expect(edit(markdown, ["Comments"])).toBe(markdown.replace("Comments<", "Comments!<"))
+  })
+
   it("keeps the style of edited setext headings", () => {
     expect(edit("Title\n=====\n\nText\n", ["Title"])).toBe("Title!\n=====\n\nText\n")
     expect(edit("Line one\nline two\n---\n", ["two"])).toBe("Line one\nline two!\n---\n")
@@ -288,6 +344,8 @@ describe("markdown source of edited blocks", () => {
 
   it("keeps the indentation of edited list items", () => {
     expect(edit("- one\n  two\n- three\n", ["one"])).toBe("- one!\n  two\n- three\n")
+    // Lines that continue the text without indentation (lazy continuation lines).
+    expect(edit("1. one\ntwo\n2. three\n", ["two"])).toBe("1. one\ntwo!\n2. three\n")
     expect(edit("-   one\n    two\n-   three\n", ["one"])).toBe("-   one!\n    two\n-   three\n")
     expect(edit("* one\n* two\n", ["two"])).toBe("* one\n* two!\n")
   })

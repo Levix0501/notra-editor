@@ -24,6 +24,11 @@ if (typeof window !== "undefined") {
       dispatchEvent: () => false,
     }) as MediaQueryList
 
+  // ProseMirror creates paste events for `view.pasteHTML()` and `view.pasteText()`.
+  globalThis.ClipboardEvent ??= class extends Event {
+    readonly clipboardData = null
+  } as unknown as typeof ClipboardEvent
+
   window.ResizeObserver ??= class {
     observe() {}
     unobserve() {}

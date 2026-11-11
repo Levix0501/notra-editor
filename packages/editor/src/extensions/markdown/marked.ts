@@ -76,39 +76,64 @@ const callout: TokenizerExtension = {
   },
 }
 
+/** The parts of a `<details>` block in its source, as offsets into the source. */
+export interface DetailsParts {
+  /** The end of the block: the end of the closing tag and the line it is on. */
+  end: number
+  open: boolean
+  /** The HTML inside of `<summary>`, if the block has a summary. */
+  summary: { start: number; end: number } | null
+  /** The Markdown content, between the summary (or the opening tag) and the closing tag. */
+  body: { start: number; end: number }
+}
+
+/** Finds the parts of a `<details>` block at the start of `source`. */
+export function splitDetails(source: string): DetailsParts | null {
+  const indent = DETAILS_START.exec(source)?.[1]
+  if (indent === undefined) {
+    return null
+  }
+  const html = source.slice(indent.length)
+  const element = matchHtml(html)
+  if (!element || !DETAILS_CLOSE_TAG.test(element)) {
+    return null
+  }
+  // Text after the closing tag would belong to the HTML block: leave it to marked.
+  const lineEnd = /^[ \t]*(?:\n|$)/.exec(html.slice(element.length))
+  if (!lineEnd) {
+    return null
+  }
+
+  const openTag = DETAILS_OPEN_TAG.exec(element)?.[0] ?? "<details>"
+  const closeTag = /<\/details\s*>$/i.exec(element)?.[0] ?? "</details>"
+  const innerStart = indent.length + openTag.length
+  const bodyEnd = indent.length + element.length - closeTag.length
+  const summary = SUMMARY.exec(source.slice(innerStart, bodyEnd))
+  const summaryStart = summary ? innerStart + summary[0].indexOf(">", summary[0].indexOf("<summary")) + 1 : -1
+  return {
+    end: indent.length + element.length + lineEnd[0].length,
+    open: /\sopen(?=[\s=>/]|$)/i.test(openTag),
+    summary: summary ? { start: summaryStart, end: summaryStart + (summary[1] ?? "").length } : null,
+    body: { start: summary ? innerStart + summary[0].length : innerStart, end: bodyEnd },
+  }
+}
+
 /** `<details>` blocks with an optional `<summary>` and Markdown content. */
 const details: TokenizerExtension = {
   name: DETAILS_TOKEN,
   level: "block",
   tokenizer(source) {
-    const indent = DETAILS_START.exec(source)?.[1]
-    if (indent === undefined) {
+    const parts = splitDetails(source)
+    if (!parts) {
       return undefined
     }
-    const html = source.slice(indent.length)
-    const element = matchHtml(html)
-    if (!element || !DETAILS_CLOSE_TAG.test(element)) {
-      return undefined
-    }
-    // Text after the closing tag would belong to the HTML block: leave it to marked.
-    const lineEnd = /^[ \t]*(?:\n|$)/.exec(html.slice(element.length))
-    if (!lineEnd) {
-      return undefined
-    }
-
-    const openTag = DETAILS_OPEN_TAG.exec(element)?.[0] ?? "<details>"
-    const closeTag = /<\/details\s*>$/i.exec(element)?.[0] ?? "</details>"
-    const inner = element.slice(openTag.length, element.length - closeTag.length)
-    const summary = SUMMARY.exec(inner)
-    const body = summary ? inner.slice(summary[0].length) : inner
-
     return {
       type: DETAILS_TOKEN,
-      raw: indent + element + lineEnd[0],
-      open: /\sopen(?=[\s=>/]|$)/i.test(openTag),
+      raw: source.slice(0, parts.end),
+      open: parts.open,
       // Markdown is not processed inside of `<summary>`: it is HTML.
-      summary: (summary?.[1] ?? "").trim(),
-      tokens: lexBlocks(this.lexer, body),
+      summary: parts.summary ? source.slice(parts.summary.start, parts.summary.end).trim() : "",
+      tokens: lexBlocks(this.lexer, source.slice(parts.body.start, parts.body.end)),
     }
   },
 }

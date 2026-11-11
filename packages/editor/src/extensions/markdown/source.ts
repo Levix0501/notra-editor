@@ -4,6 +4,7 @@ import { Plugin, PluginKey } from "@tiptap/pm/state"
 
 import { UPDATE_CONTENT_META, type UpdateContentMeta } from "../update-content"
 import { detectStyle, type NotraMarkdownContext } from "./context"
+import { indexReferences } from "./inline"
 import { createSnapshot, type SourceSnapshot } from "./source-snapshot"
 import { SourceWriter } from "./source-writer"
 
@@ -62,15 +63,20 @@ export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
       if (!context) {
         return getMarkdown.call(editor)
       }
-      // Text in brackets reads as a link when the document defines it.
-      const definitions = context.definitions
+      // Text in brackets reads as a link when the document defines it, and links can refer to the definitions.
+      const { definitions, references } = context
       context.definitions = getDefinitions(editor.state.doc)
+      const manager = editor.markdown
+      context.references = manager
+        ? indexReferences(() => new manager.instance.Lexer(manager.instance.defaults), context.definitions)
+        : null
       try {
-        return snapshot && editor.markdown
-          ? new SourceWriter(editor.markdown, context, snapshot).write(editor.state.doc)
+        return snapshot && manager
+          ? new SourceWriter(manager, context, snapshot).write(editor.state.doc)
           : getMarkdown.call(editor)
       } finally {
         context.definitions = definitions
+        context.references = references
       }
     }
   },

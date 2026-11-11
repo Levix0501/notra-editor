@@ -1,7 +1,8 @@
 import { type JSONContent, textblockTypeInputRule } from "@tiptap/core"
-import { Heading, type Level } from "@tiptap/extension-heading"
+import { Heading, type HeadingOptions, type Level } from "@tiptap/extension-heading"
 
-import { prepareInlineContent, writeInline } from "./markdown/inline"
+import type { NotraMarkdownContext } from "./markdown/context"
+import { getMarkDelimiters, prepareInlineContent, writeInline } from "./markdown/inline"
 
 /**
  * `#` at the end of a heading, after a space or alone, which Markdown reads
@@ -20,7 +21,16 @@ export const MENU_HEADING_LEVELS: readonly Level[] = [1, 2, 3]
  * them is limited to the levels offered in the menus. Without this, `####` in
  * Markdown or `<h4>` in HTML would be turned into a paragraph.
  */
-export const NotraHeading = Heading.extend({
+export interface NotraHeadingOptions extends HeadingOptions {
+  /** Shared Markdown state, see {@link NotraMarkdownContext}. */
+  context: NotraMarkdownContext | null
+}
+
+export const NotraHeading = Heading.extend<NotraHeadingOptions>({
+  addOptions() {
+    return { ...(this.parent?.() as HeadingOptions), context: null }
+  },
+
   renderMarkdown(node, helpers, context) {
     const content = node.content ?? []
     // Tiptap writes nothing for an empty heading, which would then be lost.
@@ -28,7 +38,13 @@ export const NotraHeading = Heading.extend({
       return "#".repeat(Number(node.attrs?.level) || 1)
     }
     const write = (inline: JSONContent[]) => this.parent?.({ ...node, content: inline }, helpers, context) ?? ""
-    return writeInline(prepareInlineContent(content, true), write).replace(CLOSING_SEQUENCE, "$1\\$2")
+    const { context: markdownContext } = this.options
+    const markdown = writeInline(
+      prepareInlineContent(content, true, markdownContext),
+      write,
+      getMarkDelimiters(markdownContext),
+    )
+    return markdown.replace(CLOSING_SEQUENCE, "$1\\$2")
   },
 
   addKeyboardShortcuts() {

@@ -6,7 +6,8 @@ import { detectStyle, NotraMarkdownContext } from "./context"
 import { MarkdownEscaping } from "./escaping"
 import { MarkdownFallbacks } from "./fallback"
 import { Footnotes } from "./footnotes"
-import { MarkdownMarks } from "./inline"
+import { MarkdownMarks, markInlineSource } from "./inline"
+import { ListMarkers } from "./list-markers"
 import { ListSyntax } from "./list-syntax"
 import { createNotraMarked } from "./marked"
 import { LinkDefinitions, RawBlock } from "./raw-block"
@@ -66,6 +67,17 @@ export function createNotraMarkdown(
 
     onBeforeCreate() {
       context.schema = this.editor.schema
+      // Extends the Markdown manager as soon as the Markdown extension creates it, before it reads the initial content.
+      let manager = this.editor.markdown
+      Object.defineProperty(this.editor, "markdown", {
+        configurable: true,
+        enumerable: true,
+        get: () => manager,
+        set: (value: typeof manager) => {
+          manager = value
+          if (value) markInlineSource(value)
+        },
+      })
       // The Markdown extension replaces the initial content with its parsed form.
       const { content, contentType } = this.editor.options
       const markdown = contentType === "markdown" && typeof content === "string" ? content : null
@@ -92,6 +104,7 @@ export function createNotraMarkdown(
       LinkDefinitions.configure({ context }),
       FrontMatterSyntax,
       ListSyntax.configure({ context }),
+      ListMarkers,
       ...Footnotes,
       CalloutSyntax.configure({ context }),
       DetailsSyntax.configure({ context }),

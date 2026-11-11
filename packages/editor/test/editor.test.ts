@@ -190,8 +190,9 @@ describe("editing", () => {
     editor = instance
     instance.commands.setTextSelection(1)
     typeText(instance, "see README.md, app.py, example.com, https://example.com and www.example.com ")
+    // Links whose text is their URL are written as the URL; `www.` links of the editor use https, which Markdown does not.
     expect(instance.getMarkdown()).toBe(
-      "see README.md, app.py, example.com, [https://example.com](https://example.com) and [www.example.com](https://www.example.com) ",
+      "see README.md, app.py, example.com, https://example.com and [www.example.com](https://www.example.com) ",
     )
   })
 })

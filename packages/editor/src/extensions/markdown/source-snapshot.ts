@@ -200,7 +200,8 @@ function addChildren(block: SourceBlock, token: MarkdownToken, source: string): 
 }
 
 /**
- * Reads where each top-level node of `doc` comes from in `source`. Every top
+ * Reads where each top-level node of `doc` comes from in `source` (also the
+ * source of the content of a block, such as a `<details>` block). Every top
  * level token is parsed on its own and compared with the document, so that
  * only blocks that match are written back verbatim. A block that reads
  * differently on its own (for example because of context from other blocks)
@@ -213,6 +214,7 @@ export function createSnapshot(
   context: NotraMarkdownContext,
   rawSource: string,
   doc: ProseMirrorNode,
+  documentDefinitions?: string,
 ): SourceSnapshot | null {
   // marked normalizes line breaks the same way before reading the source.
   const crlf: number[] = []
@@ -239,10 +241,13 @@ export function createSnapshot(
   }
 
   // Reference links of a block need the definitions of the document, also
-  // the ones inside of other blocks (for example a `<details>` block).
-  const definitions = Object.entries(lexed.links ?? {})
-    .map(([label, definition]) => writeDefinition(label, definition))
-    .join("\n")
+  // the ones inside of other blocks (for example a `<details>` block). The
+  // source of a part of a document (`documentDefinitions`) uses the ones of the document.
+  const definitions =
+    documentDefinitions ??
+    Object.entries(lexed.links ?? {})
+      .map(([label, definition]) => writeDefinition(label, definition))
+      .join("\n")
   const firstContent = located.findIndex(({ token }) => token.type !== "space")
   const lastContent = located.findLastIndex(({ token }) => token.type !== "space")
 

@@ -43,6 +43,7 @@ const ROUND_TRIPS: Record<string, string> = {
   "every alert type": "> [!TIP]\n> a\n\n> [!IMPORTANT]\n> b\n\n> [!WARNING]\n> c\n\n> [!CAUTION]\n> d",
   "escaped block syntax": "1\\. not a list\n\n\\# not a heading\n\n\\- not an item\n\nfoo\n\\---",
   "text that only looks like syntax": "snake_case, [note], [[Wiki link]], a -> b, x < y, R&D and ~/path",
+  "angle brackets that are not HTML": "Returns Record<string, string|string[]> when a <b or 1<2.",
   "code containing a fence": "````md\n```js\nx\n```\n````",
   footnotes: "Text with a note[^1].\n\n[^1]: The note,\n    continued.",
 }
@@ -119,6 +120,30 @@ describe("source blocks", () => {
       { type: "text", text: " and " },
       { type: "text", text: "this", marks: [{ type: "underline" }] },
     ])
+  })
+
+  it("gives inline source the marks around it", () => {
+    const markdown =
+      "See [How to fight the <body> scroll](https://example.com), **Ctrl <kbd>K</kbd> now** and **a**<kbd>K</kbd>**b**."
+    const instance = load(markdown)
+    const nodes = topLevel(instance)[0]?.content ?? []
+    const sources = (text: string) => nodes.filter((node) => node.type === "rawInline" && node.attrs?.source === text)
+    expect(sources("<body>")[0]?.marks).toEqual([expect.objectContaining({ type: "link" })])
+    const [inBold, between] = sources("<kbd>K</kbd>")
+    expect(inBold?.marks).toEqual([{ type: "bold" }])
+    // Inline source between marks of their own is not marked.
+    expect(between?.marks).toBeUndefined()
+    expect(instance.getMarkdown()).toBe(markdown)
+  })
+
+  it("nests marks that end at different places", () => {
+    for (const markdown of [
+      "**[link](https://example.com) after** end",
+      "**[*Prettier*와 호환](https://example.com)되는** 포매터",
+      "*[a **b**](https://example.com) c* end",
+    ]) {
+      expect(load(markdown).getMarkdown()).toBe(markdown)
+    }
   })
 
   it("does not read HTML in code", () => {
@@ -218,6 +243,22 @@ describe("toggles", () => {
       '<details><summary>T &amp; <em>x</em></summary><div data-type="detailsContent"><p>Body</p></div></details>',
     )
     expect(instance.getMarkdown()).toBe("<details>\n<summary>T &amp; <em>x</em></summary>\n\nBody\n\n</details>")
+  })
+
+  it("keeps HTML of summaries that the editor does not have as inline source", () => {
+    const markdown =
+      '<details>\n<summary><a id="install"></a><b>Install</b> with <kbd>npm</kbd></summary>\n\nBody\n\n</details>'
+    const instance = load(markdown)
+    expect(topLevel(instance)[0]?.content?.[0]?.content).toEqual([
+      { type: "rawInline", attrs: { kind: "html", source: '<a id="install">' } },
+      { type: "rawInline", attrs: { kind: "html", source: "</a>" } },
+      { type: "text", text: "Install", marks: [{ type: "bold" }] },
+      { type: "text", text: " with " },
+      { type: "rawInline", attrs: { kind: "html", source: "<kbd>" } },
+      { type: "text", text: "npm" },
+      { type: "rawInline", attrs: { kind: "html", source: "</kbd>" } },
+    ])
+    expect(instance.getMarkdown()).toBe(markdown.replace("<b>Install</b>", "<strong>Install</strong>"))
   })
 
   it("still reads Tiptap's container syntax", () => {
@@ -334,6 +375,71 @@ describe("lists", () => {
     expect(code?.content?.map((node) => node.type)).toEqual(["paragraph", "codeBlock"])
     expect(instance.getMarkdown()).toBe(markdown)
   })
+
+  const item = (...content: JSONContent[]): JSONContent => ({ type: "listItem", content })
+  const text = (value: string): JSONContent => ({ type: "paragraph", content: [{ type: "text", text: value }] })
+
+  it("writes lists that follow a list of their kind with another marker", () => {
+    const content: JSONContent[] = [
+      { type: "bulletList", content: [item(text("a"))] },
+      { type: "bulletList", content: [item(text("b"))] },
+      { type: "paragraph" },
+      { type: "bulletList", content: [item(text("c"))] },
+      { type: "orderedList", content: [item(text("d"))] },
+      { type: "orderedList", attrs: { start: 5 }, content: [item(text("e"))] },
+      { type: "taskList", content: [{ type: "taskItem", attrs: { checked: false }, content: [text("f")] }] },
+      {
+        type: "bulletList",
+        content: [
+          item(
+            text("g"),
+            { type: "bulletList", content: [item(text("h"))] },
+            { type: "bulletList", content: [item(text("i"))] },
+          ),
+        ],
+      },
+    ]
+    const markdown = createTestEditor({ type: "doc", content }).getMarkdown()
+    expect(markdown).toBe("- a\n\n* b\n\n\n\n- c\n\n1. d\n\n5) e\n\n- [ ] f\n\n* g\n  - h\n  * i")
+    expect(topLevel(load(markdown))).toEqual(createTestEditor({ type: "doc", content }).getJSON().content)
+  })
+
+  it("writes dividers in list items so that they stay dividers", () => {
+    const content: JSONContent[] = [
+      { type: "bulletList", content: [item({ type: "paragraph" }, { type: "horizontalRule" })] },
+      text("Text"),
+      { type: "bulletList", content: [item(text("x"), { type: "horizontalRule" })] },
+    ]
+    const markdown = createTestEditor({ type: "doc", content }).getMarkdown()
+    // `- ---` would be a divider, and `---` under text a heading.
+    expect(markdown).toBe("-\n  ---\n\nText\n\n- x\n\n  ---")
+    expect(topLevel(load(markdown))).toEqual(createTestEditor({ type: "doc", content }).getJSON().content)
+  })
+
+  it("writes tables in list items inside of the item", () => {
+    const cell = (type: string, value: string) => ({ type, content: [text(value)] })
+    const table = {
+      type: "table",
+      content: [
+        { type: "tableRow", content: [cell("tableHeader", "a")] },
+        { type: "tableRow", content: [cell("tableCell", "1")] },
+      ],
+    }
+    const content: JSONContent[] = [
+      { type: "bulletList", content: [item({ type: "paragraph" }, table), item(text("x"), table), item(text("y"))] },
+    ]
+    const markdown = createTestEditor({ type: "doc", content }).getMarkdown()
+    expect(markdown).toBe("-\n  | a   |\n  | --- |\n  | 1   |\n- x\n\n  | a   |\n  | --- |\n  | 1   |\n- y")
+    expect(topLevel(load(markdown))).toEqual(createTestEditor({ type: "doc", content }).getJSON().content)
+  })
+
+  it("writes a blank line before blocks that cannot follow the text of an item directly", () => {
+    const nested = { type: "orderedList", attrs: { start: 3 }, content: [item(text("three"))] }
+    const content: JSONContent[] = [{ type: "bulletList", content: [item(text("x"), nested)] }]
+    const markdown = createTestEditor({ type: "doc", content }).getMarkdown()
+    expect(markdown).toBe("- x\n\n  3. three")
+    expect(topLevel(load(markdown))).toEqual(createTestEditor({ type: "doc", content }).getJSON().content)
+  })
 })
 
 describe("text escaping", () => {
@@ -445,6 +551,29 @@ describe("emphasis next to punctuation", () => {
     expect(editor.getMarkdown()).toBe("旧<del>「新」</del>Hello [user] snake_case")
   })
 
+  it("writes emphasis with the delimiters most of the document uses", () => {
+    expect(load("Some _em_, __strong__ and ___both___.").getMarkdown()).toBe("Some _em_, __strong__ and ___both___.")
+    expect(load("Some *em* and **strong**.").getMarkdown()).toBe("Some *em* and **strong**.")
+    // `_` only works next to punctuation inside of a word, `*` everywhere.
+    const instance = load("_a_ and _b_")
+    const italic = [{ type: "italic" }]
+    instance.commands.setContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "a", marks: italic },
+            { type: "text", text: " and x" },
+            { type: "text", text: "b", marks: italic },
+            { type: "text", text: "y" },
+          ],
+        },
+      ],
+    })
+    expect(instance.getMarkdown()).toBe("_a_ and x*b*y")
+  })
+
   it("reads the content of HTML tags of such marks as Markdown", () => {
     const instance = load("a <strong>`code`</strong> <em>[link](https://example.com)</em> <del>~x~</del>")
     expect(topLevel(instance)[0]?.content).toEqual([
@@ -480,6 +609,31 @@ describe("link targets", () => {
   it("writes links of the editor with spaces between angle brackets", () => {
     const instance = loadHtml('<p><a href="My Notes.md">notes</a></p>')
     expect(instance.getMarkdown()).toBe("[notes](<My Notes.md>)")
+  })
+
+  it("writes links whose text is their URL as autolinks, like the document", () => {
+    for (const markdown of [
+      "See https://example.com/a_b, www.example.com and me@example.com.",
+      "See <https://example.com/a_b> and <me@example.com>.",
+    ]) {
+      expect(load(markdown).getMarkdown()).toBe(markdown)
+    }
+    // A URL followed by text would take in the text: it is written between `<` and `>`.
+    const link = [{ type: "link", attrs: { href: "https://example.com" } }]
+    const instance = loadHtml("<p></p>")
+    instance.commands.setContent({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "https://example.com", marks: link },
+            { type: "text", text: "abc" },
+          ],
+        },
+      ],
+    })
+    expect(instance.getMarkdown()).toBe("<https://example.com>abc")
   })
 })
 
@@ -548,6 +702,7 @@ describe("hard breaks and code spans", () => {
   it("writes hard breaks like most hard breaks of the document", () => {
     expect(load("Type: `a`\\\nDefault: `b`").getMarkdown()).toBe("Type: `a`\\\nDefault: `b`")
     expect(load("Type: `a`  \nDefault: `b`").getMarkdown()).toBe("Type: `a`  \nDefault: `b`")
+    expect(load("Type: `a`<br/>Default: `b`<br/>\nMore").getMarkdown()).toBe("Type: `a`<br/>Default: `b`<br/>\nMore")
   })
 
   it("keeps marks outside of code spans and spaces inside of them", () => {

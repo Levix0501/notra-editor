@@ -30,6 +30,7 @@ import { MarkdownPaste } from "./markdown-paste"
 import { NotraCore, type NotraCoreOptions } from "./notra-core"
 import { NotraPlaceholder } from "./placeholder"
 import { SlashCommand } from "./slash-command/extension"
+import { TextTableCell, TextTableHeader } from "./table"
 import { TrailingParagraph } from "./trailing-paragraph"
 import { UpdateContent } from "./update-content"
 
@@ -112,7 +113,7 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
   ]
 
   if (enabled("heading")) {
-    extensions.push(NotraHeading)
+    extensions.push(NotraHeading.configure({ context: notraMarkdown.context }))
   }
   if (enabled("bulletList") || enabled("orderedList")) {
     extensions.push(NotraListItem)
@@ -135,8 +136,14 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
     )
   }
   if (enabled("table")) {
+    const { resizable, blocksInCells } = getFeatureOptions(features, "table")
+    const textCells = blocksInCells === false
     extensions.push(
-      TableKit.configure({ table: { resizable: getFeatureOptions(features, "table").resizable !== false } }),
+      TableKit.configure({
+        table: { resizable: resizable !== false },
+        ...(textCells ? { tableCell: false, tableHeader: false } : {}),
+      }),
+      ...(textCells ? [TextTableCell, TextTableHeader] : []),
     )
   }
   if (enabled("image")) {

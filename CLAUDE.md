@@ -20,14 +20,19 @@ Run from this directory (requires pnpm 12):
 - `packages/editor/src/extensions/markdown/`: Markdown support on top of `@tiptap/markdown`:
   marked tokenizers (each editor has its own marked instance), source blocks for content the
   editor cannot represent (`fallback.ts` keeps blocks that no extension reads), all lists read by
-  `list-syntax.ts` (Tiptap's list readers are turned off), minimal escaping (`escaping.ts`), inline
-  writing in `inline.ts` (emphasis that CommonMark would not read is written as HTML, link
-  targets), and `source.ts` with `source-snapshot.ts` and `source-writer.ts`, which write
-  unchanged blocks, list items and table rows back verbatim. Some of it replaces internals of
-  `@tiptap/markdown` (`encodeTextForMarkdown`, `getMarkOpening`, `getMarkClosing`);
-  `test/markdown*.test.ts` covers them, so run it after upgrading Tiptap.
+  `list-syntax.ts` (Tiptap's list readers are turned off) and kept apart by `list-markers.ts`,
+  minimal escaping (`escaping.ts`), inline writing in `inline.ts` (emphasis that CommonMark would
+  not read is written as HTML, link targets, autolinks and references), the style of the file
+  (`detectStyle` in `context.ts`), and `source.ts` with `source-snapshot.ts` and
+  `source-writer.ts`, which write unchanged blocks, list items, table rows and the parts of
+  toggles back verbatim. Some of it replaces internals of `@tiptap/markdown`
+  (`encodeTextForMarkdown`, `getMarkOpening`, `getMarkClosing`, `applyMarkToContent`,
+  `renderNodesWithMarkBoundaries`, `getMarksToOpenForSerialization`); `test/markdown*.test.ts`
+  covers them, so run it after upgrading Tiptap.
 - Line breaks in the text of paragraphs are Markdown soft line breaks: `soft-breaks.ts` keeps
   ProseMirror from turning them into hard breaks when text blocks are joined.
+- `markdownFeatures` turns off what Markdown cannot store; `table.ts` holds the text-only table
+  cells it uses (`blocksInCells: false`).
 - `packages/editor/src/components/`: React UI (bubble menu, slash menu, block handle,
   table menu, image panel). `components/ui/` contains shadcn/ui components.
 - `packages/editor/src/blocks/block-types.ts`: block types shared by the slash menu and the

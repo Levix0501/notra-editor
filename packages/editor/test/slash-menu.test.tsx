@@ -3,6 +3,8 @@ import type { Editor } from "@tiptap/core"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { NotraEditor } from "../src/components/notra-editor"
+import { markdownFeatures } from "../src/extensions/features"
+import { findTextEnd } from "./utils"
 
 async function renderEditor(): Promise<Editor> {
   let editor: Editor | undefined
@@ -86,5 +88,27 @@ describe("slash menu", () => {
     pressKey(editor, "ArrowUp")
     await waitFor(() => expect(selectedOption()?.textContent).not.toContain("Text"))
     expect(scrollIntoView).not.toHaveBeenCalled()
+  })
+
+  it("does not open in table cells that only hold text", async () => {
+    let editor: Editor | undefined
+    render(
+      <NotraEditor
+        content={"| a |\n|---|\n| x |"}
+        contentType="markdown"
+        features={markdownFeatures}
+        onCreate={(instance) => {
+          editor = instance
+        }}
+      />,
+    )
+    await waitFor(() => expect(editor).toBeDefined())
+    const instance = editor as Editor
+    act(() => {
+      instance.chain().focus().setTextSelection(findTextEnd(instance, "x")).run()
+    })
+    type(instance, " /")
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(screen.queryByRole("listbox")).toBeNull()
   })
 })

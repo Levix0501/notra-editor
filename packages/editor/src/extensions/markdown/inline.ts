@@ -1,6 +1,14 @@
 import { Extension, type JSONContent } from "@tiptap/core"
 
+import type { NotraMarkdownContext } from "./context"
+
 type Mark = NonNullable<JSONContent["marks"]>[number]
+
+/**
+ * A writer-only mark of text that is written as it is (see
+ * `MarkdownEscaping`): inline source inside of marks.
+ */
+export const RAW_TEXT_MARK = "notraRawText"
 
 function isCode(node: JSONContent | undefined): boolean {
   return node?.type === "text" && (node.marks ?? []).some((mark) => mark.type === "code")
@@ -55,56 +63,178 @@ export function writeLinkTarget(href: string, title?: string | null): string {
   return title ? `${destination} "${escapeLinkTitle(title)}"` : destination
 }
 
+/** Identifies the target of a link in {@link NotraMarkdownContext.references}. */
+function getTargetKey(href: unknown, title: unknown): string {
+  return `${String(href ?? "")}\u0000${title ? String(title) : ""}`
+}
+
 /**
- * Prepares the inline content of a paragraph or heading for Tiptap's
- * Markdown writer, which would otherwise change the content:
+ * Finds the labels of link reference definitions by the target they define:
+ * the destination and title that marked reads for a reference to them.
+ * `createLexer` creates a lexer of the editor's marked instance.
+ */
+export function indexReferences(
+  createLexer: () => { lex(source: string): unknown },
+  definitions: string,
+): Map<string, string[]> {
+  const index = new Map<string, string[]>()
+  const labels = Array.from(definitions.matchAll(/^ {0,3}\[((?:\\.|[^\\[\]])+)\]:/gm), (match) => match[1] as string)
+  if (labels.length === 0) {
+    return index
+  }
+  // A reference to each label, read with the definitions.
+  const references = labels.map((label) => `[x][${label}]`).join(" ")
+  const tokens = createLexer().lex(`${references}\n\n${definitions}`) as {
+    type: string
+    tokens?: { type: string; href?: string; title?: string | null }[]
+  }[]
+  const links = (tokens.find((token) => token.type === "paragraph")?.tokens ?? []).filter(
+    (token) => token.type === "link",
+  )
+  if (links.length !== labels.length) {
+    return index
+  }
+  links.forEach((link, position) => {
+    const key = getTargetKey(link.href, link.title)
+    index.set(key, [...(index.get(key) ?? []), labels[position] as string])
+  })
+  return index
+}
+
+/** Normalizes a link label like CommonMark compares labels. */
+function normalizeLabel(label: string): string {
+  return label.trim().replace(/\s+/g, " ").toLowerCase()
+}
+
+const EMAIL = /^[\w.+-]+@[A-Za-z\d-]+(?:\.[A-Za-z\d-]+)+$/
+
+/**
+ * Writes a link whose text is its URL (or email address) like Markdown
+ * writes it: as the URL, which GitHub links (`bare`), or between `<` and
+ * `>`, which CommonMark links. Returns `null` for other links.
+ */
+function writeAutolink(text: string, href: string, bare: boolean): string | null {
+  const isEmail = href === `mailto:${text}` && EMAIL.test(text)
+  const isUrl = href === text || (/^www\./i.test(text) && href === `http://${text}`)
+  if (bare && (isEmail || (isUrl && /^(?:https?:\/\/|www\.)\S+$/i.test(text)))) {
+    return text
+  }
+  if (isEmail) {
+    return `<${text}>`
+  }
+  return href === text && /^[A-Za-z][A-Za-z\d+.-]{1,31}:[^\s<>\p{Cc}]*$/u.test(href) ? `<${href}>` : null
+}
+
+/**
+ * Prepares a link of `content` (the node at `index`): its destination and
+ * title in their Markdown form, as an autolink (see {@link writeAutolink}),
+ * and, with `sourceForms`, as a reference to a definition of the document.
+ */
+function prepareLink(
+  content: JSONContent[],
+  index: number,
+  context: NotraMarkdownContext | null | undefined,
+  sourceForms: boolean,
+): JSONContent {
+  const node = content[index] as JSONContent
+  const marks = node.marks ?? []
+  const link = marks.find((mark) => mark.type === "link")
+  if (!link) {
+    return node
+  }
+  const { href, title } = (link.attrs ?? {}) as { href?: string | null; title?: string | null }
+  const isLink = (other: JSONContent | undefined) =>
+    (other?.marks ?? []).some((mark) => mark.type === "link" && mark.attrs?.href === href)
+  // The whole text of the link is in this node.
+  const isWhole = node.type === "text" && !isLink(content[index - 1]) && !isLink(content[index + 1])
+  const text = node.text ?? ""
+
+  if (isWhole && !title) {
+    const autolink = writeAutolink(text, String(href ?? ""), sourceForms && context?.autolink !== "angle")
+    if (autolink !== null) {
+      const otherMarks = marks.filter((mark) => mark !== link)
+      return { type: "rawInline", attrs: { kind: "html", source: autolink }, marks: otherMarks }
+    }
+  }
+
+  // The end of a reference: `][id]`, or `]` and `][]` for a label that is the text.
+  let reference: string | undefined
+  const labels = sourceForms ? context?.references?.get(getTargetKey(href, title)) : undefined
+  if (labels?.length) {
+    const plain = isWhole && marks.length === 1
+    const label = plain ? labels.find((candidate) => normalizeLabel(candidate) === normalizeLabel(text)) : undefined
+    // `[text]` is a shortcut for `[text][text]`, unless brackets or parentheses follow it.
+    const next = content[index + 1]
+    const shortcut = !(next && (next.type !== "text" || /^[[(]/.test(next.text ?? "")))
+    const style = context?.reference === "shortcut" && !shortcut ? "collapsed" : context?.reference
+    reference =
+      label === undefined || style === "full" ? `][${label ?? labels[0]}]` : style === "collapsed" ? "][]" : "]"
+  }
+  const prepared = marks.map(
+    (mark): Mark =>
+      mark === link
+        ? {
+            ...mark,
+            attrs: {
+              ...mark.attrs,
+              href: writeLinkDestination(String(href ?? "")),
+              title: title ? escapeLinkTitle(String(title)) : title,
+              ...(reference !== undefined ? { notraReference: reference } : {}),
+            },
+          }
+        : mark,
+  )
+  return { ...node, marks: prepared }
+}
+
+/**
+ * Prepares the inline content of a paragraph or heading (also in a table
+ * cell) for Tiptap's Markdown writer, which would otherwise change the content:
  *
  * - Code that starts or ends with a space is written as it is: Tiptap moves
  *   spaces at the edges of marked text outside of the marks.
- * - A hard break is written as two spaces (or, with `hardBreak`, a
- *   backslash) at the end of the line. At the start or the end of the block,
- *   after another hard break or next to a line break of the text, that makes
- *   a blank line, which splits the paragraph, or nothing; in headings it ends
- *   the heading. Such hard breaks are written as `<br>`.
+ * - A hard break is written in the style of the document: two spaces or a
+ *   backslash at the end of the line, or `<br>`. At the start or the end of
+ *   the block, after another hard break or next to a line break of the text,
+ *   the end of a line makes a blank line, which splits the paragraph, or
+ *   nothing; in blocks that are a single line (`isLine`: headings and the
+ *   cells of tables) it ends the block. Such hard breaks are written as `<br>`.
  * - Code next to code with other marks (`` **`a`**`b` ``) would be written as
  *   one code span with the marks inside of it (`` `**a**b` ``). Each part is
  *   written as a code span of its own instead, by giving the code marks of
  *   the parts different attributes, which only the writer sees.
  * - Tiptap writes the destination and title of links as they are, which
  *   breaks links to `My Notes.md`: they are given in their Markdown form.
+ *   Links whose text is their URL are written as autolinks.
+ * - Tiptap closes the marks around other nodes than text and opens them
+ *   again after them, which splits a link around inline source
+ *   (`[a <kbd>K</kbd> b](url)`). Inline source inside of marks is written as
+ *   text that is not escaped instead (see {@link RAW_TEXT_MARK}).
+ *
+ * While the minimal form of a block is written (see `MarkdownEscaping`,
+ * which checks that it reads back the same), links are written in the forms
+ * of the document: URLs as they are or between `<` and `>`, and links that a
+ * definition of the document defines as references to it (`[text][id]`).
  */
 export function prepareInlineContent(
   content: JSONContent[],
-  isHeading: boolean,
-  hardBreak: "spaces" | "backslash" = "spaces",
+  isLine: boolean,
+  context?: NotraMarkdownContext | null,
 ): JSONContent[] {
+  const hardBreak = context?.hardBreak ?? "spaces"
+  const sourceForms = context?.escaping === "minimal"
   const prepared = content.map((node, index): JSONContent => {
     const marks = node.marks ?? []
     if (node.type === "text" && marks.length === 1 && marks[0]?.type === "code" && /^\s|\s$/.test(node.text ?? "")) {
       return { type: "rawInline", attrs: { kind: "html", source: codeSpan(node.text ?? "") } }
     }
     if (node.type !== "hardBreak") {
-      if (!marks.some((mark) => mark.type === "link")) {
-        return node
-      }
-      const withTargets = marks.map((mark): Mark => {
-        if (mark.type !== "link") return mark
-        const title = mark.attrs?.title
-        return {
-          ...mark,
-          attrs: {
-            ...mark.attrs,
-            href: writeLinkDestination(String(mark.attrs?.href ?? "")),
-            title: title ? escapeLinkTitle(String(title)) : title,
-          },
-        }
-      })
-      return { ...node, marks: withTargets }
+      return prepareLink(content, index, context, sourceForms)
     }
     const previous = content[index - 1]
     const next = content[index + 1]
     const isSafe =
-      !isHeading &&
+      !isLine &&
       previous !== undefined &&
       next !== undefined &&
       previous.type !== "hardBreak" &&
@@ -112,8 +242,9 @@ export function prepareInlineContent(
       previous.type !== "rawInline" &&
       !(previous.type === "text" && /\n[ \t]*$/.test(previous.text ?? "")) &&
       !(next.type === "text" && /^[ \t]*\n/.test(next.text ?? ""))
-    if (!isSafe) {
-      return { type: "rawInline", attrs: { kind: "html", source: "<br>" }, marks: node.marks }
+    const breakTag = context?.breakTag ?? "<br>"
+    if (!isSafe || hardBreak === "html") {
+      return { type: "rawInline", attrs: { kind: "html", source: breakTag }, marks: node.marks }
     }
     return hardBreak === "backslash"
       ? { type: "rawInline", attrs: { kind: "html", source: "\\\n" }, marks: node.marks }
@@ -138,7 +269,11 @@ export function prepareInlineContent(
     }
     start = end
   }
-  return prepared
+  return prepared.map((node) =>
+    node.type === "rawInline" && node.marks?.length
+      ? { type: "text", text: String(node.attrs?.source ?? ""), marks: [...node.marks, { type: RAW_TEXT_MARK }] }
+      : node,
+  )
 }
 
 /**
@@ -148,10 +283,10 @@ export function prepareInlineContent(
  * the characters around it: `**` between a letter and punctuation, as in
  * `用户选择**「推荐」**的方案` or `2026**-10-14**`, is text.
  */
-const DELIMITED_MARKS: Readonly<Record<string, { delimiter: string; open: string; close: string }>> = {
-  bold: { delimiter: "**", open: "<strong>", close: "</strong>" },
-  italic: { delimiter: "*", open: "<em>", close: "</em>" },
-  strike: { delimiter: "~~", open: "<del>", close: "</del>" },
+const DELIMITED_MARKS: Readonly<Record<string, { delimiters: readonly string[]; open: string; close: string }>> = {
+  bold: { delimiters: ["**", "__"], open: "<strong>", close: "</strong>" },
+  italic: { delimiters: ["*", "_"], open: "<em>", close: "</em>" },
+  strike: { delimiters: ["~~"], open: "<del>", close: "</del>" },
 }
 
 /** Stand-ins for the delimiters of a run while they are checked, followed by the run (as a character). */
@@ -162,8 +297,11 @@ const MAX_RUNS = 0xf8ff - RUN_BASE
 
 /** Writer-only attributes of delimited marks, see {@link MarkdownMarks}. */
 interface MarkFormAttributes {
-  /** `html`: written as HTML. `probe`: written as stand-ins, to check the delimiters. */
-  notraForm?: "html" | "probe"
+  /**
+   * How the mark is written: `probe` writes stand-ins to check the
+   * delimiters, `html` HTML tags, and otherwise the delimiter it names.
+   */
+  notraForm?: string
   notraRun?: number
 }
 
@@ -235,25 +373,31 @@ function isEscaped(text: string, index: number): boolean {
 }
 
 /**
- * Finds the runs whose delimiters CommonMark would not read as emphasis.
+ * Finds the runs whose delimiters CommonMark would not read as emphasis,
+ * with the forms that `formOf` gives the runs (a delimiter, or `html`).
  * `probed` is the Markdown with stand-ins for the delimiters, which are put
  * back to see the characters around each run of delimiters. A run of
  * delimiters is left-flanking when it is not followed by whitespace, and not
  * followed by punctuation unless whitespace or punctuation precedes it;
  * right-flanking the other way around. The beginning and end of the line
- * count as whitespace.
+ * count as whitespace. `*` opens when left-flanking and closes when
+ * right-flanking; `_` only does so inside of a word next to punctuation.
  */
-function findUnreadRuns(probed: string, types: Map<number, string>): Set<number> {
+function findUnreadRuns(probed: string, types: Map<number, string>, formOf: (run: number) => string): Set<number> {
   let text = ""
   const delimiters: { run: number; open: boolean; start: number; end: number }[] = []
   for (let index = 0; index < probed.length; index++) {
     const character = probed[index] as string
     const run = probed.charCodeAt(index + 1) - RUN_BASE
-    const type = types.get(run)
-    if ((character === PROBE_OPEN || character === PROBE_CLOSE) && type) {
-      const delimiter = DELIMITED_MARKS[type]?.delimiter ?? ""
-      delimiters.push({ run, open: character === PROBE_OPEN, start: text.length, end: text.length + delimiter.length })
-      text += delimiter
+    const syntax = DELIMITED_MARKS[types.get(run) ?? ""]
+    if ((character === PROBE_OPEN || character === PROBE_CLOSE) && syntax) {
+      const open = character === PROBE_OPEN
+      const form = formOf(run)
+      const written = form === "html" ? (open ? syntax.open : syntax.close) : form
+      if (form !== "html") {
+        delimiters.push({ run, open, start: text.length, end: text.length + written.length })
+      }
+      text += written
       index++
       continue
     }
@@ -271,48 +415,109 @@ function findUnreadRuns(probed: string, types: Map<number, string>): Set<number>
     const after = characterAt(text, to)
     const isSpace = (value: string | undefined) => value === undefined || WHITESPACE.test(value)
     // Read by both marked and GitHub, whose definitions of punctuation differ.
-    const flanking = [PUNCTUATION, PUNCTUATION_BEFORE_0_31].every((punctuation) => {
+    const reads = [PUNCTUATION, PUNCTUATION_BEFORE_0_31].every((punctuation) => {
       const isPunctuation = (value: string | undefined) => value !== undefined && punctuation.test(value)
-      return open
-        ? !isSpace(after) && (!isPunctuation(after) || isSpace(before) || isPunctuation(before))
-        : !isSpace(before) && (!isPunctuation(before) || isSpace(after) || isPunctuation(after))
+      const left = !isSpace(after) && (!isPunctuation(after) || isSpace(before) || isPunctuation(before))
+      const right = !isSpace(before) && (!isPunctuation(before) || isSpace(after) || isPunctuation(after))
+      if (character !== "_") {
+        return open ? left : right
+      }
+      return open ? left && (!right || isPunctuation(before)) : right && (!left || isPunctuation(after))
     })
-    if (!flanking) unread.add(run)
+    if (!reads) unread.add(run)
   }
   return unread
 }
 
+/** The delimiter of each delimited mark that a document prefers (`_` for italic, for example). */
+export type MarkDelimiters = Readonly<Partial<Record<string, string>>>
+
 /**
- * Writes inline content with Tiptap's writer (`write`). Delimited marks whose
- * delimiters CommonMark would not read are written as HTML: bold text stays
- * `**bold**`, but `用户选择**「推荐」**的方案` becomes
- * `用户选择<strong>「推荐」</strong>的方案`. The content is first written with
- * stand-ins for the delimiters, so that the characters around each delimiter
- * are the ones of the result: escapes, other marks and code included.
+ * Writes inline content with Tiptap's writer (`write`). Delimited marks are
+ * written with the delimiters of `delimiters` (the style of the document),
+ * or else with the standard ones, where CommonMark reads them; otherwise as
+ * HTML: bold text stays `**bold**`, but `用户选择**「推荐」**的方案` becomes
+ * `用户选择<strong>「推荐」</strong>的方案`, and `_` inside of a word becomes
+ * `*`. The content is first written with stand-ins for the delimiters, so
+ * that the characters around each delimiter are the ones of the result:
+ * escapes, other marks and code included.
  */
-export function writeInline(content: JSONContent[], write: (content: JSONContent[]) => string): string {
+export function writeInline(
+  content: JSONContent[],
+  write: (content: JSONContent[]) => string,
+  delimiters: MarkDelimiters = {},
+): string {
   const { types, byNode } = findRuns(content)
   if (types.size === 0 || types.size > MAX_RUNS) {
     return write(content)
   }
-  const probed = write(withForms(content, byNode, (run) => ({ notraForm: "probe", notraRun: run })))
-  const unread = findUnreadRuns(probed, types)
-  if (unread.size === 0) {
-    return write(content)
+  // The forms each run can still be written in, best first.
+  const forms = new Map<number, string[]>()
+  for (const [run, type] of types) {
+    const allowed = DELIMITED_MARKS[type]?.delimiters ?? []
+    const preferred = allowed.find((delimiter) => delimiter === delimiters[type])
+    forms.set(run, [...new Set([preferred ?? allowed[0] ?? "html", allowed[0] ?? "html", "html"])])
   }
-  return write(withForms(content, byNode, (run) => (unread.has(run) ? { notraForm: "html" } : null)))
+  const formOf = (run: number) => forms.get(run)?.[0] ?? "html"
+
+  const probed = write(withForms(content, byNode, (run) => ({ notraForm: "probe", notraRun: run })))
+  for (let unread = findUnreadRuns(probed, types, formOf); unread.size > 0; ) {
+    for (const run of unread) forms.get(run)?.shift()
+    unread = findUnreadRuns(probed, types, formOf)
+  }
+  const isStandard = [...types].every(([run, type]) => formOf(run) === DELIMITED_MARKS[type]?.delimiters[0])
+  return isStandard ? write(content) : write(withForms(content, byNode, (run) => ({ notraForm: formOf(run) })))
 }
 
 /** Internals of the Markdown manager of Tiptap that {@link MarkdownMarks} extends. */
 interface MarkInternals {
   getMarkOpening(markType: string, mark: Mark | undefined, openingMode?: string, markText?: string): string
   getMarkClosing(markType: string, mark: Mark | undefined, openingMode?: string, markText?: string): string
+  renderNodesWithMarkBoundaries(nodes: JSONContent[], ...rest: unknown[]): string
+  getMarksToOpenForSerialization(
+    activeMarks: Map<string, Mark>,
+    currentMarks: Map<string, Mark>,
+    nextNode: JSONContent | null,
+  ): { type: string; mark: Mark }[]
+}
+
+function hasMark(node: JSONContent | undefined, mark: Mark): boolean {
+  return (node?.marks ?? []).some(
+    (other) => other.type === mark.type && JSON.stringify(other.attrs ?? null) === JSON.stringify(mark.attrs ?? null),
+  )
+}
+
+/**
+ * Orders the marks that open at a node like they nest: the mark that ends
+ * first is the innermost one (Tiptap opens the first mark next to the text).
+ * Tiptap only looks at the next node, so that `**[a](url) b**` became
+ * `[**a](url) b**`, where the bold opens inside of the link. Marks that end
+ * together keep the order Tiptap gives them.
+ */
+function orderByEnd(
+  marks: { type: string; mark: Mark }[],
+  nodes: JSONContent[] | undefined,
+  nextNode: JSONContent | null,
+): { type: string; mark: Mark }[] {
+  const index = nodes && nextNode ? nodes.indexOf(nextNode) - 1 : -1
+  if (marks.length <= 1 || !nodes || index < 0) {
+    return marks
+  }
+  const endOf = (mark: Mark) => {
+    let end = index
+    while (end + 1 < nodes.length && hasMark(nodes[end + 1], mark)) end++
+    return end
+  }
+  return marks
+    .map((entry, position) => ({ entry, position, end: endOf(entry.mark) }))
+    .sort((a, b) => a.end - b.end || a.position - b.position)
+    .map(({ entry }) => entry)
 }
 
 /** Keeps one mark of each type on every text, the first (inner) one. */
 function withoutRepeatedMarks(node: JSONContent): JSONContent {
-  if (node.type === "text") {
-    const marks = node.marks ?? []
+  if (node.marks?.length) {
+    const marks = node.marks
     const repeated = marks.some((mark, index) => marks.findIndex((other) => other.type === mark.type) !== index)
     return repeated
       ? {
@@ -324,11 +529,39 @@ function withoutRepeatedMarks(node: JSONContent): JSONContent {
   return node.content ? { ...node, content: node.content.map(withoutRepeatedMarks) } : node
 }
 
+/** Internals of the Markdown manager of Tiptap that {@link markInlineSource} extends. */
+interface ParseInternals {
+  applyMarkToContent(markType: string, content: JSONContent[], attrs?: Record<string, unknown>): JSONContent[]
+}
+
+/**
+ * Gives inline source the marks around it when Markdown is read: Tiptap only
+ * gives them to text, so that `[a <kbd>K</kbd> b](url)` would be read as two
+ * links around unlinked source. This extends a private method of Tiptap's
+ * Markdown manager (the tests cover it), which must happen before the
+ * manager reads the initial content.
+ */
+export function markInlineSource(manager: unknown): void {
+  const internals = manager as ParseInternals
+  const apply = internals.applyMarkToContent.bind(manager)
+  internals.applyMarkToContent = (markType, content, attrs) =>
+    apply(markType, content, attrs).map((node) =>
+      node.type === "rawInline"
+        ? { ...node, marks: [...(node.marks ?? []), attrs ? { type: markType, attrs } : { type: markType }] }
+        : node,
+    )
+}
+
+/** The delimiters of the document of `context` (see `detectStyle`), for {@link writeInline}. */
+export function getMarkDelimiters(context: NotraMarkdownContext | null | undefined): MarkDelimiters {
+  return context ? { bold: context.strong, italic: context.emphasis } : {}
+}
+
 /**
  * Marks in Markdown. Delimited marks are written in the form that
  * {@link writeInline} selects with writer-only attributes, by extending the
  * private methods of Tiptap's Markdown manager that write the delimiters of
- * marks (the tests cover them). A mark read inside of the same mark
+ * marks and order them (the tests cover them, see {@link orderByEnd}). A mark read inside of the same mark
  * (`**a **b** c**`, `<strong>**b**</strong>`) is kept once: Tiptap gives the
  * text the mark twice, which is not a valid set of marks.
  */
@@ -356,18 +589,38 @@ export const MarkdownMarks = Extension.create({
     const closing = internals.getMarkClosing.bind(manager)
     const form = (markType: string, mark: Mark | undefined, openingMode: string | undefined, open: boolean) => {
       const syntax = DELIMITED_MARKS[markType]
-      const attrs = (mark?.attrs ?? {}) as MarkFormAttributes
+      const attrs = (mark?.attrs ?? {}) as MarkFormAttributes & { notraReference?: string }
       // Tiptap writes marks as HTML itself where they overlap.
-      if (!syntax || openingMode === "html") return null
+      if (openingMode === "html") return null
+      // A reference to a definition, see `prepareLink`.
+      if (markType === "link" && typeof attrs.notraReference === "string") {
+        return open ? "[" : attrs.notraReference
+      }
+      if (!syntax) return null
       if (attrs.notraForm === "probe" && attrs.notraRun !== undefined) {
         return (open ? PROBE_OPEN : PROBE_CLOSE) + String.fromCharCode(RUN_BASE + attrs.notraRun)
       }
       if (attrs.notraForm === "html") return open ? syntax.open : syntax.close
-      return null
+      return attrs.notraForm && syntax.delimiters.includes(attrs.notraForm) ? attrs.notraForm : null
     }
     internals.getMarkOpening = (markType, mark, openingMode, markText) =>
       form(markType, mark, openingMode, true) ?? opening(markType, mark, openingMode, markText)
     internals.getMarkClosing = (markType, mark, openingMode, markText) =>
       form(markType, mark, openingMode, false) ?? closing(markType, mark, openingMode, markText)
+
+    // The nodes being written (rendering is nested: a list item renders its paragraphs).
+    const rendering: JSONContent[][] = []
+    const renderNodes = internals.renderNodesWithMarkBoundaries.bind(manager)
+    internals.renderNodesWithMarkBoundaries = (nodes, ...rest) => {
+      rendering.push(nodes)
+      try {
+        return renderNodes(nodes, ...rest)
+      } finally {
+        rendering.pop()
+      }
+    }
+    const marksToOpen = internals.getMarksToOpenForSerialization.bind(manager)
+    internals.getMarksToOpenForSerialization = (activeMarks, currentMarks, nextNode) =>
+      orderByEnd(marksToOpen(activeMarks, currentMarks, nextNode), rendering.at(-1), nextNode)
   },
 })

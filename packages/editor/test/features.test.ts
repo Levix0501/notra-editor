@@ -3,9 +3,10 @@ import { afterEach, describe, expect, it } from "vitest"
 
 import { getAvailableBlockTypes } from "../src/blocks/block-types"
 import { markdownFeatures } from "../src/extensions/features"
+import { insertImageFiles } from "../src/extensions/image-upload"
 import { createDefaultSlashCommands } from "../src/extensions/slash-command/items"
 import { createDictionary } from "../src/i18n/dictionary"
-import { createTestEditor, typeText } from "./utils"
+import { createTestEditor, findTextEnd, pressKey, typeText } from "./utils"
 
 let editor: Editor | undefined
 
@@ -90,6 +91,7 @@ describe("features", () => {
       textColor: false,
       highlight: false,
       image: { resize: false },
+      table: { blocksInCells: false },
     })
     editor = createTestEditor('<p>"quoted" -- <span style="color: red">red</span></p>', "html", {
       features: markdownFeatures,
@@ -99,5 +101,36 @@ describe("features", () => {
     expect(editor.getText()).toBe('"quoted" -- red "a"')
     // Colored text is plain text when colors are disabled.
     expect(editor.getMarkdown()).toBe('"quoted" -- red "a"')
+  })
+
+  it("keeps table cells to text, like Markdown tables, without blocks in cells", async () => {
+    editor = createTestEditor("| a | b |\n|---|---|\n| one | two |\n\nAfter", "markdown", {
+      features: { table: { blocksInCells: false } },
+    })
+    const instance = editor
+    instance.commands.setTextSelection(findTextEnd(instance, "on"))
+    // Blocks do not fit into a cell, and inserting them does not split the table.
+    instance.commands.toggleBulletList()
+    instance.commands.toggleHeading({ level: 2 })
+    instance.commands.setHorizontalRule()
+    instance.commands.insertContent({ type: "image", attrs: { src: "a.png" } })
+    instance.commands.insertContent("- x\n- y", { contentType: "markdown" })
+    expect(instance.getJSON().content?.map((node) => node.type)).toEqual(["table", "paragraph"])
+
+    // Enter adds a line break, and pasted blocks become lines of the cell.
+    pressKey(instance, "Enter")
+    instance.view.pasteHTML("<p>first</p><ul><li>second</li></ul>")
+    expect(() => instance.state.doc.check()).not.toThrow()
+    expect(instance.getMarkdown()).toContain("| on<br>first<br>seconde | two |")
+
+    // Images go after the table.
+    await insertImageFiles(instance, [new File(["x"], "shot.png", { type: "image/png" })])
+    expect(instance.getJSON().content?.map((node) => node.type)).toEqual(["table", "image", "paragraph"])
+  })
+
+  it("does not escape block syntax in table cells", () => {
+    editor = createTestEditor("| a |\n|---|\n| x |", "markdown")
+    editor.chain().setTextSelection(findTextEnd(editor, "x")).insertContent(" - # ---").run()
+    expect(editor.getMarkdown()).toContain("| x - # --- |")
   })
 })

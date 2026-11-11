@@ -103,13 +103,13 @@ slash menu, the formatting toolbar and the block menu only offer enabled feature
 />
 ```
 
-| Feature                                                                                                       | Options                    |
-| ------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| `heading`, `bulletList`, `orderedList`, `taskList`, `toggle`, `blockquote`, `callout`, `codeBlock`, `divider` | –                          |
-| `table`                                                                                                       | `{ resizable?: boolean }`  |
-| `image`                                                                                                       | `{ resize?: boolean }`     |
-| `bold`, `italic`, `underline`, `strike`, `code`, `link`, `textColor`, `highlight`                             | –                          |
-| `typography`                                                                                                  | Tiptap `TypographyOptions` |
+| Feature                                                                                                       | Options                                            |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `heading`, `bulletList`, `orderedList`, `taskList`, `toggle`, `blockquote`, `callout`, `codeBlock`, `divider` | –                                                  |
+| `table`                                                                                                       | `{ resizable?: boolean; blocksInCells?: boolean }` |
+| `image`                                                                                                       | `{ resize?: boolean }`                             |
+| `bold`, `italic`, `underline`, `strike`, `code`, `link`, `textColor`, `highlight`                             | –                                                  |
+| `typography`                                                                                                  | Tiptap `TypographyOptions`                         |
 
 Features only control what can be created. Content is never dropped when it is loaded: headings of
 levels 4 to 6 are kept although the menus offer levels 1 to 3, and content the editor cannot
@@ -133,13 +133,20 @@ with these additions:
   blocks (kind `markdown`) instead of being dropped.
 - **GitHub alerts** (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are callouts.
 - **Toggle lists** are written as `<details>` blocks, which GitHub renders; Tiptap's `:::details`
-  syntax is still read.
+  syntax is still read. HTML in a summary that the editor does not represent (`<a id="…">`,
+  `<kbd>`) is kept as inline source.
 - Lists are read like other CommonMark implementations: `9.` followed by `10.`, text after a code
   block in an item, the whole text of task items; `A. Title` is a paragraph. Ordered lists with
-  tasks (`1. [x] Done`) are kept as source blocks.
-- Emphasis that CommonMark would not read with delimiters, next to punctuation as in
-  `用户选择**「推荐」**的方案` or `2026**-10-14**`, is written as HTML: `<strong>「推荐」</strong>`. The
-  content of `<strong>`, `<em>` and `<del>` is read as Markdown, as in CommonMark.
+  tasks (`1. [x] Done`) are kept as source blocks. A list that follows a list of its kind is written
+  with the other marker (`*` after `-`, `1)` after `1.`), so that Markdown does not read the two
+  lists as one, and blocks of list items are written so that they stay in the item (`-` and a
+  divider on the next line, a blank line before blocks that cannot follow text directly).
+- Written Markdown follows the style of the Markdown that was read: emphasis with `_` or `*`
+  (`__` or `**`), hard breaks as two spaces, a backslash or `<br>`, and links whose text is their URL
+  as the URL or between `<` and `>`. Emphasis that CommonMark would not read with delimiters, next to
+  punctuation as in `用户选择**「推荐」**的方案` or `2026**-10-14**`, is written as HTML:
+  `<strong>「推荐」</strong>`. The content of `<strong>`, `<em>` and `<del>` is read as Markdown, as in
+  CommonMark, and marks around inline source (`[a <kbd>K</kbd> b](url)`) are kept.
 - Link and image destinations with spaces are written between angle brackets (`[notes](<My Notes.md>)`).
 - Character references such as `&copy;` and `&nbsp;` are read as the characters they stand for
   (named references are looked up in the DOM, so they stay as written without one). Non-breaking
@@ -148,18 +155,23 @@ with these additions:
 - Resized images are written as `<img>` tags, so that their size is kept.
 - Code blocks get a fence longer than the backtick runs of their code, so that code that contains a
   fence (a Markdown sample, for example) is not cut off.
-- Text is only escaped where it would read as Markdown syntax: `snake_case`, `[note]`, `a -> b` and
-  `R&D` stay as they are, while text that starts like a block (`1.`, `#`, `-`, `>`, four spaces,
-  `[x]` in a list item) or ends a heading with `#` is escaped. Empty headings are kept.
+- Text is only escaped where it would read as Markdown syntax: `snake_case`, `[note]`, `a -> b`,
+  `Record<string, number>` and `R&D` stay as they are, while text that starts like a block (`1.`,
+  `#`, `-`, `>`, four spaces, `[x]` in a list item) or ends a heading with `#` is escaped. Empty
+  headings are kept.
 
 ### Markdown files
 
 For documents stored as Markdown files, enable `markdown.preserveSource` (experimental). Unchanged
 blocks, list items (also nested ones, and the blocks inside of an item) and table rows are then
 written back exactly as they were read, with their line endings, blank lines and the end of the
-file; only edited blocks are written again, between the original blank lines. Edited setext
-headings (`Title` over `=====`) keep their style, and hard breaks are written like most hard
-breaks of the file (two spaces or a backslash).
+file; only edited blocks are written again, between the original blank lines (or line breaks,
+where the blocks read back the same with them). Edited setext headings (`Title` over `=====`) keep
+their style, edited code blocks their fences (`~~~`, a longer fence, the info string) or
+indentation, and edited links their form (`[text][id]` when the document defines the link).
+Toggles are written part by part: their summary while it is unchanged, and their content block by
+block. Lists that become neighbors (by deleting the block between them) stay two lists, and blocks
+that refer to a link definition that was added or deleted are written again.
 
 ```tsx
 const editor = useNotraEditor({
@@ -192,16 +204,17 @@ useNotraEditor({
 ```
 
 With `preserveSource`, the features start from `markdownFeatures`: the features Markdown cannot store
-(text colors, highlights, image sizes) and smart typography, which changes what is typed, are off.
+(text colors, highlights, image sizes, blocks in table cells) and smart typography, which changes
+what is typed, are off. Table cells then hold text like the cells of Markdown tables: Enter adds a
+line break (`<br>`), pasted blocks become lines of the cell, and blocks cannot be inserted into cells.
 Features set explicitly in `features` take precedence. The preset can also be used on its own:
 `features={{ ...markdownFeatures, table: false }}`.
 
-Limitations: rewritten blocks use the editor's Markdown style for emphasis (`**bold**`, `*italic*`),
-code fences and links (`[https://…](https://…)` for autolinks), and their reference links
-(`[text][id]`) are written inline. An edit inside of a block quote, callout or toggle rewrites that
-block, and a rewritten list that directly follows a block can get a blank line before it. Two lists
-of the same kind that become neighbors, by deleting the block between them, are read back as one
-list, and blocks in table cells (lists, quotes) are written as text: Markdown tables only hold text.
+Limitations: the style of written Markdown is the style most of the file uses, so a file that mixes
+styles (`*a*` and `_b_`) gets the more frequent one in rewritten blocks. An edit inside of a block
+quote or callout rewrites that block, and a table inside of a list item is written again as a whole.
+Without `blocksInCells: false`, blocks in table cells (lists, quotes) are written as text: Markdown
+tables only hold text.
 
 ### Markdown dialects and source blocks
 

@@ -3,6 +3,7 @@ import { PluginKey } from "@tiptap/pm/state"
 import { Suggestion } from "@tiptap/suggestion"
 
 import { getNotraStorage } from "../notra-core"
+import { isInTextCell } from "../table"
 import { createDefaultSlashCommands, filterSlashCommands, type SlashCommandItem } from "./items"
 import { SlashMenuStore } from "./store"
 
@@ -41,8 +42,8 @@ export const SlashCommand = Extension.create<Record<string, never>, SlashCommand
         startOfLine: false,
         allow: ({ state, range }) => {
           const $from = state.doc.resolve(range.from)
-          // Never trigger inside code blocks or inline code.
-          if ($from.parent.type.spec.code) return false
+          // Never trigger inside code blocks or inline code, or in table cells that only hold text.
+          if ($from.parent.type.spec.code || isInTextCell(state.selection)) return false
           return !$from.marks().some((mark) => mark.type.spec.code)
         },
         items: ({ query, editor }) => {

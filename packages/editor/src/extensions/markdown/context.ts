@@ -38,27 +38,86 @@ export class NotraMarkdownContext {
 
   /**
    * How hard breaks are written: with two spaces or a backslash at the end of
-   * the line, like most hard breaks of the Markdown that was read.
+   * the line, or as a `<br>` tag (`breakTag`), like most hard breaks of the
+   * Markdown that was read.
    */
-  hardBreak: "spaces" | "backslash" = "spaces"
+  hardBreak: "spaces" | "backslash" | "html" = "spaces"
+
+  /** The `<br>` tag of the Markdown that was read (`<br>`, `<br/>`, `<br />`…). */
+  breakTag = "<br>"
 
   /**
    * How non-breaking spaces are written: as `&nbsp;`, or as the character
    * when most of them are in the Markdown that was read.
    */
   nonBreakingSpace: "reference" | "character" = "reference"
+
+  /** The delimiters of emphasis and strong emphasis: like most of the Markdown that was read. */
+  emphasis: "*" | "_" = "*"
+  strong: "**" | "__" = "**"
+
+  /**
+   * How links whose text is their URL are written: as the URL (GitHub links
+   * it), or between `<` and `>` when most of the Markdown that was read does so.
+   */
+  autolink: "bare" | "angle" = "bare"
+
+  /**
+   * The labels of the link reference definitions of the document being
+   * written, by the destination and title they define (see `indexReferences`).
+   */
+  references: ReadonlyMap<string, readonly string[]> | null = null
+
+  /**
+   * How references whose label is their text are written: `[text]`,
+   * `[text][]` or `[text][text]`, like most of the Markdown that was read.
+   */
+  reference: "shortcut" | "collapsed" | "full" = "shortcut"
+}
+
+function count(text: string, pattern: RegExp): number {
+  return text.match(pattern)?.length ?? 0
 }
 
 /**
- * Takes the style of the Markdown that was read, outside of code blocks:
- * how most of its hard breaks and non-breaking spaces are written.
+ * Takes the style of the Markdown that was read, outside of code: how most
+ * of its hard breaks, non-breaking spaces, emphasis, autolinks and
+ * references are written.
  */
 export function detectStyle(context: NotraMarkdownContext, markdown: string): void {
   const text = markdown.replace(/^ {0,3}(`{3,}|~{3,})[^\n]*\n[\s\S]*?^ {0,3}\1[ \t]*$/gm, "")
-  const backslashes = text.match(/[^\\\n]\\\r?\n(?=[ \t]*\S)/g)?.length ?? 0
-  const spaces = text.match(/\S {2,}\r?\n(?=[ \t]*\S)/g)?.length ?? 0
-  context.hardBreak = backslashes > spaces ? "backslash" : "spaces"
-  const characters = text.match(/\u00A0/g)?.length ?? 0
-  const references = text.match(/&nbsp;/g)?.length ?? 0
+  // Text outside of code spans, where the style of most of the remaining syntax is counted roughly.
+  const prose = text.replace(/(`+)[^`]*?\1/g, "")
+
+  const backslashes = count(text, /[^\\\n]\\\r?\n(?=[ \t]*\S)/g)
+  const spaces = count(text, /\S {2,}\r?\n(?=[ \t]*\S)/g)
+  // `<br>` after text (not after another tag, as in `</summary><br>`).
+  const tags = prose.match(/(?<=[^\s>][ \t]*)<br[ \t]*\/?>/gi) ?? []
+  context.hardBreak =
+    tags.length > Math.max(spaces, backslashes) ? "html" : backslashes > spaces ? "backslash" : "spaces"
+  const tagCounts = new Map<string, number>()
+  for (const tag of tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)
+  context.breakTag = [...tagCounts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "<br>"
+
+  const characters = count(text, /\u00A0/g)
+  const references = count(text, /&nbsp;/g)
   context.nonBreakingSpace = characters > references ? "character" : "reference"
+
+  // Emphasis: an opening delimiter that is not inside of a word, text, a closing one.
+  const underscores = count(prose, /(?<![\p{L}\p{N}\\_])_(?![\s_])[^_\n]*?[^\s\\_]_(?![\p{L}\p{N}_])/gu)
+  const asterisks = count(prose, /(?<![\p{L}\p{N}\\*])\*(?![\s*])[^*\n]*?[^\s\\*]\*(?![\p{L}\p{N}*])/gu)
+  context.emphasis = underscores > asterisks ? "_" : "*"
+  const doubleUnderscores = count(prose, /(?<![\p{L}\p{N}\\_])__(?![\s_])[^\n]*?[^\s\\_]__(?![\p{L}\p{N}_])/gu)
+  const doubleAsterisks = count(prose, /(?<![\\*])\*\*(?![\s*])[^\n]*?[^\s\\*]\*\*/g)
+  context.strong = doubleUnderscores > doubleAsterisks ? "__" : "**"
+
+  // URLs in text, not in definitions, link destinations or HTML attributes.
+  const words = prose.replace(/^ {0,3}\[[^\]]+\]:.*$/gm, "").replace(/\]\([^)]*\)/g, "]")
+  const angles = count(words, /<(?:[A-Za-z][A-Za-z\d+.-]{1,31}:[^\s<>]*|[^\s<>@]+@[^\s<>@]+)>/g)
+  const bare = count(words.replace(/<[^>]*>/g, ""), /(?:^|[\s(*_~])(?:https?:\/\/|www\.)/gm)
+  context.autolink = angles > bare ? "angle" : "bare"
+
+  const collapsed = count(words, /\[[^\]\n]+\]\[\]/g)
+  const full = count(words, /\[([^\]\n]+)\]\[\1\]/gi)
+  context.reference = collapsed > full ? "collapsed" : full > collapsed ? "full" : "shortcut"
 }

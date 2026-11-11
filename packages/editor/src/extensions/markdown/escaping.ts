@@ -2,6 +2,7 @@ import { Extension, type JSONContent } from "@tiptap/core"
 import type { MarkdownManager } from "@tiptap/markdown"
 
 import type { NotraMarkdownContext } from "./context"
+import { RAW_TEXT_MARK } from "./inline"
 
 /** Internals of the Markdown manager of Tiptap that {@link MarkdownEscaping} replaces. */
 interface ManagerInternals {
@@ -18,10 +19,29 @@ const WHITESPACE = /\s/
 /** A character reference such as `&amp;`, `&#38;` or `&#x26;`. */
 const ENTITY = /^&(?:#\d{1,7}|#[xX][\da-fA-F]{1,6}|[A-Za-z][A-Za-z\d]{1,31});/
 
+const ATTRIBUTE = String.raw`\s+[A-Za-z_:][\w.:-]*(?:\s*=\s*(?:[^\s"'=<>\x60]+|'[^']*'|"[^"]*"))?`
+const LABEL = String.raw`[A-Za-z\d](?:[A-Za-z\d-]{0,61}[A-Za-z\d])?`
+/**
+ * What CommonMark reads at a `<`: an open or closing tag, the start of a
+ * comment, a processing instruction, a declaration or CDATA, or an autolink.
+ * `Record<string, number>` or `a <b` are text.
+ */
+const HTML_START = new RegExp(
+  [
+    String.raw`<[A-Za-z][A-Za-z\d-]*(?:${ATTRIBUTE})*\s*\/?>`,
+    String.raw`<\/[A-Za-z][A-Za-z\d-]*\s*>`,
+    String.raw`<(?:!--|\?|![A-Za-z]|!\[CDATA\[)`,
+    String.raw`<[A-Za-z][A-Za-z\d+.-]{1,31}:[^\s<>]*>`,
+    String.raw`<[\w.!#$%&'*+/=?^\x60{|}~-]+@${LABEL}(?:\.${LABEL})*>`,
+  ]
+    .map((pattern) => `^${pattern}`)
+    .join("|"),
+)
+
 /**
  * Escapes the characters of text that Markdown could read as syntax, but
- * only where it could: `snake_case`, `[note]`, `a -> b`, `x < y` or `R&D`
- * stay as they are. Whether the result reads back as the same text is checked
+ * only where it could: `snake_case`, `[note]`, `a -> b`, `x < y`,
+ * `Record<string, number>` or `R&D` stay as they are. Whether the result reads back as the same text is checked
  * by {@link MarkdownEscaping}, which escapes like Tiptap otherwise.
  */
 export function escapeText(text: string): string {
@@ -46,8 +66,7 @@ export function escapeText(text: string): string {
       case "~":
         return tildes > 1 ? "\\~" : "~"
       case "<":
-        // Tags, comments and autolinks start with a letter, `/`, `!` or `?`.
-        return after !== undefined && /[A-Za-z/!?]/.test(after) ? "\\<" : "<"
+        return HTML_START.test(text.slice(offset)) ? "\\<" : "<"
       case "&":
         return ENTITY.test(text.slice(offset)) ? "&amp;" : "&"
       default:
@@ -59,9 +78,15 @@ export function escapeText(text: string): string {
 /** Characters that Tiptap escapes in text. */
 const ESCAPED_CHARACTERS = /[\\`*_~[\]<>&]/
 
-function hasEscapedCharacters(node: JSONContent): boolean {
+/**
+ * Whether a block can be written in a shorter form than Tiptap's: with fewer
+ * escapes, or with links in the forms of the document (see `prepareInlineContent`).
+ */
+function hasShorterForm(node: JSONContent): boolean {
   return (node.content ?? []).some((child) =>
-    child.type === "text" ? ESCAPED_CHARACTERS.test(child.text ?? "") : hasEscapedCharacters(child),
+    child.type === "text"
+      ? ESCAPED_CHARACTERS.test(child.text ?? "") || (child.marks ?? []).some((mark) => mark.type === "link")
+      : hasShorterForm(child),
   )
 }
 
@@ -123,7 +148,7 @@ export const MarkdownEscaping = Extension.create<MarkdownEscapingOptions>({
     internals.encodeTextForMarkdown = (text, node, parentNode) => {
       const isCode =
         (parentNode?.type !== undefined && internals.codeTypes.has(parentNode.type)) ||
-        (node.marks ?? []).some((mark) => internals.codeTypes.has(mark.type))
+        (node.marks ?? []).some((mark) => internals.codeTypes.has(mark.type) || mark.type === RAW_TEXT_MARK)
       if (isCode) {
         return text
       }
@@ -134,7 +159,7 @@ export const MarkdownEscaping = Extension.create<MarkdownEscapingOptions>({
 
     const render = manager.renderNodeToMarkdown.bind(manager)
     manager.renderNodeToMarkdown = (node, parentNode, index, level, meta) => {
-      if (context.escaping !== "auto" || !TEXT_BLOCKS.has(node.type ?? "") || !hasEscapedCharacters(node)) {
+      if (context.escaping !== "auto" || !TEXT_BLOCKS.has(node.type ?? "") || !hasShorterForm(node)) {
         return render(node, parentNode, index, level, meta)
       }
       const escaped = render(node, parentNode, index, level, meta)
