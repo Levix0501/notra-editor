@@ -1,18 +1,16 @@
-import type { AnyExtension, Editor } from "@tiptap/core"
-import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight"
+import type { AnyExtension } from "@tiptap/core"
 import { FileHandler } from "@tiptap/extension-file-handler"
 import { Highlight } from "@tiptap/extension-highlight"
-import { TaskItem, TaskList } from "@tiptap/extension-list"
 import { TableKit } from "@tiptap/extension-table"
 import { Color, TextStyle } from "@tiptap/extension-text-style"
 import { Typography } from "@tiptap/extension-typography"
-import { Placeholder, Selection } from "@tiptap/extensions"
-import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import { Selection } from "@tiptap/extensions"
 import { StarterKit } from "@tiptap/starter-kit"
 import { common, createLowlight } from "lowlight"
 
 import { NotraRawBlock } from "#components/raw-block-view.tsx"
 import { Callout } from "./callout"
+import { NotraCodeBlock } from "./code-block"
 import { NotraDetails, NotraDetailsContent, NotraDetailsSummary } from "./details"
 import {
   getFeatureOptions,
@@ -25,11 +23,14 @@ import { NotraHeading } from "./heading"
 import { NotraImage } from "./image"
 import { IMAGE_MIME_TYPES, insertImageFiles } from "./image-upload"
 import { LinkClick } from "./link-click"
+import { NotraListItem, NotraOrderedList, NotraTaskItem, NotraTaskList } from "./lists"
 import { createNotraMarkdown, type NotraMarkdownOptions } from "./markdown"
 import { NotraParagraph } from "./markdown/paragraph"
 import { MarkdownPaste } from "./markdown-paste"
-import { getNotraStorage, NotraCore, type NotraCoreOptions } from "./notra-core"
+import { NotraCore, type NotraCoreOptions } from "./notra-core"
+import { NotraPlaceholder } from "./placeholder"
 import { SlashCommand } from "./slash-command/extension"
+import { TrailingParagraph } from "./trailing-paragraph"
 import { UpdateContent } from "./update-content"
 
 const lowlight = createLowlight(common)
@@ -45,27 +46,14 @@ export interface NotraExtensionsOptions extends NotraCoreOptions {
   markdown?: NotraMarkdownOptions
 }
 
-function getPlaceholder(editor: Editor, node: ProseMirrorNode, pos: number): string {
-  const { dictionary, placeholder } = getNotraStorage(editor)
-
-  switch (node.type.name) {
-    case "heading": {
-      const placeholders: Record<string, string> = dictionary.placeholder
-      return placeholders[`heading${node.attrs.level}`] ?? ""
-    }
-    case "detailsSummary":
-      return dictionary.placeholder.toggle
-    case "paragraph": {
-      const parent = editor.state.doc.resolve(pos).parent.type.name
-      if (parent === "listItem") return dictionary.placeholder.listItem
-      if (parent === "taskItem") return dictionary.placeholder.taskItem
-      if (parent === "blockquote") return dictionary.placeholder.blockquote
-      if (parent === "tableCell" || parent === "tableHeader") return ""
-      return placeholder ?? dictionary.placeholder.default
-    }
-    default:
-      return ""
-  }
+/**
+ * Whether typed text becomes a link: only what Markdown (GFM) reads as a
+ * link, URLs with a scheme or starting with `www.` and email addresses. File
+ * names such as `README.md` or `app.py` end in a top-level domain, but they
+ * are not links.
+ */
+function shouldAutoLink(url: string): boolean {
+  return /^(?:(?:https?|ftp):\/\/|www\.)/i.test(url) || /^[^\s@/:]+@[^\s@/:]+\.[^\s@/:]+$/.test(url)
 }
 
 /**
@@ -80,6 +68,7 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
   const enabled = (name: NotraFeatureName) => isFeatureEnabled(features, name)
   const unless = (name: NotraFeatureName) => (enabled(name) ? undefined : false)
   const hasLists = enabled("bulletList") || enabled("orderedList") || enabled("taskList")
+  const notraMarkdown = createNotraMarkdown(markdown, NotraRawBlock)
 
   const extensions: AnyExtension[] = [
     NotraCore.configure(coreOptions),
@@ -88,10 +77,10 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
       paragraph: false,
       heading: false,
       codeBlock: false,
+      orderedList: false,
+      listItem: false,
       blockquote: unless("blockquote"),
       bulletList: unless("bulletList"),
-      orderedList: unless("orderedList"),
-      listItem: enabled("bulletList") || enabled("orderedList") ? undefined : false,
       listKeymap: hasLists ? undefined : false,
       horizontalRule: unless("divider"),
       bold: unless("bold"),
@@ -105,30 +94,34 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
             openOnClick: false,
             autolink: true,
             linkOnPaste: true,
+            shouldAutoLink,
             defaultProtocol: "https",
             HTMLAttributes: { rel: "noopener noreferrer nofollow" },
           }
         : false,
     }),
-    NotraParagraph,
-    Placeholder.configure({
-      includeChildren: true,
-      showOnlyCurrent: true,
-      placeholder: ({ editor, node, pos }) => getPlaceholder(editor, node, pos),
-    }),
+    NotraParagraph.configure({ context: notraMarkdown.context }),
+    NotraPlaceholder,
     Selection.configure({ className: "notra-selection" }),
-    ...createNotraMarkdown(markdown, NotraRawBlock).extensions,
+    ...notraMarkdown.extensions,
     MarkdownPaste,
     SlashCommand,
     LinkClick,
     UpdateContent,
+    TrailingParagraph,
   ]
 
   if (enabled("heading")) {
     extensions.push(NotraHeading)
   }
+  if (enabled("bulletList") || enabled("orderedList")) {
+    extensions.push(NotraListItem)
+  }
+  if (enabled("orderedList")) {
+    extensions.push(NotraOrderedList)
+  }
   if (enabled("taskList")) {
-    extensions.push(TaskList, TaskItem.configure({ nested: true }))
+    extensions.push(NotraTaskList, NotraTaskItem.configure({ nested: true }))
   }
   if (enabled("toggle")) {
     extensions.push(NotraDetails.configure({ persist: true }), NotraDetailsSummary, NotraDetailsContent)
@@ -138,7 +131,7 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
   }
   if (enabled("codeBlock")) {
     extensions.push(
-      CodeBlockLowlight.configure({ lowlight, defaultLanguage: null, enableTabIndentation: true, tabSize: 2 }),
+      NotraCodeBlock.configure({ lowlight, defaultLanguage: null, enableTabIndentation: true, tabSize: 2 }),
     )
   }
   if (enabled("table")) {

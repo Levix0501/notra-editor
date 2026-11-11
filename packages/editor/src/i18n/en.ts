@@ -46,6 +46,8 @@ export const en = {
     html: "HTML",
     definition: "Link definitions",
     callout: "Callout",
+    footnote: "Footnote",
+    markdown: "Markdown",
   },
   slashMenu: {
     groups: {

@@ -45,6 +45,8 @@ export const zhCN: NotraDictionary = {
     html: "HTML",
     definition: "链接定义",
     callout: "提示框",
+    footnote: "脚注",
+    markdown: "Markdown",
   },
   slashMenu: {
     groups: {

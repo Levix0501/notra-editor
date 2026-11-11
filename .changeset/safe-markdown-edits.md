@@ -1,0 +1,16 @@
+---
+"notra-editor": minor
+---
+
+Keep Markdown files intact when they are edited, and write less for edited blocks:
+
+- Saving an edited document no longer breaks or drops Markdown: code that contains ```` ``` ```` gets a longer fence, code in ordered list items no longer gains a space on every save, ordered lists are read like CommonMark (`9.` followed by `10.` keeps both items, `A. Title` is a paragraph), fences indented by one to three spaces are read, and blocks the editor cannot read (for example tables when `table` is disabled) are kept as source blocks instead of being dropped.
+- All lists are read from marked's list tokens: text after a code block in a list item is a paragraph (it was invalid content, which made typing throw and gained escapes on every save), task items keep their whole text, items that start with a heading, code or a quote keep it, and ordered lists with tasks are kept as source blocks.
+- Emphasis that CommonMark would not read with delimiters, next to punctuation as in `用户选择**「推荐」**的方案`, `**注意：**这里` or `2026**-10-14**`, is written as `<strong>`, `<em>` or `<del>`. The content of these tags is read as Markdown, and a mark inside of the same mark (`**a **b** c**`) no longer makes the document invalid.
+- Link and image destinations with spaces are written between angle brackets (`[notes](<My Notes.md>)`), named character references (`&copy;`, `&nbsp;`) are read as their characters, and text that would change its meaning is escaped: four leading spaces, `>` at the start of a line, `[x]` at the start of a list item and `#` at the end of a heading. Empty headings are kept.
+- Images inside of text (badges in a heading, linked images) are kept as inline source, so that the text around them can be edited; editing it used to throw. HTML with several images is written back once instead of once per image. Hard breaks and code next to other marks (`` **`name`**`(value)` ``) are written so that they read back the same.
+- Text is only escaped where it would read as Markdown syntax: `snake_case`, `[note]`, `[[Wiki]]` and `a -> b` stay as they are. Footnotes are kept as source.
+- Editing: undo after deleting a block no longer throws, Backspace and Delete no longer join text with source blocks (front matter, HTML, link definitions), front matter stays at the start of the document, and joining paragraphs keeps their soft line breaks instead of turning them into hard breaks.
+- Typed text only becomes a link where GitHub's Markdown links it: URLs with a scheme or starting with `www.`, and email addresses. File names such as `README.md` or `app.py` (and `example.com`) stay text.
+- With `preserveSource`, mixed line endings and the blank lines around edited blocks are kept, nested list items and the blocks inside of list items (also task items) are written back one by one, the items of edited ordered lists are numbered from the start of the list, link definitions inside of other blocks no longer turn source preservation off, edited setext headings keep their style, and hard breaks and non-breaking spaces follow the style of the file. The new `markdown.onSourceMismatch` option is called when the source cannot be preserved.
+- Clicking into the editor no longer emits an `update` event: the trailing paragraph that the editor adds is not reported as a change and is not added to the history.
