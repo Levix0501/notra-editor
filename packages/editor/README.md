@@ -82,7 +82,9 @@ Markdown, see [Markdown files](#markdown-files).
 `editor.commands.setContent(content, options)` replaces the whole document. To apply changes made
 outside of the editor (synchronization, another window, AI edits), use `updateContent`: it only
 changes what differs (the changed blocks, or the changed text inside of a block, also in front
-matter, source blocks, tables and toggles) and keeps the selection and the scroll position.
+matter, source blocks, tables and toggles) and keeps the selection and the scroll position. How
+long it takes to find the unchanged blocks depends on how many blocks changed, not on the length
+of the document.
 
 ```ts
 editor.commands.updateContent(markdown, { contentType: "markdown" })
@@ -139,7 +141,9 @@ with these additions:
 - **GitHub alerts** (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are callouts.
 - **Toggle lists** are written as `<details>` blocks, which GitHub renders; Tiptap's `:::details`
   syntax is still read. HTML in a summary that the editor does not represent (`<a id="…">`,
-  `<kbd>`) is kept as inline source.
+  `<kbd>`) is kept as inline source. Whether a toggle is expanded is not part of the document:
+  expanding it is no change that can be undone or that emits `update`, and toggles start collapsed,
+  also `<details open>`.
 - Lists are read like other CommonMark implementations: `9.` followed by `10.`, text after a code
   block in an item, the whole text of task items; `A. Title` is a paragraph. Ordered lists with
   tasks (`1. [x] Done`) are kept as source blocks. A list that follows a list of its kind is written
@@ -182,8 +186,10 @@ their style, edited code blocks their fences (`~~~`, a longer fence, the info st
 indentation, also in list items, and edited links their form (`[text][id]` when the document
 defines the link).
 Toggles are written part by part: their summary while it is unchanged, and their content block by
-block. Lists that become neighbors (by deleting the block between them) stay two lists, and blocks
-that refer to a link definition that was added or deleted are written again.
+block. Tables are written line by line: a row that is no longer the header row is written below an
+empty header row, and the delimiter row is written again when the alignment of a column changed.
+Lists that become neighbors (by deleting the block between them) stay two lists, and blocks that
+refer to a link definition that was added or deleted are written again.
 
 ```tsx
 const editor = useNotraEditor({
@@ -201,7 +207,8 @@ editor?.commands.updateContent(newFileText, { contentType: "markdown" })
 
 The source is the Markdown content the editor was created with, or the Markdown passed to
 `setContent` or `updateContent` with `contentType: "markdown"`. Undoing an edit writes the original
-source again.
+source again, also when the edit is a change from outside: the last ten sources are kept, and after
+undo and redo the document is written with the one that has the most of it.
 
 When Markdown cannot be matched block by block with the document, the whole document is written
 again instead: `isPreservingMarkdownSource(editor)` returns `false` and `markdown.onSourceMismatch`

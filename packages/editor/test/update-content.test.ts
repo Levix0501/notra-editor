@@ -83,6 +83,22 @@ describe("updateContent", () => {
     expect(editor.state.doc.textBetween(from - 6, from)).toBe("Second")
   })
 
+  it("keeps the blocks between separate changes in long documents", () => {
+    const paragraphs = Array.from({ length: 2000 }, (_, index) => `<p>Paragraph ${index}</p>`)
+    editor = createTestEditor(paragraphs.join(""))
+    const middle = editor.state.doc.child(1000)
+    editor.commands.setTextSelection(findTextEnd(editor, "Paragraph 1000"))
+    // A block added at the start and one changed at the end: none of the blocks between them are compared with each other.
+    editor.commands.updateContent(
+      ["<p>Added</p>", ...paragraphs.slice(0, -1), "<p>Paragraph 1999, edited</p>"].join(""),
+    )
+
+    expect(editor.state.doc.childCount).toBe(2001)
+    expect(editor.state.doc.child(1001)).toBe(middle)
+    const { from } = editor.state.selection
+    expect(editor.state.doc.textBetween(from - 14, from)).toBe("Paragraph 1000")
+  })
+
   it("changes the content of blocks that are not joined with other blocks", () => {
     // A change from such a block to the next one used to create a new block or split a table.
     const changes: [string, (markdown: string) => string][] = [
@@ -104,6 +120,19 @@ describe("updateContent", () => {
       expect(instance.getMarkdown()).toBe(next)
       instance.destroy()
     }
+  })
+
+  it("keeps toggles expanded and the selection inside of them", () => {
+    const markdown = "Intro\n\n<details>\n<summary>More</summary>\n\nHidden text\n\n</details>\n"
+    editor = createTestEditor(markdown, "markdown", { markdown: { preserveSource: true } })
+    const toggle = editor.view.dom.querySelector<HTMLElement>('[data-type="details"]')
+    toggle?.querySelector<HTMLButtonElement>(":scope > button")?.click()
+    editor.commands.setTextSelection(findTextEnd(editor, "Hidden"))
+    editor.commands.updateContent(markdown.replace("Intro", "Changed intro"), { contentType: "markdown" })
+
+    expect(editor.view.dom.querySelector('[data-type="details"]')?.classList.contains("is-open")).toBe(true)
+    const { from } = editor.state.selection
+    expect(editor.state.doc.textBetween(from - 6, from)).toBe("Hidden")
   })
 
   it("reads Markdown", () => {

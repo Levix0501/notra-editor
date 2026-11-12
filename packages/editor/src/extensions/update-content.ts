@@ -66,8 +66,8 @@ interface Replacement {
   slice: Slice
 }
 
-/** The most pairs of nodes compared to find the unchanged nodes between changes. */
-const MAX_COMPARISONS = 250_000
+/** The most steps taken to find the unchanged nodes between changes, see `matchNodes`. */
+const MAX_STEPS = 500_000
 
 function getChildren(node: ProseMirrorNode): ProseMirrorNode[] {
   const children: ProseMirrorNode[] = []
@@ -78,44 +78,77 @@ function getChildren(node: ProseMirrorNode): ProseMirrorNode[] {
 }
 
 /**
- * Pairs of equal nodes of `current` and `next` (by index), in order: their
- * longest common subsequence. Nodes that stay between two changes are kept
- * this way, also when nodes are added or deleted. Long runs of changed nodes
- * are not compared.
+ * Pairs of equal nodes of `current` and `next` (by index), in order: a longest
+ * common subsequence, so that nodes that stay between two changes are kept,
+ * also when nodes are added or deleted. It is found with Myers' algorithm
+ * ("An O(ND) Difference Algorithm and Its Variations"), whose cost grows with
+ * the number of changed nodes rather than with the number of nodes: when too
+ * many nodes changed, no nodes are paired.
  */
 function matchNodes(current: ProseMirrorNode[], next: ProseMirrorNode[]): [number, number][] {
-  const rows = current.length
-  const columns = next.length
-  if (rows === 0 || columns === 0 || rows * columns > MAX_COMPARISONS) {
+  const n = current.length
+  const m = next.length
+  if (n === 0 || m === 0) {
     return []
   }
-  const width = columns + 1
-  // The length of the common subsequence of `current` from `i` and `next` from `j`, at `i * width + j`.
-  const lengths = new Uint32Array((rows + 1) * width)
-  const lengthAt = (i: number, j: number) => lengths[i * width + j] as number
-  const equal = (i: number, j: number) => (current[i] as ProseMirrorNode).eq(next[j] as ProseMirrorNode)
-  for (let i = rows - 1; i >= 0; i--) {
-    for (let j = columns - 1; j >= 0; j--) {
-      lengths[i * width + j] = equal(i, j)
-        ? lengthAt(i + 1, j + 1) + 1
-        : Math.max(lengthAt(i + 1, j), lengthAt(i, j + 1))
+  // The furthest index of `current` reached on each diagonal `k = i - j` (at `offset + k`) with as many
+  // changes as there were rounds, and the values after each round (for its diagonals, `-round` to `round`).
+  const offset = n + m + 1
+  const furthest = new Int32Array(2 * offset + 1)
+  const rounds: Int32Array[] = []
+  let steps = 0
+  for (let round = 0; round <= n + m && steps <= MAX_STEPS; round++) {
+    for (let k = -round; k <= round; k += 2) {
+      // One change more: a node of `next` added (down) or a node of `current` deleted, then the equal nodes that follow.
+      const down =
+        k === -round || (k !== round && (furthest[offset + k - 1] as number) < (furthest[offset + k + 1] as number))
+      let i = down ? (furthest[offset + k + 1] as number) : (furthest[offset + k - 1] as number) + 1
+      let j = i - k
+      while (i < n && j < m && (current[i] as ProseMirrorNode).eq(next[j] as ProseMirrorNode)) {
+        i++
+        j++
+        steps++
+      }
+      steps++
+      furthest[offset + k] = i
+      if (i >= n && j >= m) {
+        rounds.push(furthest.slice(offset - round, offset + round + 1))
+        return followChanges(rounds, n, m)
+      }
     }
+    rounds.push(furthest.slice(offset - round, offset + round + 1))
   }
+  return []
+}
+
+/** The pairs of equal nodes on the way that `matchNodes` found, from the end back to the start. */
+function followChanges(rounds: Int32Array[], n: number, m: number): [number, number][] {
   const pairs: [number, number][] = []
-  let i = 0
-  let j = 0
-  while (i < rows && j < columns) {
-    if (equal(i, j)) {
+  let i = n
+  let j = m
+  for (let round = rounds.length - 1; round > 0; round--) {
+    const previous = rounds[round - 1] as Int32Array
+    const at = (k: number) => previous[k + round - 1] as number
+    const k = i - j
+    const down = k === -round || (k !== round && at(k - 1) < at(k + 1))
+    const previousK = down ? k + 1 : k - 1
+    const previousI = at(previousK)
+    // The equal nodes after the change.
+    const start = down ? previousI : previousI + 1
+    while (i > start) {
+      i--
+      j--
       pairs.push([i, j])
-      i++
-      j++
-    } else if (lengthAt(i + 1, j) >= lengthAt(i, j + 1)) {
-      i++
-    } else {
-      j++
     }
+    i = previousI
+    j = previousI - previousK
   }
-  return pairs
+  while (i > 0 && j > 0) {
+    i--
+    j--
+    pairs.push([i, j])
+  }
+  return pairs.reverse()
 }
 
 /**

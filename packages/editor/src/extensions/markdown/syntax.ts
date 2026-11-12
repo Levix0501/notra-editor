@@ -175,9 +175,8 @@ export const DetailsSyntax = Extension.create<SyntaxOptions>({
 
     const content = helpers.parseChildren((token.tokens ?? []) as MarkdownToken[])
     const summary = parseSummaryHtml(String(token.summary ?? ""), nodes.details.schema)
-    const attributes = token.open && nodes.details.spec.attrs?.open ? { open: true } : undefined
 
-    return helpers.createNode("details", attributes, [
+    return helpers.createNode("details", undefined, [
       helpers.createNode("detailsSummary", undefined, summary),
       helpers.createNode("detailsContent", undefined, content.length ? content : [helpers.createNode("paragraph")]),
     ])

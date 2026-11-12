@@ -50,9 +50,13 @@ function renderSummaryHtml(nodes: JSONContent[] = []): string {
 
 /**
  * Toggles are written to Markdown as `<details>` blocks, which GitHub and most
- * Markdown renderers support. The open state is not written: it is a viewing
- * state, and expanding a toggle should not change the document. Tiptap's
- * `:::details` syntax is still read.
+ * Markdown renderers support. Tiptap's `:::details` syntax is still read.
+ *
+ * Whether a toggle is expanded is a viewing state, which is not part of the
+ * document (Tiptap's `persist` option stays off): expanding a toggle is no
+ * change that can be undone, and the document does not differ from the
+ * Markdown it was read from, which would rewrite a toggle that is edited
+ * while it is expanded and collapse it when the content is updated.
  */
 export const NotraDetails = Details.extend({
   renderMarkdown(node, helpers) {

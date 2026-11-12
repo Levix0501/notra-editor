@@ -1,4 +1,6 @@
 import { commands as coreCommands, type Editor, Extension } from "@tiptap/core"
+import type { MarkdownManager } from "@tiptap/markdown"
+import { isHistoryTransaction } from "@tiptap/pm/history"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
 
@@ -14,7 +16,23 @@ import { SourceWriter } from "./source-writer"
  */
 const SOURCE_META = "notraMarkdownSource"
 
-const sourceKey = new PluginKey<SourceSnapshot | null>("notraMarkdownSource")
+/** How many sources of content set before are kept, see {@link MarkdownSourceState}. */
+const KEPT_SOURCES = 10
+
+interface MarkdownSourceState {
+  /** The source the document is written with. */
+  snapshot: SourceSnapshot | null
+  /**
+   * The sources of the content set last, the latest first. Undo and redo can
+   * bring back content that an earlier `setContent` or `updateContent`
+   * replaced, which is then written with the source it was read from.
+   */
+  sources: SourceSnapshot[]
+}
+
+const sourceKey = new PluginKey<MarkdownSourceState>("notraMarkdownSource")
+
+const EMPTY_STATE: MarkdownSourceState = { snapshot: null, sources: [] }
 
 /** The link reference definitions of a document, one per line. */
 function getDefinitions(doc: ProseMirrorNode): string {
@@ -27,6 +45,61 @@ function getDefinitions(doc: ProseMirrorNode): string {
     return !node.isTextblock
   })
   return definitions.join("\n")
+}
+
+/** Runs `write` with the link definitions of `doc`: text in brackets reads as a link when the document defines it. */
+function withDefinitions<T>(
+  context: NotraMarkdownContext,
+  manager: MarkdownManager | undefined,
+  doc: ProseMirrorNode,
+  write: () => T,
+): T {
+  const { definitions, references } = context
+  context.definitions = getDefinitions(doc)
+  context.references = manager
+    ? indexReferences(() => new manager.instance.Lexer(manager.instance.defaults), context.definitions)
+    : null
+  try {
+    return write()
+  } finally {
+    context.definitions = definitions
+    context.references = references
+  }
+}
+
+/**
+ * Finds the source that `doc` is written with the most of, the current one
+ * when others do not have more (see `SourceWriter.countUnchanged`). Blocks
+ * that undo brings back are the nodes of before, which are counted first;
+ * blocks with text that changed and changed back are new nodes, which are
+ * found by their Markdown, for the sources that have as many nodes.
+ */
+function findSource(
+  manager: MarkdownManager,
+  context: NotraMarkdownContext,
+  { snapshot, sources }: MarkdownSourceState,
+  doc: ProseMirrorNode,
+): SourceSnapshot | null {
+  if (!snapshot || sources.length < 2) {
+    return snapshot
+  }
+  const candidates = [snapshot, ...sources.filter((source) => source !== snapshot)]
+  const keys = new WeakMap<ProseMirrorNode, string>()
+  const writers = candidates.map((source) => new SourceWriter(manager, context, source, keys))
+  // The indexes of the candidates with the highest count, in their order.
+  const most = (indexes: number[], count: (writer: SourceWriter) => number) => {
+    const counts = indexes.map((index) => count(writers[index] as SourceWriter))
+    return indexes.filter((_, position) => counts[position] === Math.max(...counts))
+  }
+  let found = most(
+    candidates.map((_, index) => index),
+    (writer) => writer.countUnchanged(doc, true),
+  )
+  if (found.length > 1) {
+    const tied = found
+    found = withDefinitions(context, manager, doc, () => most(tied, (writer) => writer.countUnchanged(doc)))
+  }
+  return candidates[found[0] ?? 0] as SourceSnapshot
 }
 
 export interface MarkdownSourceOptions {
@@ -43,6 +116,9 @@ export interface MarkdownSourceOptions {
  *
  * The source is the Markdown the editor was created with, or the Markdown
  * last passed to `setContent` or `updateContent` (with `contentType: "markdown"`).
+ * After undo and redo, it is the one of the last sources that has the most
+ * blocks of the document, so that undoing a change from outside writes the
+ * document as it was.
  */
 export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
   name: "notraMarkdownSource",
@@ -59,25 +135,15 @@ export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
     const { context } = this.options
     const getMarkdown = editor.getMarkdown
     editor.getMarkdown = () => {
-      const snapshot = sourceKey.getState(editor.state)
+      const snapshot = sourceKey.getState(editor.state)?.snapshot
+      const manager = editor.markdown
       if (!context) {
         return getMarkdown.call(editor)
       }
-      // Text in brackets reads as a link when the document defines it, and links can refer to the definitions.
-      const { definitions, references } = context
-      context.definitions = getDefinitions(editor.state.doc)
-      const manager = editor.markdown
-      context.references = manager
-        ? indexReferences(() => new manager.instance.Lexer(manager.instance.defaults), context.definitions)
-        : null
-      try {
-        return snapshot && manager
-          ? new SourceWriter(manager, context, snapshot).write(editor.state.doc)
-          : getMarkdown.call(editor)
-      } finally {
-        context.definitions = definitions
-        context.references = references
-      }
+      const { doc } = editor.state
+      return withDefinitions(context, manager, doc, () =>
+        snapshot && manager ? new SourceWriter(manager, context, snapshot).write(doc) : getMarkdown.call(editor),
+      )
     }
   },
 
@@ -116,24 +182,35 @@ export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
       return result
     }
 
+    // The new source comes first; without one (other content), the source is not preserved.
+    const replace = (value: MarkdownSourceState, created: SourceSnapshot | null): MarkdownSourceState =>
+      created ? { snapshot: created, sources: [created, ...value.sources].slice(0, KEPT_SOURCES) } : EMPTY_STATE
+
     return [
-      new Plugin<SourceSnapshot | null>({
+      new Plugin<MarkdownSourceState>({
         key: sourceKey,
         state: {
           init: (_config, state) => {
             const source = context?.initialSource ?? null
             if (context) context.initialSource = null
-            return snapshot(source, state.doc)
+            return replace(EMPTY_STATE, snapshot(source, state.doc))
           },
           apply: (tr, value, _oldState, newState) => {
             const source: unknown = tr.getMeta(SOURCE_META)
             if (source !== undefined) {
-              return snapshot(typeof source === "string" ? source : null, newState.doc)
+              return replace(value, snapshot(typeof source === "string" ? source : null, newState.doc))
             }
             const update = tr.getMeta(UPDATE_CONTENT_META) as UpdateContentMeta | undefined
             if (update) {
               const isMarkdown = update.contentType === "markdown" && typeof update.content === "string"
-              return snapshot(isMarkdown ? (update.content as string) : null, newState.doc)
+              return replace(value, snapshot(isMarkdown ? (update.content as string) : null, newState.doc))
+            }
+            if (tr.docChanged && isHistoryTransaction(tr) && context && editor.markdown) {
+              const found = findSource(editor.markdown, context, value, newState.doc)
+              if (found && found !== value.snapshot) {
+                detectStyle(context, found.raw)
+                return { ...value, snapshot: found }
+              }
             }
             return value
           },
@@ -145,5 +222,5 @@ export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
 
 /** Returns whether the editor writes unchanged Markdown blocks back verbatim. */
 export function isPreservingMarkdownSource(editor: Editor): boolean {
-  return sourceKey.getState(editor.state) != null
+  return sourceKey.getState(editor.state)?.snapshot != null
 }

@@ -1,4 +1,4 @@
-import type { Editor, JSONContent } from "@tiptap/core"
+import { type Editor, Extension, type JSONContent } from "@tiptap/core"
 import { marked } from "marked"
 import { afterEach, describe, expect, it } from "vitest"
 
@@ -54,6 +54,36 @@ describe("markdown round trips", () => {
       expect(load(markdown).getMarkdown()).toBe(markdown)
     })
   }
+})
+
+describe("large documents", () => {
+  it("only gives tokenizers the paragraph that is read to find where they start", () => {
+    // Tokenizers that looked at the rest of the document for every paragraph made reading take quadratic time.
+    const seen: string[] = []
+    const probe = Extension.create({
+      name: "probe",
+      markdownTokenizer: {
+        name: "probe",
+        level: "block",
+        start: (source: string) => {
+          seen.push(source)
+          return -1
+        },
+        tokenize: () => undefined,
+      },
+    })
+    const paragraphs = Array.from({ length: 200 }, (_, index) => `Paragraph ${index}\nwith two lines.`)
+    editor = createTestEditor(paragraphs.join("\n\n"), "markdown", {}, [probe])
+    expect(editor.state.doc.childCount).toBe(200)
+    expect(seen.length).toBeGreaterThanOrEqual(200)
+    expect(seen.every((source) => source.split("\n").length <= 3)).toBe(true)
+  })
+
+  it("still lets block syntax interrupt a paragraph after a line with only tabs, which marked reads as text", () => {
+    const math = createRawSyntax({ name: "math", level: "block", pattern: /^\$\$\n[\s\S]*?\n\$\$(?:\n|$)/ })
+    editor = createTestEditor("Text\n\t\n$$\nE = mc^2\n$$\n", "markdown", {}, [math])
+    expect(topLevel(editor).map((node) => node.type)).toEqual(["paragraph", "rawBlock"])
+  })
 })
 
 describe("headings", () => {
@@ -254,7 +284,9 @@ describe("callouts", () => {
 describe("toggles", () => {
   it("reads <details> blocks", () => {
     const [toggle] = topLevel(load("<details open>\n<summary>Sum <b>bold</b></summary>\n\nBody\n\n- a\n\n</details>"))
-    expect(toggle).toMatchObject({ type: "details", attrs: { open: true } })
+    // Whether a toggle is expanded is not part of the document.
+    expect(toggle?.type).toBe("details")
+    expect(toggle?.attrs).toBeUndefined()
     expect(toggle?.content?.[0]).toEqual({
       type: "detailsSummary",
       content: [

@@ -125,7 +125,7 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
     extensions.push(NotraTaskList, NotraTaskItem.configure({ nested: true }))
   }
   if (enabled("toggle")) {
-    extensions.push(NotraDetails.configure({ persist: true }), NotraDetailsSummary, NotraDetailsContent)
+    extensions.push(NotraDetails, NotraDetailsSummary, NotraDetailsContent)
   }
   if (enabled("callout")) {
     extensions.push(Callout)

@@ -173,16 +173,23 @@ function findReplaced(
 
 /** Writes a document to Markdown, reusing the source of unchanged blocks. */
 export class SourceWriter {
-  private readonly keys = new WeakMap<ProseMirrorNode, string>()
+  private readonly keys: WeakMap<ProseMirrorNode, string>
   private readonly markdown = new WeakMap<ProseMirrorNode, string>()
   private readonly manager: MarkdownManager
   private readonly context: NotraMarkdownContext
   private readonly snapshot: SourceSnapshot
 
-  constructor(manager: MarkdownManager, context: NotraMarkdownContext, snapshot: SourceSnapshot) {
+  /** `keys` can be shared by writers that compare the same document with several sources. */
+  constructor(
+    manager: MarkdownManager,
+    context: NotraMarkdownContext,
+    snapshot: SourceSnapshot,
+    keys = new WeakMap<ProseMirrorNode, string>(),
+  ) {
     this.manager = manager
     this.context = context
     this.snapshot = snapshot
+    this.keys = keys
   }
 
   /** Converts an offset in the normalized source to an offset in the source as it was read. */
@@ -267,6 +274,38 @@ export class SourceWriter {
     return candidates.reduce((best, candidate) =>
       Math.abs(candidate - hint) < Math.abs(best - hint) ? candidate : best,
     )
+  }
+
+  /** The blocks of a document, without the empty paragraphs at its end that the trailing node extension adds. */
+  private getBlocks(doc: ProseMirrorNode): ProseMirrorNode[] {
+    const nodes = getChildren(doc)
+    while (isEmptyParagraph(nodes.at(-1)) && !this.snapshot.byNode.has(nodes.at(-1) as ProseMirrorNode)) {
+      nodes.pop()
+    }
+    return nodes
+  }
+
+  /**
+   * How much of `doc` would be written with the source (see `write`): one for
+   * every unchanged block, one for the lines before it when it follows the
+   * same block as in the source (or starts the document, like in the source),
+   * and one for the end of the source. With `byNode`, only the blocks that are
+   * the nodes of the source are counted, which is faster.
+   */
+  countUnchanged(doc: ProseMirrorNode, byNode = false): number {
+    let count = 0
+    // The block before the current one: -1 before the first block.
+    let previous: number | null = -1
+    this.getBlocks(doc).forEach((node, index) => {
+      const block = byNode
+        ? (this.snapshot.byNode.get(node) ?? null)
+        : this.findBlock(node, previous === null ? index : previous + 1)
+      if (block !== null) {
+        count += previous !== null && block === previous + 1 ? 2 : 1
+      }
+      previous = block
+    })
+    return previous !== null && previous === this.snapshot.blocks.length - 1 ? count + 1 : count
   }
 
   /** Finds the list or table a changed node comes from, through its unchanged items or rows. */
@@ -717,47 +756,54 @@ export class SourceWriter {
     return output
   }
 
-  /** Writes the rows of a table, reusing the source of unchanged rows. */
+  /**
+   * Writes a table line by line, like the editor writes it: the header row
+   * (an empty one when the first row is not a header row), the delimiter row
+   * with the alignment of the columns, and the other rows. A line is written
+   * with its source when the editor writes it the same for the original
+   * table, so that a row that is no longer the header row or a changed
+   * alignment is written as it is now.
+   */
   private writeTable(block: SourceBlock, node: ProseMirrorNode): string | null {
     const { children = [], table } = block
-    const header = node.firstChild
-    const originalHeader = block.node.firstChild
-    if (!table || !header || !originalHeader || header.childCount !== table.columns) {
+    const rows = getChildren(node)
+    if (!table || node.firstChild?.childCount !== table.columns) {
       return null
     }
-    // A row is written as the last line of a table made of the header row and the row.
-    const writeRow = (row: ProseMirrorNode, headerRow: ProseMirrorNode, write: (content: JSONContent[]) => string) => {
-      const rows = row === headerRow ? [row.toJSON()] : [headerRow.toJSON(), row.toJSON()]
-      const lines = write([{ type: "table", content: rows }]).split("\n")
-      return (row === headerRow ? lines[0] : lines.at(-1)) ?? ""
+    const written = serialize(this.manager, [node.toJSON()]).split("\n")
+    // The empty header row the editor writes before a first row that is not a header row.
+    const emptyHeader = written.length - rows.length - 1
+    if (emptyHeader !== 0 && emptyHeader !== 1) {
+      return null
     }
-    // Rows are compared without the padding that aligns the columns.
-    const toKey = (line: string) =>
-      line
-        .split("|")
-        .map((cell) => cell.trim())
-        .join("|")
-    const keyOf = (row: ProseMirrorNode, headerRow: ProseMirrorNode) =>
-      toKey(writeRow(row, headerRow, (content) => this.key(content)))
-
-    const lines: { text: string; source?: SourceRange }[] = []
-    getChildren(node).forEach((row, index) => {
-      const original = this.findChild(
-        block,
-        row,
-        (current) => keyOf(current, header),
-        (originalRow) => keyOf(originalRow, originalHeader),
-      )
-      const source = original === null ? undefined : children[original]
-      lines.push({
-        text: source
-          ? this.slice(source)
-          : this.lines(writeRow(row, header, (content) => serialize(this.manager, content))),
-        source,
+    // Lines are compared without the padding that aligns the columns, the delimiter row without the length of its dashes.
+    const toKeys = (markdown: string) =>
+      markdown.split("\n").map((line, index) => {
+        const key = line
+          .split("|")
+          .map((cell) => cell.trim())
+          .join("|")
+        return index === 1 ? key.replace(/-+/g, "-") : key
       })
+    const keys = toKeys(this.nodeKey(node))
+    const originalKeys = toKeys(this.nodeKey(block.node))
+    // The source of each line of the original table: its header row, its delimiter row and its other rows.
+    const sources = [children[0], table.delimiter, ...children.slice(1)]
+
+    const lines = written.map((text, index) => {
+      let source: SourceRange | undefined
       if (index === 0) {
-        lines.push({ text: this.slice(table.delimiter), source: table.delimiter })
+        // The header row decides how many columns a table has: only the one of the source takes its place.
+        source = keys[0] === originalKeys[0] ? children[0] : undefined
+      } else if (index === 1) {
+        source = keys[1] === originalKeys[1] ? table.delimiter : undefined
+      } else {
+        const row = rows[index - 1 - emptyHeader]
+        source =
+          children.find((child) => child.node === row) ??
+          sources[originalKeys.findIndex((key, original) => original !== 1 && key === keys[index])]
       }
+      return { text: source ? this.slice(source) : text, source }
     })
     // Lines of the source keep the line break that followed them.
     const lineBreakAfter = (range: SourceRange | undefined) =>
@@ -896,11 +942,7 @@ export class SourceWriter {
 
   write(doc: ProseMirrorNode): string {
     const { blocks, source } = this.snapshot
-    const nodes = getChildren(doc)
-    // Empty paragraphs at the end are added by the trailing node extension.
-    while (isEmptyParagraph(nodes.at(-1)) && !this.snapshot.byNode.has(nodes.at(-1) as ProseMirrorNode)) {
-      nodes.pop()
-    }
+    const nodes = this.getBlocks(doc)
 
     // Unchanged blocks, and lists and tables written item by item or row by row.
     const matches: (number | null)[] = []

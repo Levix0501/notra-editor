@@ -1,4 +1,5 @@
 import { type Editor, Extension } from "@tiptap/core"
+import { undoDepth } from "@tiptap/pm/history"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { isPreservingMarkdownSource } from "../src/extensions/markdown/source"
@@ -152,17 +153,32 @@ describe("markdown source", () => {
     expect(instance.getMarkdown()).toBe(DOCUMENT)
   })
 
-  it("ignores changes that are not written to Markdown, such as opening a toggle", () => {
+  it("ignores changes that are not written to Markdown, such as column widths", () => {
     const instance = load(DOCUMENT)
     let pos = -1
-    instance.state.doc.forEach((node, offset) => {
-      if (node.type.name === "details") pos = offset
+    instance.state.doc.descendants((node, offset) => {
+      if (pos === -1 && node.type.name === "tableHeader") pos = offset
     })
     instance.commands.command(({ tr }) => {
-      tr.setNodeAttribute(pos, "open", true)
+      tr.setNodeAttribute(pos, "colwidth", [120])
       return true
     })
     expect(instance.getMarkdown()).toBe(DOCUMENT)
+  })
+
+  it("keeps expanding a toggle out of the document, also when it is edited", () => {
+    const markdown = "<details>\n<summary>More</summary>\n\nHidden text.\n\n* one\n* two\n\n</details>\n\nAfter\n"
+    const instance = load(markdown)
+    const doc = instance.state.doc
+    const toggle = instance.view.dom.querySelector<HTMLElement>('[data-type="details"]')
+    toggle?.querySelector<HTMLButtonElement>(":scope > button")?.click()
+    expect(toggle?.classList.contains("is-open")).toBe(true)
+    expect(toggle?.querySelector('[data-type="detailsContent"]')?.hasAttribute("hidden")).toBe(false)
+    expect(instance.state.doc).toBe(doc)
+    expect(undoDepth(instance.state)).toBe(0)
+
+    insertAfter(instance, "Hidden", "!")
+    expect(instance.getMarkdown()).toBe(markdown.replace("Hidden", "Hidden!"))
   })
 
   it("keeps the link definitions used by unchanged blocks", () => {
@@ -179,6 +195,26 @@ describe("markdown source", () => {
     const next = "New _text_\n\n- a\n- b\n"
     instance.commands.updateContent(next, { contentType: "markdown" })
     expect(instance.getMarkdown()).toBe(next)
+  })
+
+  it("writes the source of before again after undoing a change from outside", () => {
+    const markdown = "# Title\n\n* one\n* two\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\nSome *text*.\n"
+    const next = markdown.replace("| 2 |", "| 3 |").replace("* two", "* two\n* three").replace("Some", "More")
+    const instance = load(markdown)
+    instance.commands.updateContent(next, { contentType: "markdown" })
+    expect(instance.getMarkdown()).toBe(next)
+    instance.commands.undo()
+    expect(instance.getMarkdown()).toBe(markdown)
+    instance.commands.redo()
+    expect(instance.getMarkdown()).toBe(next)
+
+    // Both sources have all the blocks: the one with their blank lines and the end of the file is used.
+    const matter = "---\ntitle: a\n---\n\nText.\n"
+    const undone = change(matter, (other) => {
+      other.commands.updateContent("---\ntitle: a\n---\nText.\n\n\n", { contentType: "markdown" })
+      other.commands.undo()
+    })
+    expect(undone).toBe(matter)
   })
 
   it("stops preserving the source when other content is set", () => {
@@ -329,6 +365,35 @@ describe("markdown source of edited blocks", () => {
     expect(edit("Mail <me@example.com>.\n", ["Mail"])).toBe("Mail! <me@example.com>.\n")
     const collapsed = "See [docs][] and [API][].\n\n[docs]: https://d.example\n[api]: https://a.example\n"
     expect(edit(collapsed, ["See"])).toBe(collapsed.replace("See", "See!"))
+  })
+
+  it("writes a row that is no longer the header row below an empty header row", () => {
+    const markdown = "Intro\n\n| Name | Kind |\n| :--- | ---: |\n| alpha | a |\n| beta | b |\n\nAfter\n"
+    const instance = load(markdown)
+    instance.chain().setTextSelection(findTextEnd(instance, "Name")).toggleHeaderRow().run()
+    expect(instance.getMarkdown()).toBe(
+      "Intro\n\n|       |      |\n| :--- | ---: |\n| Name | Kind |\n| alpha | a |\n| beta | b |\n\nAfter\n",
+    )
+    insertAfter(instance, "Name", "!")
+    expect(instance.getMarkdown()).toContain("| :--- | ---: |\n| Name!")
+    instance.chain().toggleHeaderRow().run()
+    expect(instance.getMarkdown()).toBe(markdown.replace("Name", "Name!"))
+  })
+
+  it("writes the alignment of the columns of a table as it is now", () => {
+    const markdown = "| Name | Kind |\n| --- | --- |\n| alpha | a |\n"
+    const output = change(markdown, (instance) => {
+      instance.commands.command(({ tr }) => {
+        // The cells of the first column.
+        tr.doc.descendants((node, pos) => {
+          if (node.type.spec.tableRole?.includes("cell") && ["Name", "alpha"].includes(node.textContent)) {
+            tr.setNodeAttribute(pos, "align", "center")
+          }
+        })
+        return true
+      })
+    })
+    expect(output).toBe("| Name | Kind |\n| :-----: | ---- |\n| alpha | a |\n")
   })
 
   it("only rewrites the edited part of a toggle", () => {

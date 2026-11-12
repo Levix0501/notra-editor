@@ -1,4 +1,12 @@
-import { type Lexer, Marked, type Token, Tokenizer, type TokenizerExtension, type Tokens } from "marked"
+import {
+  type Lexer,
+  Marked,
+  type MarkedExtension,
+  type Token,
+  Tokenizer,
+  type TokenizerExtension,
+  type Tokens,
+} from "marked"
 
 import type { NotraMarkdownContext } from "./context"
 import { decodeNamedReferences } from "./entities"
@@ -80,7 +88,6 @@ const callout: TokenizerExtension = {
 export interface DetailsParts {
   /** The end of the block: the end of the closing tag and the line it is on. */
   end: number
-  open: boolean
   /** The HTML inside of `<summary>`, if the block has a summary. */
   summary: { start: number; end: number } | null
   /** The Markdown content, between the summary (or the opening tag) and the closing tag. */
@@ -112,7 +119,6 @@ export function splitDetails(source: string): DetailsParts | null {
   const summaryStart = summary ? innerStart + summary[0].indexOf(">", summary[0].indexOf("<summary")) + 1 : -1
   return {
     end: indent.length + element.length + lineEnd[0].length,
-    open: /\sopen(?=[\s=>/]|$)/i.test(openTag),
     summary: summary ? { start: summaryStart, end: summaryStart + (summary[1] ?? "").length } : null,
     body: { start: summary ? innerStart + summary[0].length : innerStart, end: bodyEnd },
   }
@@ -130,7 +136,6 @@ const details: TokenizerExtension = {
     return {
       type: DETAILS_TOKEN,
       raw: source.slice(0, parts.end),
-      open: parts.open,
       // Markdown is not processed inside of `<summary>`: it is HTML.
       summary: parts.summary ? source.slice(parts.summary.start, parts.summary.end).trim() : "",
       tokens: lexBlocks(this.lexer, source.slice(parts.body.start, parts.body.end)),
@@ -264,13 +269,47 @@ function createInlineImages(context: NotraMarkdownContext): TokenizerExtension {
   }
 }
 
+/** The end of a paragraph: a line without text (marked reads a line with only tabs as text). */
+const PARAGRAPH_END = /\n *(?:\n|$)/
+
+/**
+ * Gives the block tokenizers of an extension only the paragraph that is read
+ * to find where they start. For every paragraph, marked asks them where they
+ * could interrupt it, with the rest of the document: tokenizers that look at
+ * all of it (Tiptap's tables split it into lines) made reading a document take
+ * time with the square of its length. A start after the end of the paragraph
+ * does not change the paragraph.
+ */
+function findStartsInParagraph(extension: MarkedExtension): MarkedExtension {
+  return {
+    ...extension,
+    extensions: extension.extensions?.map((tokenizer) => {
+      if (!("start" in tokenizer) || !tokenizer.start || tokenizer.level !== "block") {
+        return tokenizer
+      }
+      const { start } = tokenizer
+      return {
+        ...tokenizer,
+        start(source) {
+          const end = PARAGRAPH_END.exec(source)
+          return start.call(this, end ? source.slice(0, end.index + 1) : source)
+        },
+      }
+    }),
+  }
+}
+
 /**
  * Creates the marked instance of one editor, with the notra tokenizers. Every
  * editor gets its own instance: Tiptap registers tokenizers on the instance it
  * is given, and the global `marked` instance may be used by the application.
  */
 export function createNotraMarked(context: NotraMarkdownContext): Marked {
-  return new Marked({
+  const instance = new Marked()
+  const use = instance.use.bind(instance)
+  // Tiptap registers the tokenizers of its extensions with `use` too.
+  instance.use = (...extensions) => use(...extensions.map(findStartsInParagraph))
+  return instance.use({
     extensions: [frontMatter, callout, details, createRawInline(context), createInlineImages(context)],
     tokenizer: {
       // Text with its named character references decoded, see `decodeNamedReferences`.
