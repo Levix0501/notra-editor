@@ -81,10 +81,7 @@ Markdown, see [Markdown files](#markdown-files).
 
 `editor.commands.setContent(content, options)` replaces the whole document. To apply changes made
 outside of the editor (synchronization, another window, AI edits), use `updateContent`: it only
-changes what differs (the changed blocks, or the changed text inside of a block, also in front
-matter, source blocks, tables and toggles) and keeps the selection and the scroll position. How
-long it takes to find the unchanged blocks depends on how many blocks changed, not on the length
-of the document.
+changes what differs and keeps the selection and the scroll position.
 
 ```ts
 editor.commands.updateContent(markdown, { contentType: "markdown" })
@@ -141,9 +138,8 @@ with these additions:
 - **GitHub alerts** (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are callouts.
 - **Toggle lists** are written as `<details>` blocks, which GitHub renders; Tiptap's `:::details`
   syntax is still read. HTML in a summary that the editor does not represent (`<a id="…">`,
-  `<kbd>`) is kept as inline source. Whether a toggle is expanded is not part of the document:
-  expanding it is no change that can be undone or that emits `update`, and toggles start collapsed,
-  also `<details open>`.
+  `<kbd>`) is kept as inline source. Toggles start collapsed, also `<details open>`: whether a
+  toggle is expanded is not saved.
 - Lists are read like other CommonMark implementations: `9.` followed by `10.`, text after a code
   block in an item, the whole text of task items; `A. Title` is a paragraph. Ordered lists with
   tasks (`1. [x] Done`) are kept as source blocks. A list that follows a list of its kind is written
@@ -177,19 +173,9 @@ with these additions:
 
 ### Markdown files
 
-For documents stored as Markdown files, enable `markdown.preserveSource` (experimental). Unchanged
-blocks, list items (also nested ones, and the blocks inside of an item) and table rows are then
-written back exactly as they were read, with their line endings, blank lines and the end of the
-file; only edited blocks are written again, between the original blank lines (or line breaks,
-where the blocks read back the same with them). Edited setext headings (`Title` over `=====`) keep
-their style, edited code blocks their fences (`~~~`, a longer fence, the info string) or
-indentation, also in list items, and edited links their form (`[text][id]` when the document
-defines the link).
-Toggles are written part by part: their summary while it is unchanged, and their content block by
-block. Tables are written line by line: a row that is no longer the header row is written below an
-empty header row, and the delimiter row is written again when the alignment of a column changed.
-Lists that become neighbors (by deleting the block between them) stay two lists, and blocks that
-refer to a link definition that was added or deleted are written again.
+For documents stored as Markdown files, enable `markdown.preserveSource` (experimental): the parts
+of the file that were not edited are written back as they were read, so that saving changes as
+little of the file as possible.
 
 ```tsx
 const editor = useNotraEditor({
@@ -206,12 +192,7 @@ editor?.commands.updateContent(newFileText, { contentType: "markdown" })
 ```
 
 The source is the Markdown content the editor was created with, or the Markdown passed to
-`setContent` or `updateContent` with `contentType: "markdown"`. Undoing an edit writes the original
-source again, also when the edit is a change from outside: the last ten sources are kept, and after
-undo and redo the document is written with the one that has the most of it. Blocks, list items and
-table rows that it does not have are written with another of them, for example an item whose
-typing is undone after a change from outside that is not part of the history
-(`addToHistory: false`).
+`setContent` or `updateContent` with `contentType: "markdown"`.
 
 When Markdown cannot be matched block by block with the document, the whole document is written
 again instead: `isPreservingMarkdownSource(editor)` returns `false` and `markdown.onSourceMismatch`
@@ -231,12 +212,6 @@ what is typed, are off. Table cells then hold text like the cells of Markdown ta
 line break (`<br>`), pasted blocks become lines of the cell, and blocks cannot be inserted into cells.
 Features set explicitly in `features` take precedence. The preset can also be used on its own:
 `features={{ ...markdownFeatures, table: false }}`.
-
-Limitations: the style of written Markdown is the style most of the file uses, so a file that mixes
-styles (`*a*` and `_b_`) gets the more frequent one in rewritten blocks. An edit inside of a block
-quote or callout rewrites that block, and a table inside of a list item is written again as a whole.
-Without `blocksInCells: false`, blocks in table cells (lists, quotes) are written as text: Markdown
-tables only hold text.
 
 ### Markdown dialects and source blocks
 
