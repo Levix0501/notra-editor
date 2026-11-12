@@ -208,7 +208,10 @@ editor?.commands.updateContent(newFileText, { contentType: "markdown" })
 The source is the Markdown content the editor was created with, or the Markdown passed to
 `setContent` or `updateContent` with `contentType: "markdown"`. Undoing an edit writes the original
 source again, also when the edit is a change from outside: the last ten sources are kept, and after
-undo and redo the document is written with the one that has the most of it.
+undo and redo the document is written with the one that has the most of it. Blocks, list items and
+table rows that it does not have are written with another of them, for example an item whose
+typing is undone after a change from outside that is not part of the history
+(`addToHistory: false`).
 
 When Markdown cannot be matched block by block with the document, the whole document is written
 again instead: `isPreservingMarkdownSource(editor)` returns `false` and `markdown.onSourceMismatch`

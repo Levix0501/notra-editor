@@ -40,7 +40,7 @@ function renderListItem(
       .join("\n")
 
   const [first, ...rest] = node.content ?? []
-  // Some blocks are written with line breaks around them (tables), which would be blank lines here.
+  // Blocks of other extensions can be written with line breaks around them, which would be blank lines here.
   const render = (child: JSONContent, index: number) =>
     (helpers.renderChild?.(child, index) ?? helpers.renderChildren([child])).replace(/^\n+|\n+$/g, "")
   let main = first ? helpers.renderChildren([first]) : ""

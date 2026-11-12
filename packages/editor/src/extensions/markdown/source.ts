@@ -25,7 +25,9 @@ interface MarkdownSourceState {
   /**
    * The sources of the content set last, the latest first. Undo and redo can
    * bring back content that an earlier `setContent` or `updateContent`
-   * replaced, which is then written with the source it was read from.
+   * replaced, which is then written with the source it was read from: the
+   * document with the one that has the most of it, and blocks, list items
+   * and table rows that this one does not have with another one.
    */
   sources: SourceSnapshot[]
 }
@@ -85,7 +87,7 @@ function findSource(
   }
   const candidates = [snapshot, ...sources.filter((source) => source !== snapshot)]
   const keys = new WeakMap<ProseMirrorNode, string>()
-  const writers = candidates.map((source) => new SourceWriter(manager, context, source, keys))
+  const writers = candidates.map((source) => new SourceWriter(manager, context, source, { keys }))
   // The indexes of the candidates with the highest count, in their order.
   const most = (indexes: number[], count: (writer: SourceWriter) => number) => {
     const counts = indexes.map((index) => count(writers[index] as SourceWriter))
@@ -118,7 +120,10 @@ export interface MarkdownSourceOptions {
  * last passed to `setContent` or `updateContent` (with `contentType: "markdown"`).
  * After undo and redo, it is the one of the last sources that has the most
  * blocks of the document, so that undoing a change from outside writes the
- * document as it was.
+ * document as it was. Blocks, list items and table rows that it does not
+ * have are written with another of the last sources that has them, such as
+ * an item whose edit is undone after a change from outside that is not part
+ * of the history.
  */
 export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
   name: "notraMarkdownSource",
@@ -135,14 +140,16 @@ export const MarkdownSource = Extension.create<MarkdownSourceOptions>({
     const { context } = this.options
     const getMarkdown = editor.getMarkdown
     editor.getMarkdown = () => {
-      const snapshot = sourceKey.getState(editor.state)?.snapshot
+      const { snapshot, sources } = sourceKey.getState(editor.state) ?? EMPTY_STATE
       const manager = editor.markdown
       if (!context) {
         return getMarkdown.call(editor)
       }
       const { doc } = editor.state
       return withDefinitions(context, manager, doc, () =>
-        snapshot && manager ? new SourceWriter(manager, context, snapshot).write(doc) : getMarkdown.call(editor),
+        snapshot && manager
+          ? new SourceWriter(manager, context, snapshot, { others: sources }).write(doc)
+          : getMarkdown.call(editor),
       )
     }
   },

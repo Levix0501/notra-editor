@@ -26,7 +26,8 @@ Run from this directory (requires pnpm 12):
   not read is written as HTML, link targets, autolinks and references), the style of the file
   (`detectStyle` in `context.ts`), and `source.ts` with `source-snapshot.ts` and
   `source-writer.ts`, which write unchanged blocks, list items, table rows and the parts of
-  toggles back verbatim (`source.ts` keeps the last sources, for undo after `updateContent`).
+  toggles back verbatim (`source.ts` keeps the last sources, for undo after `updateContent`:
+  blocks, items and rows that the chosen source does not have are written with another one).
   Some of it replaces internals of `@tiptap/markdown` (`encodeTextForMarkdown`,
   `getMarkOpening`, `getMarkClosing`, `applyMarkToContent`, `renderNodesWithMarkBoundaries`,
   `getMarksToOpenForSerialization`); `test/markdown*.test.ts` covers them. This is why the

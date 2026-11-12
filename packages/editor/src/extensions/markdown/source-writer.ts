@@ -19,9 +19,11 @@ import {
   type ItemBlock,
   type ItemSource,
   isEmptyParagraph,
+  type LinkDefinition,
   parseBlock,
   type SourceBlock,
   type SourceChild,
+  type SourcePart,
   type SourceRange,
   type SourceSnapshot,
   trimLineBreaks,
@@ -171,6 +173,34 @@ function findReplaced(
   return replaced
 }
 
+/** The blocks, list items and table rows of a source by their text (computed when first needed). */
+function getParts(snapshot: SourceSnapshot): Map<string, SourcePart[]> {
+  if (!snapshot.byText) {
+    const byText = new Map<string, SourcePart[]>()
+    const add = (part: SourcePart) => {
+      const text = part.node.textContent
+      const parts = byText.get(text)
+      if (parts) parts.push(part)
+      else byText.set(text, [part])
+    }
+    snapshot.blocks.forEach((block, index) => {
+      add({ node: block.node, start: block.start, end: block.end, block: index, child: null })
+      block.children?.forEach((child, childIndex) => {
+        add({ node: child.node, start: child.start, end: child.end, block: index, child: childIndex })
+      })
+    })
+    snapshot.byText = byText
+  }
+  return snapshot.byText
+}
+
+export interface SourceWriterOptions {
+  /** Shared by writers that compare the same document with several sources. */
+  keys?: WeakMap<ProseMirrorNode, string>
+  /** Other sources of the document, the latest first, see `SourceWriter.writeElsewhere`. */
+  others?: readonly SourceSnapshot[]
+}
+
 /** Writes a document to Markdown, reusing the source of unchanged blocks. */
 export class SourceWriter {
   private readonly keys: WeakMap<ProseMirrorNode, string>
@@ -178,18 +208,22 @@ export class SourceWriter {
   private readonly manager: MarkdownManager
   private readonly context: NotraMarkdownContext
   private readonly snapshot: SourceSnapshot
+  private readonly others: readonly SourceSnapshot[]
+  /** The link definitions of the document, read when first needed. */
+  private links: Record<string, LinkDefinition> | null = null
+  private readonly changedLabels = new Map<SourceSnapshot, string[]>()
 
-  /** `keys` can be shared by writers that compare the same document with several sources. */
   constructor(
     manager: MarkdownManager,
     context: NotraMarkdownContext,
     snapshot: SourceSnapshot,
-    keys = new WeakMap<ProseMirrorNode, string>(),
+    { keys = new WeakMap(), others = [] }: SourceWriterOptions = {},
   ) {
     this.manager = manager
     this.context = context
     this.snapshot = snapshot
     this.keys = keys
+    this.others = others.filter((other) => other !== snapshot)
   }
 
   /** Converts an offset in the normalized source to an offset in the source as it was read. */
@@ -276,11 +310,21 @@ export class SourceWriter {
     )
   }
 
-  /** The blocks of a document, without the empty paragraphs at its end that the trailing node extension adds. */
+  /**
+   * The blocks of a document, without the empty paragraphs at its end that
+   * the trailing node extension adds. Those that the source has at its end
+   * (blank lines) stay, also as new nodes: undo brings them back so.
+   */
   private getBlocks(doc: ProseMirrorNode): ProseMirrorNode[] {
     const nodes = getChildren(doc)
-    while (isEmptyParagraph(nodes.at(-1)) && !this.snapshot.byNode.has(nodes.at(-1) as ProseMirrorNode)) {
+    const { blocks, byNode } = this.snapshot
+    let inSource = 0
+    while (isEmptyParagraph(blocks[blocks.length - 1 - inSource]?.node)) inSource++
+    let atEnd = 0
+    while (isEmptyParagraph(nodes[nodes.length - 1 - atEnd])) atEnd++
+    while (atEnd > inSource && !byNode.has(nodes.at(-1) as ProseMirrorNode)) {
       nodes.pop()
+      atEnd--
     }
     return nodes
   }
@@ -337,6 +381,101 @@ export class SourceWriter {
     const markdown = key(child)
     const index = children.findIndex((original) => originalKey(original.node) === markdown)
     return index === -1 ? null : index
+  }
+
+  /**
+   * The labels of the link definitions that another source and the document
+   * define differently, or that only one of them defines: text of the source
+   * that refers to them reads differently in the document.
+   */
+  private getChangedLabels(snapshot: SourceSnapshot): string[] {
+    let labels = this.changedLabels.get(snapshot)
+    if (!labels) {
+      if (!this.links) {
+        const lexer = new this.manager.instance.Lexer(this.manager.instance.defaults)
+        this.links = (lexer.lex(this.context.definitions) as { links?: Record<string, LinkDefinition> }).links ?? {}
+      }
+      const current = this.links
+      const before = snapshot.links
+      labels = [...new Set([...Object.keys(before), ...Object.keys(current)])].filter((label) => {
+        const was = before[label]
+        const is = current[label]
+        return !was || !is || was.href !== is.href || (was.title ?? "") !== (is.title ?? "")
+      })
+      this.changedLabels.set(snapshot, labels)
+    }
+    return labels
+  }
+
+  /**
+   * Writes a node that the source does not have with another of the sources
+   * that has it, the latest first: undo brings back blocks, list items and
+   * table rows of before, which the source of a later change from outside
+   * does not have (when the change is not part of the history, for example).
+   * The node of the other source is the same or has the same content.
+   * `accept` picks the parts that can take the place of the node, `adapt`
+   * fits their source into the document or rejects it. Text that refers to
+   * a link definition that the document defines differently is not used.
+   */
+  private writeElsewhere(
+    node: ProseMirrorNode,
+    accept: (part: SourcePart, snapshot: SourceSnapshot) => boolean,
+    adapt: (markdown: string) => string | null = (markdown) => markdown,
+  ): string | null {
+    if (this.others.length === 0 || isEmptyParagraph(node)) {
+      return null
+    }
+    const text = node.textContent
+    for (const snapshot of this.others) {
+      for (const part of getParts(snapshot).get(text) ?? []) {
+        if (!accept(part, snapshot) || !part.node.eq(node)) continue
+        const source = snapshot.source.slice(part.start, part.end)
+        const lower = source.toLowerCase().replace(/\s+/g, " ")
+        if (this.getChangedLabels(snapshot).some((label) => lower.includes(`[${label}]`))) continue
+        const markdown = adapt(source)
+        if (markdown !== null) return this.lines(markdown)
+      }
+    }
+    return null
+  }
+
+  /** Writes a block with another source, see `writeElsewhere`: one that reads as the block on its own. */
+  private writeBlockElsewhere(node: ProseMirrorNode, index: number): string | null {
+    // Front matter is only valid at the start of the document.
+    if (index > 0 && node.type.name === "rawBlock" && node.attrs.kind === "frontmatter") {
+      return null
+    }
+    return this.writeElsewhere(node, (part, snapshot) => {
+      const block = snapshot.blocks[part.block]
+      return part.child === null && Boolean(block?.verified) && !block?.group
+    })
+  }
+
+  /**
+   * Writes a list item with another source, see `writeElsewhere`: with the
+   * `marker` of the list it is in (an item with another bullet would start
+   * another list) and the indentation of the list.
+   */
+  private writeItemElsewhere(
+    item: ProseMirrorNode,
+    list: ProseMirrorNode,
+    marker: string | undefined,
+    indent: string,
+  ): string | null {
+    if (!marker) {
+      return null
+    }
+    return this.writeElsewhere(
+      item,
+      (part, snapshot) => part.child !== null && snapshot.blocks[part.block]?.node.type === list.type,
+      (markdown) => {
+        const lines = markdown.split("\n")
+        const base = /^ */.exec(lines[0] ?? "")?.[0] ?? ""
+        const unindented = lines.map((line) => (line.startsWith(base) ? line.slice(base.length) : line)).join("\n")
+        const text = indentLines(setItemMarker(unindented, marker), indent, 0)
+        return this.readsBackAsItem(text, item) ? text : null
+      },
+    )
   }
 
   /**
@@ -719,19 +858,20 @@ export class SourceWriter {
       (index, original) => children[original]?.node.type === items[index]?.type,
     )
 
+    // Keep the markers of the list: `*` or `+` bullets, `1)` delimiters.
+    const listMarker = list?.bullet ?? list?.delimiter
     let output = ""
     let previous: number | null = null
     items.forEach((item, index) => {
       const original = matches[index] ?? null
       const position = original ?? replaced[index] ?? null
       let text = original !== null && children[original] ? this.slice(children[original]) : null
+      text ??= this.writeItemElsewhere(item, node, listMarker, indent)
       const replacedItem = position === null ? undefined : children[position]
       if (text === null && replacedItem) {
         text = this.writeItem(replacedItem, item, nested)
       }
       if (text === null) {
-        // Keep the markers of the list: `*` or `+` bullets, `1)` delimiters.
-        const listMarker = list?.bullet ?? list?.delimiter
         // The items of nested lists are written as nested items (an empty one has a text).
         const markdown = nested
           ? this.manager.renderNodeToMarkdown(wrap(item)[0] as JSONContent, undefined, 0, 1).replace(/^\n+|\n+$/g, "")
@@ -790,20 +930,28 @@ export class SourceWriter {
     // The source of each line of the original table: its header row, its delimiter row and its other rows.
     const sources = [children[0], table.delimiter, ...children.slice(1)]
 
+    const isRow = (part: SourcePart, snapshot: SourceSnapshot) =>
+      part.child !== null && snapshot.blocks[part.block]?.node.type === node.type
     const lines = written.map((text, index) => {
       let source: SourceRange | undefined
+      // The row of the line: none for the delimiter row and an empty header row.
+      let row: ProseMirrorNode | undefined
       if (index === 0) {
         // The header row decides how many columns a table has: only the one of the source takes its place.
         source = keys[0] === originalKeys[0] ? children[0] : undefined
+        row = emptyHeader ? undefined : rows[0]
       } else if (index === 1) {
         source = keys[1] === originalKeys[1] ? table.delimiter : undefined
       } else {
-        const row = rows[index - 1 - emptyHeader]
+        row = rows[index - 1 - emptyHeader]
         source =
           children.find((child) => child.node === row) ??
           sources[originalKeys.findIndex((key, original) => original !== 1 && key === keys[index])]
       }
-      return { text: source ? this.slice(source) : text, source }
+      if (source) {
+        return { text: this.slice(source), source }
+      }
+      return { text: (row && this.writeElsewhere(row, isRow)) ?? text, source }
     })
     // Lines of the source keep the line break that followed them.
     const lineBreakAfter = (range: SourceRange | undefined) =>
@@ -944,7 +1092,9 @@ export class SourceWriter {
     const { blocks, source } = this.snapshot
     const nodes = this.getBlocks(doc)
 
-    // Unchanged blocks, and lists and tables written item by item or row by row.
+    // Unchanged blocks, lists and tables written item by item or row by row,
+    // and blocks of other sources (those are not matches: they take the
+    // place of the changed blocks of this source).
     const matches: (number | null)[] = []
     const texts: (string | null)[] = []
     let previous: number | null = null
@@ -960,7 +1110,7 @@ export class SourceWriter {
         if (text === null) block = null
       }
       matches.push(block)
-      texts.push(text)
+      texts.push(text ?? this.writeBlockElsewhere(node, index))
       previous = block
     })
     // Unchanged blocks whose text refers to a definition that was added or deleted read differently: they are written again.

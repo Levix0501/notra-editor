@@ -217,6 +217,86 @@ describe("markdown source", () => {
     expect(undone).toBe(matter)
   })
 
+  it("writes blocks, items and rows that undo brings back with the source they were read from", () => {
+    // The text is typed and saved, a change from outside that is not part of the history changes other
+    // lines of the same list and table (an agent), and the typing is undone: only the other source has
+    // the text of before, which the editor would write as `\~/a`, `HOOT\_\*`.
+    const markdown =
+      "- one ~/a and ~/b\n- two\n\n| Name | Vars |\n|---|---|\n| x | HOOT_* vars |\n| y | 2 |\n\nText ~/c and ~/d.\n\nEnd\n"
+    const instance = load(markdown)
+    insertAfter(instance, "one", "!")
+    insertAfter(instance, "HOOT", "!")
+    insertAfter(instance, "Text", "!")
+    const outside = instance.getMarkdown().replace("two", "two!").replace("| 2 |", "| 3 |").replace("End", "End!")
+    instance.commands.updateContent(outside, { contentType: "markdown", addToHistory: false })
+    instance.commands.undo()
+    instance.commands.undo()
+    instance.commands.undo()
+    expect(instance.getMarkdown()).toBe(
+      markdown.replace("two", "two!").replace("| 2 |", "| 3 |").replace("End", "End!"),
+    )
+
+    // Changes from outside that are part of the history, with typing between them.
+    const list = "# Title\n\n- one ~/a and ~/b\n- two\n"
+    const before = change(list, (other) => {
+      other.commands.updateContent(list.replace("two", "two!"), { contentType: "markdown" })
+      insertAfter(other, "Title", "!")
+    })
+    const undone = change(list, (other) => {
+      other.commands.updateContent(list.replace("two", "two!"), { contentType: "markdown" })
+      insertAfter(other, "Title", "!")
+      other.commands.updateContent(other.getMarkdown().replace("one", "one!"), { contentType: "markdown" })
+      other.commands.undo()
+    })
+    expect(undone).toBe(before)
+  })
+
+  it("writes text of other sources so that it reads back the same", () => {
+    // `*` items in the list of `-` items that the change from outside wrote would start another list.
+    const bullets = change("* one ~/a and ~/b\n* two\n", (instance) => {
+      insertAfter(instance, "one", "!")
+      const outside = instance.getMarkdown().replace(/^\* /gm, "- ").replace("two", "two!")
+      instance.commands.updateContent(outside, { contentType: "markdown", addToHistory: false })
+      instance.commands.undo()
+    })
+    expect(bullets).toBe("- one ~/a and ~/b\n- two!\n")
+
+    // Without the link definition that was deleted before, the reference would be text.
+    const reference = change("See [docs][d] ~/a ~/b.\n\nOther\n\n[d]: https://d.example\n", (instance) => {
+      instance.state.doc.forEach((node, pos) => {
+        if (node.textContent.startsWith("[d]:")) instance.commands.deleteRange({ from: pos, to: pos + node.nodeSize })
+      })
+      insertAfter(instance, "See", "!")
+      const outside = instance.getMarkdown().replace("Other", "Other!")
+      instance.commands.updateContent(outside, { contentType: "markdown", addToHistory: false })
+      instance.commands.undo()
+    })
+    expect(reference).toBe("See [docs](https://d.example) \\~/a \\~/b.\n\nOther!\n")
+
+    // The line endings of the file.
+    const lineEndings = change("- one ~/a and ~/b\r\n  more\r\n- two\r\n", (instance) => {
+      insertAfter(instance, "one", "!")
+      const outside = instance.getMarkdown().replace(/\r\n/g, "\n").replace("two", "two!")
+      instance.commands.updateContent(outside, { contentType: "markdown", addToHistory: false })
+      instance.commands.undo()
+    })
+    expect(lineEndings).toBe("- one ~/a and ~/b\n  more\n- two!\n")
+  })
+
+  it("writes the blank lines at the end of the file again after undo", () => {
+    for (const markdown of ["Text\n\n- a\n\n", "Text\n\n- a\n\n\n", "Text\n\nlast\n\n"]) {
+      const undone = change(markdown, (instance) => {
+        instance
+          .chain()
+          .setTextSelection(instance.state.doc.content.size - 1)
+          .insertContent("x")
+          .run()
+        instance.commands.undo()
+      })
+      expect(undone).toBe(markdown)
+    }
+  })
+
   it("stops preserving the source when other content is set", () => {
     const instance = load("Title\n=====\n\nSome _text_\n")
     instance.commands.setContent("<h1>Title</h1><p>Some <em>text</em></p>")

@@ -28,6 +28,8 @@ export interface SourceList {
 /** A block of the document and the source it was read from. */
 export interface SourceBlock extends SourceRange {
   node: ProseMirrorNode
+  /** Whether the source of a block of the document reads as the block on its own. */
+  verified?: boolean
   /**
    * Blocks read from the same source (for example HTML with several images)
    * are only written back together: the source belongs to the first one,
@@ -55,6 +57,15 @@ export interface ItemBlock extends SourceRange {
   list?: SourceBlock
 }
 
+/** A block of a source, or a list item or table row of one of its blocks. */
+export interface SourcePart extends SourceRange {
+  node: ProseMirrorNode
+  /** The index of the block. */
+  block: number
+  /** The index of the item or row in the block, `null` for the block itself. */
+  child: number | null
+}
+
 /** The parts of a list item that are written back one by one. */
 export interface ItemSource {
   /** The marker of the item, with the indentation before it and the spaces after it. */
@@ -77,11 +88,15 @@ export interface SourceSnapshot {
   lineEnding: "\n" | "\r\n"
   /** The link reference definitions of the source, which blocks read on their own need. */
   definitions: string
+  /** The link reference definitions of the source by their label, as marked reads them. */
+  links: Record<string, LinkDefinition>
   blocks: SourceBlock[]
   byNode: Map<ProseMirrorNode, number>
   byChild: Map<ProseMirrorNode, { block: number; index: number }>
   /** Blocks by their Markdown as written by the editor, computed when first needed. */
   byMarkdown: Map<string, number[]> | null
+  /** Blocks, list items and table rows by their text, computed when first needed. */
+  byText: Map<string, SourcePart[]> | null
   /** The parts of list items, computed when an item is first rewritten. */
   items: WeakMap<SourceChild, ItemSource | null>
 }
@@ -118,7 +133,7 @@ function getLines(text: string, offset: number): SourceRange[] {
 }
 
 /** A link reference definition as collected by marked. */
-interface LinkDefinition {
+export interface LinkDefinition {
   href?: string | null
   title?: string | null
 }
@@ -313,7 +328,7 @@ export function createSnapshot(
     if (!matches && node.type.name !== entry.json.type) {
       return null
     }
-    const block: SourceBlock = { node, start: entry.start, end: entry.end, group: entry.group }
+    const block: SourceBlock = { node, start: entry.start, end: entry.end, verified: matches, group: entry.group }
     if (matches && entry.token) {
       addChildren(block, entry.token, source)
     }
@@ -335,10 +350,12 @@ export function createSnapshot(
     crlf,
     lineEnding: crlf.length > lineFeeds ? "\r\n" : "\n",
     definitions,
+    links: lexed.links ?? {},
     blocks,
     byNode,
     byChild,
     byMarkdown: null,
+    byText: null,
     items: new WeakMap(),
   }
 }

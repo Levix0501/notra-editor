@@ -560,6 +560,21 @@ describe("lists", () => {
   })
 })
 
+describe("tables", () => {
+  it("writes tables without blank lines around them, also in quotes, callouts and toggles", () => {
+    const table = "| a   | b   |\n| --- | --- |\n| 1   | 2   |"
+    const quoted = table.replace(/^/gm, "> ")
+    for (const markdown of [
+      `Intro\n\n${table}\n\nAfter`,
+      `> Intro\n>\n${quoted}\n>\n> After`,
+      `> [!NOTE]\n${quoted}`,
+      `<details>\n<summary>More</summary>\n\n${table}\n\n</details>`,
+    ]) {
+      expect(load(markdown).getMarkdown()).toBe(markdown)
+    }
+  })
+})
+
 describe("text escaping", () => {
   it("escapes text that would read as Markdown syntax", () => {
     const text = "*not bold* _x_ <div> &amp; [link](url) `code` ~~old~~ a\\"

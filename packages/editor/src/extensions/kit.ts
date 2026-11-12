@@ -30,7 +30,7 @@ import { MarkdownPaste } from "./markdown-paste"
 import { NotraCore, type NotraCoreOptions } from "./notra-core"
 import { NotraPlaceholder } from "./placeholder"
 import { SlashCommand } from "./slash-command/extension"
-import { TextTableCell, TextTableHeader } from "./table"
+import { NotraTable, TextTableCell, TextTableHeader } from "./table"
 import { TrailingParagraph } from "./trailing-paragraph"
 import { UpdateContent } from "./update-content"
 
@@ -139,8 +139,9 @@ export function createNotraExtensions(options: NotraExtensionsOptions): AnyExten
     const { resizable, blocksInCells } = getFeatureOptions(features, "table")
     const textCells = blocksInCells === false
     extensions.push(
+      NotraTable.configure({ resizable: resizable !== false }),
       TableKit.configure({
-        table: { resizable: resizable !== false },
+        table: false,
         ...(textCells ? { tableCell: false, tableHeader: false } : {}),
       }),
       ...(textCells ? [TextTableCell, TextTableHeader] : []),

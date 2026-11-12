@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core"
-import { TableCell, TableHeader } from "@tiptap/extension-table"
+import { renderTableToMarkdown, Table, TableCell, TableHeader } from "@tiptap/extension-table"
 import { isHistoryTransaction } from "@tiptap/pm/history"
 import { Fragment, type Node as ProseMirrorNode, type ResolvedPos, type Schema, Slice } from "@tiptap/pm/model"
 import { Plugin, PluginKey, type Selection, type Transaction } from "@tiptap/pm/state"
@@ -133,4 +133,16 @@ export const TextTableCell = TableCell.extend({
 /** A header cell that only holds text, see {@link TextTableCell}. */
 export const TextTableHeader = TableHeader.extend({
   content: TEXT_CELL_CONTENT,
+})
+
+/**
+ * Tables, written to Markdown without the line breaks that Tiptap writes
+ * before and after them: the block that holds a table already separates it
+ * from the blocks around it, so that they became extra blank lines, which
+ * block quotes and callouts write as lines with only `>`.
+ */
+export const NotraTable = Table.extend({
+  renderMarkdown(node, helpers) {
+    return renderTableToMarkdown(node, helpers).replace(/^\n+|\n+$/g, "")
+  },
 })
