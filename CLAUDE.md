@@ -19,7 +19,8 @@ Run from this directory (requires pnpm 12):
   `features` option; `notra-core.ts` holds runtime state (dictionary, handlers) in editor storage.
 - `packages/editor/src/extensions/markdown/`: Markdown support on top of `@tiptap/markdown`:
   marked tokenizers (each editor has its own marked instance, whose block tokenizers only get the
-  paragraph that is read to find where they start), source blocks for content the editor cannot
+  paragraph that is read to find where they start, and only starts at the start of a line
+  count), source blocks for content the editor cannot
   represent (`fallback.ts` keeps blocks that no extension reads), all lists read by
   `list-syntax.ts` (Tiptap's list readers are turned off) and kept apart by `list-markers.ts`,
   minimal escaping (`escaping.ts`), inline writing in `inline.ts` (emphasis that CommonMark would

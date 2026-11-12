@@ -274,11 +274,16 @@ const PARAGRAPH_END = /\n *(?:\n|$)/
 
 /**
  * Gives the block tokenizers of an extension only the paragraph that is read
- * to find where they start. For every paragraph, marked asks them where they
- * could interrupt it, with the rest of the document: tokenizers that look at
- * all of it (Tiptap's tables split it into lines) made reading a document take
- * time with the square of its length. A start after the end of the paragraph
- * does not change the paragraph.
+ * to find where they start, and only takes starts at the start of a line.
+ * For every paragraph, marked asks them where they could interrupt it, with
+ * the rest of the document from the second character of the paragraph on:
+ * tokenizers that look at all of it (Tiptap's tables split it into lines)
+ * made reading a document take time with the square of its length, and a
+ * start in the middle of a line (Tiptap's tables and `:::` blocks answer 0
+ * for the second character) cut the paragraph there, a character at a time
+ * when the block was not there after all, such as a table whose delimiter
+ * row has fewer columns than its header row. A start after the end of the
+ * paragraph does not change the paragraph.
  */
 function findStartsInParagraph(extension: MarkedExtension): MarkedExtension {
   return {
@@ -292,7 +297,24 @@ function findStartsInParagraph(extension: MarkedExtension): MarkedExtension {
         ...tokenizer,
         start(source) {
           const end = PARAGRAPH_END.exec(source)
-          return start.call(this, end ? source.slice(0, end.index + 1) : source)
+          const paragraph = end ? source.slice(0, end.index + 1) : source
+          // Blocks start at the start of a line, after at most three spaces: they
+          // are looked for from the line break after the first line on.
+          let from = paragraph.indexOf("\n")
+          while (from !== -1) {
+            const index = start.call(this, paragraph.slice(from))
+            if (typeof index !== "number" || index < 0) {
+              return undefined
+            }
+            const at = from + index
+            const lineStart = paragraph.lastIndexOf("\n", at - 1) + 1
+            if (index > 0 && /^ {0,3}$/.test(paragraph.slice(lineStart, at))) {
+              return at
+            }
+            // A start in the middle of a line: look again from the end of that line.
+            from = paragraph.indexOf("\n", Math.max(at, from + 1))
+          }
+          return undefined
         },
       }
     }),

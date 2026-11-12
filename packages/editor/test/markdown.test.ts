@@ -86,6 +86,49 @@ describe("large documents", () => {
   })
 })
 
+describe("block syntax inside of paragraphs", () => {
+  it("reads syntax in the middle of a line as text, like GitHub", () => {
+    // A table whose delimiter row has fewer columns than its header row is text.
+    for (const [markdown, type] of [
+      ["| a | b | c |\n|---|---|\n| 1 | 2 | 3 |", "paragraph"],
+      ["> | a | b | c |\n> |---|---|\n> | 1 | 2 | 3 |", "blockquote"],
+      ["a:::details\ncontent\n:::", "paragraph"],
+    ] as const) {
+      const instance = load(markdown)
+      expect(topLevel(instance).map((node) => node.type)).toEqual([type])
+      expect(instance.getMarkdown()).toBe(markdown)
+    }
+  })
+
+  it("starts blocks at the start of the following lines", () => {
+    const math = createRawSyntax({ name: "math", level: "block", pattern: /^\$\$\n[\s\S]*?\n\$\$(?:\n|$)/ })
+    for (const [markdown, type] of [
+      ["Intro\n| a | b |\n|---|---|\n| 1 | 2 |", "table"],
+      ["Intro\n:::details\ncontent\n:::", "details"],
+      ["Intro\n$$\nE = mc^2\n$$", "rawBlock"],
+      ["Intro\nmore\n$$\nE = mc^2\n$$", "rawBlock"],
+    ] as const) {
+      editor = createTestEditor(markdown, "markdown", {}, [math])
+      expect(topLevel(editor).map((node) => node.type)).toEqual(["paragraph", type])
+    }
+  })
+
+  it("ignores starts that tokenizers report in the middle of a line", () => {
+    // A tokenizer that looks for its syntax anywhere, which is not there after all.
+    const probe = Extension.create({
+      name: "probe",
+      markdownTokenizer: {
+        name: "probe",
+        level: "block",
+        start: (source: string) => source.indexOf("{{"),
+        tokenize: () => undefined,
+      },
+    })
+    editor = createTestEditor("Intro\nsee {{x}} here\n", "markdown", {}, [probe])
+    expect(editor.getMarkdown()).toBe("Intro\nsee {{x}} here")
+  })
+})
+
 describe("headings", () => {
   it("keeps every heading level", () => {
     const instance = load("#### Four\n\n###### Six")
