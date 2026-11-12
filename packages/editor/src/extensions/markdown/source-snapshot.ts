@@ -55,6 +55,8 @@ export interface ItemBlock extends SourceRange {
   verified: boolean
   /** The items of a nested list. */
   list?: SourceBlock
+  /** The rows of a table, which start at the start of their lines. */
+  table?: SourceBlock
 }
 
 /** A block of a source, or a list item or table row of one of its blocks. */
@@ -182,6 +184,24 @@ export function parseBlock(
   return parsed
 }
 
+/**
+ * Finds the rows of a table in its source, a line each. The lines start at
+ * the start of the block: a table inside of a list item starts at the start
+ * of its line, so that its rows keep their indentation.
+ */
+export function addTableRows(block: SourceBlock, token: MarkdownToken, source: string): void {
+  const { node } = block
+  if (token.type !== "table" || node.type.name !== "table" || !Array.isArray(token.rows)) {
+    return
+  }
+  const [header, delimiter, ...rows] = getLines(source.slice(block.start, block.end), block.start)
+  if (!header || !delimiter || rows.length !== token.rows.length || node.childCount !== rows.length + 1) {
+    return
+  }
+  block.children = [header, ...rows].map((line, index) => ({ ...line, node: node.child(index) }))
+  block.table = { columns: Array.isArray(token.header) ? token.header.length : 0, delimiter }
+}
+
 /** Finds list items and table rows in the source of a block. */
 function addChildren(block: SourceBlock, token: MarkdownToken, source: string): void {
   const { node } = block
@@ -203,15 +223,7 @@ function addChildren(block: SourceBlock, token: MarkdownToken, source: string): 
     block.list = getListMarkers(source, children, Boolean(token.loose))
     return
   }
-
-  if (token.type === "table" && node.type.name === "table" && Array.isArray(token.rows)) {
-    const [header, delimiter, ...rows] = getLines(source.slice(block.start, block.end), block.start)
-    if (!header || !delimiter || rows.length !== token.rows.length || node.childCount !== rows.length + 1) {
-      return
-    }
-    block.children = [header, ...rows].map((line, index) => ({ ...line, node: node.child(index) }))
-    block.table = { columns: Array.isArray(token.header) ? token.header.length : 0, delimiter }
-  }
+  addTableRows(block, token, source)
 }
 
 /**

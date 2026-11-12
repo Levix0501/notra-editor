@@ -297,6 +297,23 @@ describe("markdown source", () => {
     }
   })
 
+  it("keeps the line break at the end of the file when text is typed on its last line", () => {
+    for (const [markdown, written] of [
+      ["Text\n\nlast\n\n", "Text\n\nlast\n\nx\n"],
+      ["Text\n\nlast\n\n\n\n", "Text\n\nlast\n\n\n\nx\n"],
+      ["Text\r\n\r\nlast\r\n\r\n", "Text\r\n\r\nlast\r\n\r\nx\r\n"],
+    ] as const) {
+      const typed = change(markdown, (instance) => {
+        instance
+          .chain()
+          .setTextSelection(instance.state.doc.content.size - 1)
+          .insertContent("x")
+          .run()
+      })
+      expect(typed).toBe(written)
+    }
+  })
+
   it("stops preserving the source when other content is set", () => {
     const instance = load("Title\n=====\n\nSome _text_\n")
     instance.commands.setContent("<h1>Title</h1><p>Some <em>text</em></p>")
@@ -608,6 +625,18 @@ describe("markdown source of edited blocks", () => {
     const instance = load("- top\n    - one\n- other\n")
     instance.chain().setTextSelection(findTextEnd(instance, "one")).splitListItem("listItem").insertContent("new").run()
     expect(instance.getMarkdown()).toBe("- top\n    - one\n    - new\n- other\n")
+  })
+
+  it("only rewrites the edited rows of tables inside of list items", () => {
+    const markdown =
+      "1. Steps:\n   | Step | Result |\n   | --- | --- |\n   | Scope | done |\n   | Design | open |\n2. Next\n"
+    expect(edit(markdown, ["open"])).toBe(markdown.replace("| open |", "| open!  |"))
+    const nested = "- top\n  - nested:\n\n    | a | b |\n    |---|---|\n    | long text | 1 |\n- other\n"
+    expect(edit(nested, ["long text"])).toBe(nested.replace("| long text | 1 |", "| long text! | 1   |"))
+    // New rows are indented like the table.
+    const instance = load(markdown)
+    instance.chain().setTextSelection(findTextEnd(instance, "open")).addRowAfter().run()
+    expect(instance.getMarkdown()).toBe(markdown.replace("| open |\n", "| open |\n   |        |        |\n"))
   })
 
   it("writes the original source again after undoing edits of items", () => {

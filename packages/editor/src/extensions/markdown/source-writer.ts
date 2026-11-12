@@ -13,6 +13,7 @@ import {
 } from "./list-markers"
 import { splitDetails } from "./marked"
 import {
+  addTableRows,
   createSnapshot,
   getChildren,
   getListMarkers,
@@ -594,6 +595,11 @@ export class SourceWriter {
           }
         }
       }
+      if (verified && child.type === "table") {
+        const table: SourceBlock = { node, start: block.line, end: block.end }
+        addTableRows(table, child, source)
+        if (table.table) block.table = table
+      }
       children.push(block)
     }
     // Blank lines that became empty paragraphs, for example, leave nodes without source.
@@ -673,10 +679,11 @@ export class SourceWriter {
   /**
    * Writes a changed list item in the place of `item`: with the marker of
    * `item` and the source of the blocks that did not change, so that editing
-   * the text of an item keeps its code blocks and nested lists, and editing a
-   * nested item only rewrites that item. The line breaks between the blocks
-   * of the source are kept where the item reads back the same with them.
-   * Returns `null` when the item cannot be matched with its source.
+   * the text of an item keeps its code blocks and nested lists, editing a
+   * nested item only rewrites that item, and editing a table only rewrites
+   * the edited rows. The line breaks between the blocks of the source are
+   * kept where the item reads back the same with them. Returns `null` when
+   * the item cannot be matched with its source.
    */
   private writeItem(item: SourceChild, node: ProseMirrorNode, nested: boolean): string | null {
     const described = this.describeItem(item)
@@ -732,8 +739,8 @@ export class SourceWriter {
           index === 0 ? 1 : 0,
         ),
       )
-    // New items of nested lists are indented like the first item of the list.
-    const listIndent = (original: ItemBlock) =>
+    // New items of nested lists and new rows of tables are indented like the first line of the list or table.
+    const blockIndent = (original: ItemBlock) =>
       /^ */.exec(this.snapshot.source.slice(original.line, original.end))?.[0] ?? ""
 
     const verbatim = nodes.map((_, index) => matches[index] !== null && originalOf(index) !== undefined)
@@ -770,7 +777,11 @@ export class SourceWriter {
         return index === 0 ? this.slice(original) : this.text(original.line, original.end)
       }
       if (index > 0 && original?.list && LISTS.has(child.type.name)) {
-        return this.writeList(original.list, child, listIndent(original))
+        return this.writeList(original.list, child, blockIndent(original))
+      }
+      if (index > 0 && original?.table && child.type.name === "table") {
+        const rows = this.writeTable(original.table, child, blockIndent(original))
+        if (rows !== null) return rows
       }
       if (index > 0 && original?.node.type === child.type) {
         // In the style of the source (code fences, setext headings), without the indentation of the item.
@@ -792,7 +803,7 @@ export class SourceWriter {
       const original = originalOf(index)
       verbatim[index] = false
       if (original?.list) {
-        return this.writeList(original.list, nodes[index] as ProseMirrorNode, listIndent(original), marker)
+        return this.writeList(original.list, nodes[index] as ProseMirrorNode, blockIndent(original), marker)
       }
       const json = itemJSON.content?.[index] ?? {}
       return writeBlock(index, { ...json, attrs: { ...json.attrs, [LIST_MARKER]: marker } })
@@ -902,9 +913,10 @@ export class SourceWriter {
    * with the alignment of the columns, and the other rows. A line is written
    * with its source when the editor writes it the same for the original
    * table, so that a row that is no longer the header row or a changed
-   * alignment is written as it is now.
+   * alignment is written as it is now. Other lines get `indent`, the
+   * indentation of a table inside of a list item.
    */
-  private writeTable(block: SourceBlock, node: ProseMirrorNode): string | null {
+  private writeTable(block: SourceBlock, node: ProseMirrorNode, indent = ""): string | null {
     const { children = [], table } = block
     const rows = getChildren(node)
     if (!table || node.firstChild?.childCount !== table.columns) {
@@ -951,7 +963,8 @@ export class SourceWriter {
       if (source) {
         return { text: this.slice(source), source }
       }
-      return { text: (row && this.writeElsewhere(row, isRow)) ?? text, source }
+      const line = (row && this.writeElsewhere(row, isRow)) ?? text
+      return { text: indent ? indent + line.trimStart() : line, source }
     })
     // Lines of the source keep the line break that followed them.
     const lineBreakAfter = (range: SourceRange | undefined) =>
@@ -1192,11 +1205,15 @@ export class SourceWriter {
       output += written[index]
     })
 
+    // The end of the source follows its last block. A file that ends with a
+    // line break still does: the empty paragraph of a blank line at its end
+    // comes after that line break, and text can be typed into it.
     const last = positions.at(-1) ?? null
     const lastBlock = blocks.at(-1)
     if (lastBlock && last === blocks.length - 1) {
       output += this.text(lastBlock.end, source.length)
-    } else if (source.endsWith("\n")) {
+    }
+    if (source.endsWith("\n") && !output.endsWith("\n")) {
       output += this.snapshot.lineEnding
     }
     return output
