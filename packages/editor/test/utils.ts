@@ -44,3 +44,14 @@ export function typeText(editor: Editor, text: string): void {
     if (!handled) view.dispatch(insert())
   }
 }
+
+/**
+ * Presses a key like a user would, through the key handlers of the editor.
+ * Tiptap's `keyboardShortcut` command maps the steps of the handled
+ * transaction once more, which moves the later steps of a join.
+ */
+export function pressKey(editor: Editor, key: string): boolean {
+  const { view } = editor
+  const event = new KeyboardEvent("keydown", { key })
+  return view.someProp("handleKeyDown", (handler) => handler(view, event)) ?? false
+}

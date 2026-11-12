@@ -1,5 +1,8 @@
 import { Extension } from "@tiptap/core"
+import { Slice } from "@tiptap/pm/model"
 import { Plugin, PluginKey } from "@tiptap/pm/state"
+
+import { isInTextCell, toCellContent } from "./table"
 
 const MARKDOWN_PATTERNS: readonly RegExp[] = [
   /^#{1,6}\s+\S/m, // headings
@@ -52,6 +55,13 @@ export const MarkdownPaste = Extension.create({
               return false
             }
 
+            if (isInTextCell(view.state.selection)) {
+              // Cells that only hold text get the text of the blocks, with their marks.
+              const { schema } = view.state
+              const content = schema.nodeFromJSON(editor.markdown.parse(text)).content
+              view.dispatch(view.state.tr.replaceSelection(toCellContent(new Slice(content, 0, 0), schema)))
+              return true
+            }
             return editor.commands.insertContent(text, { contentType: "markdown" })
           },
         },

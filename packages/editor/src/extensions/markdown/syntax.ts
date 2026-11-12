@@ -1,5 +1,5 @@
 import { Extension, type JSONContent, type MarkdownParseHelpers, type MarkdownToken } from "@tiptap/core"
-import { DOMParser, type Schema } from "@tiptap/pm/model"
+import type { Schema } from "@tiptap/pm/model"
 
 import type { NotraMarkdownContext } from "./context"
 import { CALLOUT_TOKEN, DETAILS_TOKEN, FRONT_MATTER_TOKEN } from "./marked"
@@ -13,32 +13,90 @@ function createRawBlock(helpers: MarkdownParseHelpers, kind: string, source: str
   return helpers.createNode("rawBlock", { kind }, source ? [helpers.createTextNode(source)] : [])
 }
 
-/** Turns inline nodes into text, for nodes that only accept (marked) text. */
-function toText(nodes: JSONContent[]): JSONContent[] {
-  return nodes.flatMap((node): JSONContent[] => {
-    if (node.type === "text") {
-      return [node]
-    }
-    if (node.type === "rawInline") {
-      return [{ type: "text", text: String(node.attrs?.source ?? "") }]
-    }
-    if (node.type === "hardBreak") {
-      return [{ type: "text", text: " " }]
-    }
-    return node.content ? toText(node.content) : []
-  })
+/** The marks of HTML elements in a summary, which the editor keeps as marks (without attributes). */
+const SUMMARY_MARKS: Readonly<Record<string, string>> = {
+  strong: "bold",
+  b: "bold",
+  em: "italic",
+  i: "italic",
+  u: "underline",
+  s: "strike",
+  del: "strike",
+  strike: "strike",
+  code: "code",
+  a: "link",
 }
 
-/** Parses inline HTML into text with marks. Without a DOM, tags are dropped. */
-function parseInlineHtml(html: string, schema: Schema): JSONContent[] {
+/** Tags and comments of HTML, and the text between them. */
+const HTML_PART = /<!--[\s\S]*?-->|<\/?[A-Za-z][A-Za-z\d-]*(?:\s(?:[^<>"']|"[^"]*"|'[^']*')*)?\/?>|[^<]+|</g
+
+/** Decodes the character references of HTML text. Without a DOM, only the ones of Markdown are decoded. */
+function decodeHtmlText(text: string): string {
   if (typeof document === "undefined") {
-    const text = html.replace(/<[^>]*>/g, "")
-    return text ? [{ type: "text", text }] : []
+    return text
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&")
   }
-  const template = document.createElement("template")
-  template.innerHTML = html
-  const slice = DOMParser.fromSchema(schema).parseSlice(template.content)
-  return toText(slice.content.toJSON() ?? [])
+  const textarea = document.createElement("textarea")
+  textarea.innerHTML = text
+  return textarea.value
+}
+
+/**
+ * Reads the HTML of a summary (Markdown is not processed inside of
+ * `<summary>`): text, formatting the editor has as marks (`<b>`, `<code>`,
+ * `<a href>`…) and other HTML as inline source, so that nothing is lost
+ * (`<a id="anchor"></a>`, `<img>`, `<kbd>`). Whitespace is collapsed, like
+ * HTML displays it.
+ */
+function parseSummaryHtml(html: string, schema: Schema): JSONContent[] {
+  const parts = html.trim().match(HTML_PART) ?? []
+  const tag = (part: string) => /^<(\/?)([A-Za-z][A-Za-z\d-]*)([^>]*?)\/?>$/.exec(part)
+  // The tags of marks that are opened and closed again, by their index.
+  const markTags = new Map<number, { type: string; attrs?: Record<string, string> }>()
+  const open: { index: number; name: string; type: string; attrs?: Record<string, string> }[] = []
+  parts.forEach((part, index) => {
+    const [, closing, name = "", attributes = ""] = tag(part) ?? []
+    const lowerName = name.toLowerCase()
+    const type = SUMMARY_MARKS[lowerName]
+    if (!type || !schema.marks[type]) return
+    if (!closing) {
+      const href = /^\s+href\s*=\s*(?:"([^"]*)"|'([^']*)')\s*$/.exec(attributes)
+      if (attributes.trim() && !(type === "link" && href)) return
+      const attrs = href ? { href: decodeHtmlText(href[1] ?? href[2] ?? "") } : undefined
+      open.push({ index, name: lowerName, type, attrs })
+      return
+    }
+    const last = open.at(-1)
+    if (last?.name === lowerName) {
+      open.pop()
+      markTags.set(last.index, { type: last.type, attrs: last.attrs })
+      markTags.set(index, { type: last.type })
+    }
+  })
+
+  const content: JSONContent[] = []
+  const marks: { type: string; attrs?: Record<string, string> }[] = []
+  parts.forEach((part, index) => {
+    const markTag = markTags.get(index)
+    if (markTag) {
+      if (tag(part)?.[1]) marks.splice(marks.map((mark) => mark.type).lastIndexOf(markTag.type), 1)
+      else marks.push(markTag)
+      return
+    }
+    // A mark inside of the same mark (`<b><b>x</b></b>`) is kept once.
+    const unique = marks.filter((mark, position) => marks.findIndex((other) => other.type === mark.type) === position)
+    const currentMarks = unique.length ? unique.map((mark) => ({ ...mark })) : undefined
+    if (part.startsWith("<") && part.length > 1) {
+      content.push({ type: "rawInline", attrs: { kind: "html", source: part }, marks: currentMarks })
+      return
+    }
+    const text = decodeHtmlText(part).replace(/\s+/g, " ")
+    if (text) content.push({ type: "text", text, marks: currentMarks })
+  })
+  return content
 }
 
 /** Front matter becomes a source block. */
@@ -116,10 +174,9 @@ export const DetailsSyntax = Extension.create<SyntaxOptions>({
     }
 
     const content = helpers.parseChildren((token.tokens ?? []) as MarkdownToken[])
-    const summary = parseInlineHtml(String(token.summary ?? ""), nodes.details.schema)
-    const attributes = token.open && nodes.details.spec.attrs?.open ? { open: true } : undefined
+    const summary = parseSummaryHtml(String(token.summary ?? ""), nodes.details.schema)
 
-    return helpers.createNode("details", attributes, [
+    return helpers.createNode("details", undefined, [
       helpers.createNode("detailsSummary", undefined, summary),
       helpers.createNode("detailsContent", undefined, content.length ? content : [helpers.createNode("paragraph")]),
     ])

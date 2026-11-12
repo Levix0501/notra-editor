@@ -2,6 +2,8 @@ import { type Editor, getRenderedAttributes, mergeAttributes, ResizableNodeView 
 import { Image } from "@tiptap/extension-image"
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
 
+import { writeLinkTarget } from "./markdown/inline"
+
 /**
  * Turns the `src` stored in the document into a URL the browser can load, for
  * example a signed URL or a path relative to the edited file. The stored
@@ -171,10 +173,11 @@ export const NotraImage = Image.extend({
     }
   },
 
-  renderMarkdown(node, helpers, context) {
+  renderMarkdown(node) {
     const { src, alt, title, width, height } = node.attrs ?? {}
     if (!width && !height) {
-      return this.parent?.(node, helpers, context) ?? ""
+      // Tiptap writes the source as it is, which breaks images like `My Image.png`.
+      return `![${alt ?? ""}](${writeLinkTarget(String(src ?? ""), title ? String(title) : null)})`
     }
     const attributes = [
       `src="${escapeAttribute(String(src ?? ""))}"`,

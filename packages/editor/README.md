@@ -26,6 +26,10 @@ pnpm add notra-editor
 
 `react` and `react-dom` 19 or newer are required as peer dependencies.
 
+notra-editor depends on Tiptap 3.33 (`~3.33.0`): its Markdown support replaces internals of
+Tiptap's Markdown extension, which a newer Tiptap version can change. Applications that use Tiptap
+packages themselves should use the same version, so that a single copy of Tiptap is installed.
+
 ## Quick start
 
 ```tsx
@@ -77,7 +81,7 @@ Markdown, see [Markdown files](#markdown-files).
 
 `editor.commands.setContent(content, options)` replaces the whole document. To apply changes made
 outside of the editor (synchronization, another window, AI edits), use `updateContent`: it only
-replaces the blocks that differ and keeps the selection and the scroll position.
+changes what differs and keeps the selection and the scroll position.
 
 ```ts
 editor.commands.updateContent(markdown, { contentType: "markdown" })
@@ -103,13 +107,13 @@ slash menu, the formatting toolbar and the block menu only offer enabled feature
 />
 ```
 
-| Feature                                                                                                       | Options                    |
-| ------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| `heading`, `bulletList`, `orderedList`, `taskList`, `toggle`, `blockquote`, `callout`, `codeBlock`, `divider` | –                          |
-| `table`                                                                                                       | `{ resizable?: boolean }`  |
-| `image`                                                                                                       | `{ resize?: boolean }`     |
-| `bold`, `italic`, `underline`, `strike`, `code`, `link`, `textColor`, `highlight`                             | –                          |
-| `typography`                                                                                                  | Tiptap `TypographyOptions` |
+| Feature                                                                                                       | Options                                            |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `heading`, `bulletList`, `orderedList`, `taskList`, `toggle`, `blockquote`, `callout`, `codeBlock`, `divider` | –                                                  |
+| `table`                                                                                                       | `{ resizable?: boolean; blocksInCells?: boolean }` |
+| `image`                                                                                                       | `{ resize?: boolean }`                             |
+| `bold`, `italic`, `underline`, `strike`, `code`, `link`, `textColor`, `highlight`                             | –                                                  |
+| `typography`                                                                                                  | Tiptap `TypographyOptions`                         |
 
 Features only control what can be created. Content is never dropped when it is loaded: headings of
 levels 4 to 6 are kept although the menus offer levels 1 to 3, and content the editor cannot
@@ -124,17 +128,54 @@ with these additions:
   represent without losing elements or attributes (`<div align="center">`, `<picture>`, `<kbd>`,
   MDX components…) are kept as source blocks or inline source, shown as editable source and
   written back verbatim. In HTML and JSON the source is plain text: it is never rendered as HTML.
+  Backspace and Delete do not join source blocks with the text around them, and front matter stays
+  at the start of the document when blocks are added or moved above it.
+- **Footnotes** (`[^1]` and `[^1]: …`) are kept as inline source and source blocks.
+- **Images inside of text** (an image in a sentence, badges in a heading, linked images) are kept as
+  inline source: images are blocks in the editor. An image on its own line is an image block.
+- Blocks the editor cannot read, for example tables when `table` is disabled, are kept as source
+  blocks (kind `markdown`) instead of being dropped.
 - **GitHub alerts** (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`) are callouts.
 - **Toggle lists** are written as `<details>` blocks, which GitHub renders; Tiptap's `:::details`
-  syntax is still read.
+  syntax is still read. HTML in a summary that the editor does not represent (`<a id="…">`,
+  `<kbd>`) is kept as inline source. Toggles start collapsed, also `<details open>`: whether a
+  toggle is expanded is not saved.
+- Lists are read like other CommonMark implementations: `9.` followed by `10.`, text after a code
+  block in an item, the whole text of task items; `A. Title` is a paragraph. Ordered lists with
+  tasks (`1. [x] Done`) are kept as source blocks. A list that follows a list of its kind is written
+  with the other marker (`*` after `-`, `1)` after `1.`), so that Markdown does not read the two
+  lists as one, and blocks of list items are written so that they stay in the item (`-` and a
+  divider on the next line, a blank line before blocks that cannot follow text directly, no spaces
+  at the start of the text of an item). Items without text are written as `-` or `- [ ]`, nested
+  ones as `- &nbsp;` (like Tiptap), and read back as empty items: tasks without text are empty
+  tasks, as in Tiptap, while GitHub shows them as text.
+- Written Markdown follows the style of the Markdown that was read: emphasis with `_` or `*`
+  (`__` or `**`), hard breaks as two spaces, a backslash or `<br>`, and links whose text is their URL
+  as the URL or between `<` and `>`. Emphasis that CommonMark would not read with delimiters, next to
+  punctuation as in `用户选择**「推荐」**的方案` or `2026**-10-14**`, is written as HTML:
+  `<strong>「推荐」</strong>`. The content of `<strong>`, `<em>` and `<del>` is read as Markdown, as in
+  CommonMark, and marks around inline source (`[a <kbd>K</kbd> b](url)`) are kept.
+- Link and image destinations with spaces are written between angle brackets (`[notes](<My Notes.md>)`).
+- Character references such as `&copy;` and `&nbsp;` are read as the characters they stand for
+  (named references are looked up in the DOM, so they stay as written without one). Non-breaking
+  spaces are written as `&nbsp;`, or as characters in Markdown that writes them so.
+- Line breaks inside of paragraphs (soft line breaks) stay line breaks when paragraphs are joined.
+  Headings are a single line: when a paragraph becomes a heading or is joined with one, its line
+  breaks become spaces, which is how Markdown shows them.
 - Resized images are written as `<img>` tags, so that their size is kept.
-- Text that starts like a block (`1.`, `#`, `-`…) is escaped, so that it stays text.
+- Code blocks get a fence longer than the backtick runs of their code, so that code that contains a
+  fence (a Markdown sample, for example) is not cut off.
+- Text is only escaped where it would read as Markdown syntax: `snake_case`, `[note]`, `a -> b`,
+  `Record<string, number>` and `R&D` stay as they are, while text that starts like a block (`1.`,
+  `#`, `-`, `>`, four spaces, `[x]` in a list item) or ends a heading with `#` is escaped, and so
+  are URLs and email addresses in text that is not a link (`https\://…`), which would become
+  links. Empty headings are kept.
 
 ### Markdown files
 
-For documents stored as Markdown files, enable `markdown.preserveSource` (experimental). Unchanged
-blocks, list items and table rows are then written back exactly as they were read, with their line
-endings, blank lines and the end of the file; only edited blocks are written again.
+For documents stored as Markdown files, enable `markdown.preserveSource` (experimental): the parts
+of the file that were not edited are written back as they were read, so that saving changes as
+little of the file as possible.
 
 ```tsx
 const editor = useNotraEditor({
@@ -151,22 +192,31 @@ editor?.commands.updateContent(newFileText, { contentType: "markdown" })
 ```
 
 The source is the Markdown content the editor was created with, or the Markdown passed to
-`setContent` or `updateContent` with `contentType: "markdown"`. Undoing an edit writes the original
-source again.
+`setContent` or `updateContent` with `contentType: "markdown"`.
+
+When Markdown cannot be matched block by block with the document, the whole document is written
+again instead: `isPreservingMarkdownSource(editor)` returns `false` and `markdown.onSourceMismatch`
+is called, for example to warn before saving.
+
+```tsx
+useNotraEditor({
+  content: fileText,
+  contentType: "markdown",
+  markdown: { preserveSource: true, onSourceMismatch: () => showWarning("The file will be reformatted") },
+})
+```
 
 With `preserveSource`, the features start from `markdownFeatures`: the features Markdown cannot store
-(text colors, highlights, image sizes) and smart typography, which changes what is typed, are off.
+(text colors, highlights, image sizes, blocks in table cells) and smart typography, which changes
+what is typed, are off. Table cells then hold text like the cells of Markdown tables: Enter adds a
+line break (`<br>`), pasted blocks become lines of the cell, and blocks cannot be inserted into cells.
 Features set explicitly in `features` take precedence. The preset can also be used on its own:
 `features={{ ...markdownFeatures, table: false }}`.
 
-Limitations: rewritten blocks use the editor's Markdown style (for example `**bold**`), and their
-reference links (`[text][id]`) are written inline. List items are kept one by one at the first level
-of a list: an edit in a nested item rewrites its top-level item.
-
 ### Markdown dialects and source blocks
 
-Keep the syntax of a Markdown dialect (math, footnotes, shortcodes of static site generators…) as
-source with `createRawSyntax`, and pass the result to `extensions`:
+Keep the syntax of a Markdown dialect (math, shortcodes of static site generators…) as source with
+`createRawSyntax`, and pass the result to `extensions`:
 
 ```tsx
 import { createRawSyntax } from "notra-editor"
@@ -179,6 +229,9 @@ const inlineMath = createRawSyntax({ name: "math", level: "inline", pattern: /^\
 
 Source blocks are displayed as source. Display them differently with `renderRawBlock`, for example
 front matter as a property list or sanitized HTML; the source is shown while the block is edited.
+The `kind` of a block is `frontmatter`, `html`, `definition` (link definitions), `footnote`,
+`callout` (alerts when callouts are disabled), `markdown` (blocks the editor cannot read) or the
+name of a dialect syntax.
 
 ```tsx
 ;<NotraEditor renderRawBlock={(source, kind) => (kind === "frontmatter" ? <Properties yaml={source} /> : null)} />
@@ -221,6 +274,9 @@ keeps the stored `src`.
 ```
 
 ## Links
+
+Typed text becomes a link like in GitHub's Markdown: URLs with a scheme (`https://…`) or starting
+with `www.`, and email addresses. File names such as `README.md` or `app.py` stay text.
 
 Links open in a new tab. To open them yourself (with the router of a single-page application or
 the shell of a desktop application), provide `onLinkClick`. It is called for clicks on links of
@@ -304,7 +360,9 @@ the shadcn/ui code block.
 
 The root element accepts a `className`; utility classes from your own Tailwind CSS setup can
 override its defaults (for example `bg-transparent` or `min-h-96`). The editable area has the
-class `notra-content` and reserves space on the left for the block handle.
+class `notra-content` and reserves space on the left for the block handle. The empty block that
+shows a placeholder has the classes and attribute of Tiptap's placeholder: `is-empty`,
+`is-editor-empty` when the document is empty, and `data-placeholder`.
 
 Menus, popovers and tooltips are rendered into `document.body`. Inside a dialog with a focus trap,
 a shadow root or a fullscreen element, pass the element to render them into as `portalContainer`.
@@ -362,7 +420,7 @@ the extension list used by the editor.
 | `placeholder`       | `string`                           | –         | Placeholder of empty paragraphs.                        |
 | `dictionary`        | `PartialNotraDictionary`           | English   | UI strings.                                             |
 | `features`          | `NotraFeatures`                    | all       | Enables, disables or configures features.               |
-| `markdown`          | `{ preserveSource?: boolean }`     | –         | Writes unchanged Markdown back verbatim.                |
+| `markdown`          | `NotraMarkdownOptions`             | –         | `preserveSource`, `onSourceMismatch` (Markdown files).  |
 | `extensions`        | `AnyExtension[]`                   | `[]`      | Additional Tiptap extensions.                           |
 | `uploadImage`       | `(file: File) => Promise<string>`  | data URLs | Uploads images and returns the `src` to store.          |
 | `resolveImageUrl`   | `(src) => string \| Promise`       | –         | Turns a stored `src` into a URL to display.             |

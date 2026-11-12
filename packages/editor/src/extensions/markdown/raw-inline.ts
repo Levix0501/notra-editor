@@ -47,7 +47,8 @@ export const RawInline = Node.create({
   markdownTokenName: "notraRawInline",
 
   parseMarkdown(token, helpers) {
-    return helpers.createNode("rawInline", { source: String(token.raw ?? "") })
+    const source = String(token.source ?? token.raw ?? "")
+    return helpers.createNode("rawInline", { kind: String(token.kind ?? "html"), source })
   },
 
   renderMarkdown(node) {

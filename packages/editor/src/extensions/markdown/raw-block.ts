@@ -1,4 +1,6 @@
 import { Extension, type JSONContent, mergeAttributes, Node } from "@tiptap/core"
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model"
+import { Plugin, PluginKey } from "@tiptap/pm/state"
 
 import type { NotraMarkdownContext } from "./context"
 import { canRepresentHtml, isBalancedHtml } from "./html"
@@ -7,7 +9,7 @@ import { canRepresentHtml, isBalancedHtml } from "./html"
  * Built-in kinds of source blocks. Applications can create blocks of their
  * own kinds (for example for Markdown dialects).
  */
-export type RawBlockKind = "frontmatter" | "html" | "definition" | (string & {})
+export type RawBlockKind = "frontmatter" | "html" | "definition" | "footnote" | "markdown" | (string & {})
 
 export interface RawBlockOptions {
   /** Shared Markdown state, see {@link NotraMarkdownContext}. */
@@ -20,13 +22,17 @@ export function trimTrailingLines(source: string): string {
   return source.replace(/(?:\r?\n[ \t]*)+$/, "")
 }
 
+function isFrontMatter(node: ProseMirrorNode | null | undefined): boolean {
+  return node?.type.name === "rawBlock" && node.attrs.kind === "frontmatter"
+}
+
 /** Returns the text of a source block given as JSON. */
 function getText(node: JSONContent): string {
   return (node.content ?? []).map((child) => child.text ?? "").join("")
 }
 
 /** Wraps text in a code fence that is longer than every backtick run inside of it. */
-function fence(text: string, language: string): string {
+export function fence(text: string, language: string): string {
   const longestRun = Math.max(0, ...(text.match(/`+/g) ?? []).map((run) => run.length))
   const marker = "`".repeat(Math.max(3, longestRun + 1))
   return `${marker}${language}\n${text}${text ? "\n" : ""}${marker}`
@@ -51,6 +57,10 @@ export const RawBlock = Node.create<RawBlockOptions>({
   code: true,
 
   defining: true,
+
+  // Source is not joined with the blocks around it: Backspace at the start of
+  // the next paragraph would move the paragraph into HTML or front matter.
+  isolating: true,
 
   addOptions() {
     return {
@@ -90,6 +100,37 @@ export const RawBlock = Node.create<RawBlockOptions>({
 
   renderText({ node }) {
     return node.textContent
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey("notraFrontMatter"),
+        // Front matter is only front matter at the start of a document, so it
+        // stays there when it is edited around: blocks added or moved above it
+        // go below it. Content that is loaded is left as it is.
+        appendTransaction(transactions, oldState, newState) {
+          const frontMatter = oldState.doc.firstChild
+          const { doc } = newState
+          if (
+            !transactions.some((transaction) => transaction.docChanged) ||
+            !isFrontMatter(frontMatter) ||
+            doc.firstChild === frontMatter
+          ) {
+            return null
+          }
+          let pos = 0
+          for (let index = 0; index < doc.childCount; index++) {
+            const child = doc.child(index)
+            if (child === frontMatter) {
+              return newState.tr.delete(pos, pos + child.nodeSize).insert(0, child)
+            }
+            pos += child.nodeSize
+          }
+          return null
+        },
+      }),
+    ]
   },
 
   addKeyboardShortcuts() {

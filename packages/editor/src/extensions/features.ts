@@ -22,7 +22,12 @@ export interface NotraFeatures {
   codeBlock?: boolean
   /** Horizontal rules. */
   divider?: boolean
-  table?: boolean | { resizable?: boolean }
+  /**
+   * Tables. `blocksInCells: false` makes cells hold text only (with line
+   * breaks), like the cells of Markdown tables, which cannot hold lists,
+   * quotes or code.
+   */
+  table?: boolean | { resizable?: boolean; blocksInCells?: boolean }
   image?: boolean | { resize?: boolean }
   bold?: boolean
   italic?: boolean
@@ -43,7 +48,8 @@ export interface NotraFeatures {
 /**
  * Features for documents stored as Markdown: everything is kept except what
  * Markdown cannot store or what silently changes typed text (smart
- * typography, text colors, highlights and image sizes).
+ * typography, text colors, highlights, image sizes and blocks in table
+ * cells).
  *
  * @example
  * useNotraEditor({ features: { ...markdownFeatures, table: false } })
@@ -53,6 +59,7 @@ export const markdownFeatures: Readonly<NotraFeatures> = Object.freeze({
   textColor: false,
   highlight: false,
   image: Object.freeze({ resize: false }),
+  table: Object.freeze({ blocksInCells: false }),
 })
 
 export type NotraFeatureName = keyof NotraFeatures

@@ -1,11 +1,18 @@
-import { type AnyExtension, Extension } from "@tiptap/core"
+import { type AnyExtension, type Editor, Extension } from "@tiptap/core"
 import { Markdown } from "@tiptap/markdown"
 import type { marked } from "marked"
 
-import { NotraMarkdownContext } from "./context"
+import { detectStyle, NotraMarkdownContext } from "./context"
+import { MarkdownEscaping } from "./escaping"
+import { MarkdownFallbacks } from "./fallback"
+import { Footnotes } from "./footnotes"
+import { MarkdownMarks, markInlineSource } from "./inline"
+import { ListMarkers } from "./list-markers"
+import { ListSyntax } from "./list-syntax"
 import { createNotraMarked } from "./marked"
 import { LinkDefinitions, RawBlock } from "./raw-block"
 import { RawInline } from "./raw-inline"
+import { SoftBreaks } from "./soft-breaks"
 import { MarkdownSource } from "./source"
 import { CalloutSyntax, DetailsSyntax, FrontMatterSyntax } from "./syntax"
 
@@ -19,6 +26,14 @@ export interface NotraMarkdownOptions {
    * @default false
    */
   preserveSource?: boolean
+  /**
+   * Called with `preserveSource` when Markdown is loaded that cannot be
+   * matched block by block with the document. Unchanged blocks are then not
+   * written back verbatim: `getMarkdown()` writes the whole document again
+   * and `isPreservingMarkdownSource()` returns `false` until other Markdown
+   * is loaded. Applications can, for example, warn before saving.
+   */
+  onSourceMismatch?: (editor: Editor) => void
 }
 
 export interface NotraMarkdownSetup {
@@ -31,14 +46,15 @@ export interface NotraMarkdownSetup {
 /**
  * Creates the Markdown support of one editor: Tiptap's Markdown extension
  * with an isolated marked instance, source blocks for content the editor
- * cannot represent, front matter, GitHub alerts and `<details>` blocks.
- * `rawBlock` replaces the source block node (for example with a node view).
+ * cannot represent, front matter, footnotes, GitHub alerts and `<details>`
+ * blocks. `rawBlock` replaces the source block node (for example with a node
+ * view).
  */
 export function createNotraMarkdown(
   options: NotraMarkdownOptions = {},
   rawBlock: typeof RawBlock = RawBlock,
 ): NotraMarkdownSetup {
-  const { preserveSource = false } = options
+  const { preserveSource = false, onSourceMismatch } = options
   const context = new NotraMarkdownContext()
   // Unchanged blocks may use link reference definitions: keep them.
   context.keepDefinitions = preserveSource
@@ -51,10 +67,24 @@ export function createNotraMarkdown(
 
     onBeforeCreate() {
       context.schema = this.editor.schema
+      // Extends the Markdown manager as soon as the Markdown extension creates it, before it reads the initial content.
+      let manager = this.editor.markdown
+      Object.defineProperty(this.editor, "markdown", {
+        configurable: true,
+        enumerable: true,
+        get: () => manager,
+        set: (value: typeof manager) => {
+          manager = value
+          if (value) markInlineSource(value)
+        },
+      })
       // The Markdown extension replaces the initial content with its parsed form.
       const { content, contentType } = this.editor.options
-      context.initialSource =
-        preserveSource && contentType === "markdown" && typeof content === "string" ? content : null
+      const markdown = contentType === "markdown" && typeof content === "string" ? content : null
+      context.initialSource = preserveSource ? markdown : null
+      if (markdown !== null) {
+        detectStyle(context, markdown)
+      }
     },
 
     onDestroy() {
@@ -67,13 +97,20 @@ export function createNotraMarkdown(
     extensions: [
       setup,
       Markdown.configure({ marked: createNotraMarked(context) as unknown as typeof marked }),
+      MarkdownEscaping.configure({ context }),
+      MarkdownMarks,
       rawBlock.configure({ context }),
       RawInline,
       LinkDefinitions.configure({ context }),
       FrontMatterSyntax,
+      ListSyntax.configure({ context }),
+      ListMarkers,
+      ...Footnotes,
       CalloutSyntax.configure({ context }),
       DetailsSyntax.configure({ context }),
-      ...(preserveSource ? [MarkdownSource.configure({ context })] : []),
+      ...MarkdownFallbacks,
+      SoftBreaks,
+      ...(preserveSource ? [MarkdownSource.configure({ context, onSourceMismatch: onSourceMismatch ?? null })] : []),
     ],
   }
 }

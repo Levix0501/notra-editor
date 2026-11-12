@@ -20,6 +20,7 @@ import { preventFocusLoss, Toolbar, ToolbarSeparator, ToolbarTooltip } from "#co
 import { Button } from "#components/ui/button.tsx"
 import { ToggleGroup, ToggleGroupItem } from "#components/ui/toggle-group.tsx"
 import { handleLinkClick } from "#extensions/link-click.ts"
+import { isInTextCell } from "#extensions/table.ts"
 import { useHideMenuOnFocusLeave } from "#hooks/use-hide-menu-on-focus-leave.ts"
 import { NotraPortalContext, useNotraPortal } from "#lib/portal.tsx"
 import { ColorPopover } from "./color-popover"
@@ -184,6 +185,8 @@ function BubbleMenuToolbar({ editor }: { editor: Editor }) {
     selector: ({ editor: instance }) => ({
       empty: instance.state.selection.empty,
       blockTypeId: getActiveBlockType(instance)?.id,
+      // Cells that only hold text cannot turn into other blocks.
+      canTurnInto: !isInTextCell(instance.state.selection),
       marks: capabilities.marks
         .filter((mark) => instance.isActive(mark.name))
         .map((mark) => mark.name)
@@ -205,14 +208,16 @@ function BubbleMenuToolbar({ editor }: { editor: Editor }) {
 
   return (
     <Toolbar>
-      <TurnIntoMenu editor={editor} activeId={state.blockTypeId} />
+      {state.canTurnInto ? <TurnIntoMenu editor={editor} activeId={state.blockTypeId} /> : null}
       {capabilities.marks.length > 0 ? (
         <>
-          <ToolbarSeparator />
+          {state.canTurnInto ? <ToolbarSeparator /> : null}
           <MarkToggleGroup editor={editor} marks={capabilities.marks} active={activeMarks} />
         </>
       ) : null}
-      {capabilities.link || hasColors ? <ToolbarSeparator /> : null}
+      {(capabilities.link || hasColors) && (state.canTurnInto || capabilities.marks.length > 0) ? (
+        <ToolbarSeparator />
+      ) : null}
       {capabilities.link ? <LinkPopover editor={editor} active={state.link} registerShortcut /> : null}
       {hasColors ? (
         <ColorPopover

@@ -1,6 +1,7 @@
 import type { Editor } from "@tiptap/core"
 
 import { getNotraStorage } from "./notra-core"
+import { getBlockInsertPosition } from "./table"
 
 export const IMAGE_MIME_TYPES = [
   "image/png",
@@ -50,8 +51,8 @@ export async function insertImageFiles(editor: Editor, files: readonly File[], p
       return
     }
 
-    // The document may have changed while uploading.
-    insertAt = Math.min(insertAt, editor.state.doc.content.size)
+    // The document may have changed while uploading. Images go after tables whose cells only hold text.
+    insertAt = getBlockInsertPosition(editor.state.doc, Math.min(insertAt, editor.state.doc.content.size))
     editor
       .chain()
       .insertContentAt(insertAt, { type: "image", attrs: { src, alt: file.name } })

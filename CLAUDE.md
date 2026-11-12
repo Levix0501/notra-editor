@@ -18,8 +18,34 @@ Run from this directory (requires pnpm 12):
 - `packages/editor/src/extensions/`: Tiptap extensions. `kit.ts` assembles them from the
   `features` option; `notra-core.ts` holds runtime state (dictionary, handlers) in editor storage.
 - `packages/editor/src/extensions/markdown/`: Markdown support on top of `@tiptap/markdown`:
-  marked tokenizers (each editor has its own marked instance), source blocks for content the
-  editor cannot represent, and `source.ts`, which writes unchanged blocks back verbatim.
+  marked tokenizers (each editor has its own marked instance, whose block tokenizers only get the
+  paragraph that is read to find where they start, and only starts at the start of a line
+  count), source blocks for content the editor cannot
+  represent (`fallback.ts` keeps blocks that no extension reads), all lists read by
+  `list-syntax.ts` (Tiptap's list readers are turned off) and kept apart by `list-markers.ts`,
+  minimal escaping (`escaping.ts`), inline writing in `inline.ts` (emphasis that CommonMark would
+  not read is written as HTML, link targets, autolinks and references), the style of the file
+  (`detectStyle` in `context.ts`), and `source.ts` with `source-snapshot.ts` and
+  `source-writer.ts`, which write unchanged blocks, list items, table rows and the parts of
+  toggles back verbatim (`source.ts` keeps the last sources, for undo after `updateContent`:
+  blocks, items and rows that the chosen source does not have are written with another one).
+  Some of it replaces internals of `@tiptap/markdown` (`encodeTextForMarkdown`,
+  `getMarkOpening`, `getMarkClosing`, `applyMarkToContent`, `renderNodesWithMarkBoundaries`,
+  `getMarksToOpenForSerialization`); `test/markdown*.test.ts` covers them. This is why the
+  `@tiptap/*` dependencies allow a single minor version (`~3.33.0`): upgrade them together and
+  run the tests before widening the range.
+- Line breaks in the text of paragraphs are Markdown soft line breaks: `soft-breaks.ts` keeps
+  ProseMirror from turning them into hard breaks when text blocks are joined, and turns them into
+  spaces in headings, which are a single line.
+- `update-content.ts` compares documents node by node (Myers' algorithm on the children of a node)
+  and only replaces complete nodes or text inside of a text block: ProseMirror does not fit open
+  content into isolating nodes (source blocks, table cells, toggles), which split or got a new node
+  for the end of a changed range.
+- Whether a toggle is expanded is a viewing state, not an attribute (Tiptap's `persist` stays off):
+  documents that differ from their Markdown in it made `preserveSource` rewrite edited toggles and
+  `updateContent` collapse them.
+- `markdownFeatures` turns off what Markdown cannot store; `table.ts` holds the text-only table
+  cells it uses (`blocksInCells: false`).
 - `packages/editor/src/components/`: React UI (bubble menu, slash menu, block handle,
   table menu, image panel). `components/ui/` contains shadcn/ui components.
 - `packages/editor/src/blocks/block-types.ts`: block types shared by the slash menu and the
